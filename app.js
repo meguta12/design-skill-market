@@ -1,15 +1,113 @@
-// ===== Design Skill Market アプリロジック =====
-// レビュー・DL数増分・アカウント・投稿デザインは localStorage に保存
-//（プロトタイプ段階。本番では API + DB に置き換える）
+// ===== Design Skill Market アプリロジック（Supabase版） =====
+// アカウント・投稿・レビュー・DL数は Supabase に保存され、全ユーザーで共有される。
+// data.js のシードデザイン6件はコード内に持ち、クラウドの投稿とマージして表示する。
 
 const ORDER_EMAIL = "megupen.sab@gmail.com";
-const MY_ID = "me"; // 自分のアカウントのクリエイターID
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "その他"];
 const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "その他"];
 const NEW_DAYS = 14; // この日数以内なら NEW バッジ
 
-// 検索・絞り込みの状態
+// ---------- クラウドデータのキャッシュ ----------
+const cloud = {
+  designs: [],   // 投稿デザイン（アプリ内形式に変換済み）
+  profiles: {},  // uuid → プロフィール
+  reviews: [],   // 全レビュー
+  stats: {},     // design_id → DL数
+  loaded: false,
+};
+let session = null;
+let myProfile = null;
+
+function designFromRow(r) {
+  return {
+    id: r.id,
+    creator: r.creator,
+    title: r.title,
+    tags: r.tags || [],
+    desc: r.description || "",
+    category: r.category || "その他",
+    colorTone: r.color_tone || "その他",
+    price: r.price || 0,
+    features: r.features || [],
+    thumb: r.thumb || "",
+    skill: r.skill,
+    createdAt: (r.created_at || "").slice(0, 10),
+    downloads: 0,
+    seedReviews: [],
+  };
+}
+function profileFromRow(r) {
+  return {
+    id: r.id,
+    name: r.name,
+    initial: r.initial || r.name.slice(0, 1),
+    avatarColor: r.avatar_color || "#4f46e5",
+    bio: r.bio || "",
+    links: r.links || {},
+  };
+}
+
+async function loadCloudData() {
+  try {
+    const [designs, profiles, reviews, stats] = await Promise.all([
+      sb.from("designs").select("*").order("created_at", { ascending: false }),
+      sb.from("profiles").select("*"),
+      sb.from("reviews").select("*").order("created_at"),
+      sb.from("design_stats").select("*"),
+    ]);
+    if (designs.error || profiles.error || reviews.error || stats.error) {
+      throw designs.error || profiles.error || reviews.error || stats.error;
+    }
+    cloud.designs = designs.data.map(designFromRow);
+    cloud.profiles = Object.fromEntries(profiles.data.map(r => [r.id, profileFromRow(r)]));
+    cloud.reviews = reviews.data;
+    cloud.stats = Object.fromEntries(stats.data.map(r => [r.design_id, r.downloads]));
+    cloud.loaded = true;
+  } catch (err) {
+    console.warn("クラウドデータの取得に失敗（テーブル未作成の可能性）:", err?.message || err);
+  }
+}
+
+// ---------- データアクセス ----------
+function allDesigns() {
+  return [...DESIGNS, ...cloud.designs];
+}
+function findDesign(id) {
+  return allDesigns().find(x => x.id === id);
+}
+function allReviews(design) {
+  const cloudReviews = cloud.reviews
+    .filter(r => r.design_id === design.id)
+    .map(r => ({ name: r.name, stars: r.stars, date: (r.created_at || "").slice(0, 10), text: r.body }));
+  return [...(design.seedReviews || []), ...cloudReviews];
+}
+function avgRating(design) {
+  const list = allReviews(design);
+  if (!list.length) return 0;
+  return list.reduce((s, r) => s + r.stars, 0) / list.length;
+}
+function extraDownloads(designId) {
+  return cloud.stats[designId] || 0;
+}
+function totalDownloads(d) {
+  return (d.downloads || 0) + extraDownloads(d.id);
+}
+function findCreator(id) {
+  return CREATORS.find(c => c.id === id)
+    || cloud.profiles[id]
+    || { id, name: "退会したユーザー", initial: "?", avatarColor: "#8b90a3", bio: "", links: {} };
+}
+function designsByCreator(creatorId) {
+  return allDesigns().filter(d => d.creator === creatorId);
+}
+function isMine(d) {
+  return session && d.creator === session.user.id;
+}
+
+// ---------- 検索・絞り込み ----------
 const filters = { q: "", category: "", color: "", price: "", sort: "recommend" };
 
 function isNew(d) {
@@ -18,9 +116,6 @@ function isNew(d) {
 }
 function isPaid(d) {
   return (d.price || 0) > 0;
-}
-function totalDownloads(d) {
-  return (d.downloads || 0) + extraDownloads(d.id);
 }
 
 function filteredDesigns() {
@@ -45,68 +140,6 @@ function filteredDesigns() {
     list.sort((a, b) => avgRating(b) - avgRating(a));
   }
   return list;
-}
-
-// ---------- ストレージ ----------
-function loadUserReviews(designId) {
-  try {
-    return JSON.parse(localStorage.getItem("reviews:" + designId)) || [];
-  } catch { return []; }
-}
-function saveUserReview(designId, review) {
-  const list = loadUserReviews(designId);
-  list.push(review);
-  localStorage.setItem("reviews:" + designId, JSON.stringify(list));
-}
-function allReviews(design) {
-  return [...(design.seedReviews || []), ...loadUserReviews(design.id)];
-}
-function avgRating(design) {
-  const list = allReviews(design);
-  if (!list.length) return 0;
-  return list.reduce((s, r) => s + r.stars, 0) / list.length;
-}
-function extraDownloads(designId) {
-  return parseInt(localStorage.getItem("dl:" + designId) || "0", 10);
-}
-function bumpDownloads(designId) {
-  localStorage.setItem("dl:" + designId, String(extraDownloads(designId) + 1));
-}
-
-// ---------- アカウント ----------
-function getAccount() {
-  try { return JSON.parse(localStorage.getItem("account")); } catch { return null; }
-}
-function saveAccount(account) {
-  localStorage.setItem("account", JSON.stringify(account));
-  renderHeaderAccount();
-}
-
-// ---------- 投稿デザイン ----------
-function getUserDesigns() {
-  try { return JSON.parse(localStorage.getItem("userDesigns")) || []; } catch { return []; }
-}
-function saveUserDesigns(list) {
-  localStorage.setItem("userDesigns", JSON.stringify(list));
-}
-function allDesigns() {
-  return [...DESIGNS, ...getUserDesigns()];
-}
-function findDesign(id) {
-  return allDesigns().find(x => x.id === id);
-}
-
-// ---------- クリエイター ----------
-function findCreator(id) {
-  if (id === MY_ID) {
-    const acc = getAccount();
-    if (acc) return acc;
-    return { id: MY_ID, name: "名無しさん", initial: "?", avatarColor: "#8b90a3", bio: "", links: {} };
-  }
-  return CREATORS.find(c => c.id === id);
-}
-function designsByCreator(creatorId) {
-  return allDesigns().filter(d => d.creator === creatorId);
 }
 
 // ---------- 表示部品 ----------
@@ -213,47 +246,11 @@ function initFilterBar() {
   });
 }
 
-// 代行フォームのデザイン選択（検索付きモーダル。件数が増えても破綻しない）
-function setOrderDesign(id, title) {
-  document.getElementById("order-design-id").value = id || "";
-  document.getElementById("order-design-label").value = title || "未定・相談したい";
-}
-
-function openDesignPicker() {
-  openModal(`
-    <h3 class="modal-title">ベースにしたいデザインを選ぶ</h3>
-    <input type="search" id="picker-q" class="search-box" placeholder="🔍 デザイン名・タグで検索">
-    <div class="picker-list" id="picker-list"></div>
-  `);
-  const render = (q = "") => {
-    const needle = q.trim().toLowerCase();
-    const list = allDesigns().filter(d =>
-      !needle ||
-      [d.title, d.desc, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
-    document.getElementById("picker-list").innerHTML = `
-      <button type="button" class="picker-item" onclick="setOrderDesign('', ''); closeModal()">
-        <span class="picker-title">未定・相談したい</span>
-        <span class="picker-sub">デザインを決めずに相談する</span>
-      </button>
-      ${list.map(d => {
-        const cr = findCreator(d.creator);
-        return `
-        <button type="button" class="picker-item"
-          onclick="setOrderDesign('${d.id}', '${escapeHtml(d.title)}'); closeModal()">
-          <span class="picker-title">${escapeHtml(d.title)} ${isPaid(d) ? `<span class="badge badge-paid">¥${d.price.toLocaleString()}</span>` : ""}</span>
-          <span class="picker-sub">by ${escapeHtml(cr.name)}　<code>ID: ${d.id}</code></span>
-        </button>`;
-      }).join("")}
-      ${list.length === 0 ? `<p class="empty-note">見つかりませんでした</p>` : ""}`;
-  };
-  render();
-  document.getElementById("picker-q").addEventListener("input", e => render(e.target.value));
-}
-
 function renderHeaderAccount() {
-  const acc = getAccount();
   const el = document.getElementById("nav-account");
-  el.textContent = acc ? `👤 ${acc.name}` : "アカウント作成";
+  if (myProfile) el.textContent = `👤 ${myProfile.name}`;
+  else if (session) el.textContent = "プロフィール設定";
+  else el.textContent = "ログイン / 登録";
 }
 
 // ---------- ビュー切り替え ----------
@@ -264,7 +261,7 @@ function showView(name) {
 }
 
 function showHome() {
-  renderGallery(); // 投稿・レビュー後の状態を反映
+  renderGallery();
   showView("home");
 }
 
@@ -351,16 +348,19 @@ function renderDetail(d) {
     });
   });
 
-  // レビュー投稿
-  document.getElementById("review-form").addEventListener("submit", e => {
+  // レビュー投稿（クラウド保存）
+  document.getElementById("review-form").addEventListener("submit", async e => {
     e.preventDefault();
     if (!pendingStars) { toast("★をタップして評価を選んでください"); return; }
-    saveUserReview(d.id, {
+    const review = {
+      design_id: d.id,
       name: document.getElementById("rv-name").value.trim(),
       stars: pendingStars,
-      date: new Date().toISOString().slice(0, 10),
-      text: document.getElementById("rv-text").value.trim(),
-    });
+      body: document.getElementById("rv-text").value.trim(),
+    };
+    const { data, error } = await sb.from("reviews").insert(review).select().single();
+    if (error) { toast("投稿に失敗しました: " + error.message); return; }
+    cloud.reviews.push(data);
     toast("レビューを投稿しました！ありがとうございます");
     renderDetail(d);
   });
@@ -371,7 +371,7 @@ function showCreator(id) {
   const cr = findCreator(id);
   if (!cr) return;
   const works = designsByCreator(id);
-  const totalDl = works.reduce((s, d) => s + (d.downloads || 0) + extraDownloads(d.id), 0);
+  const totalDl = works.reduce((s, d) => s + totalDownloads(d), 0);
 
   document.getElementById("creator-body").innerHTML = `
   <div class="creator-head">
@@ -394,29 +394,93 @@ function showCreator(id) {
   showView("creator");
 }
 
-// ---------- アカウント ----------
+// ---------- 認証・アカウント ----------
+async function initAuth() {
+  const { data } = await sb.auth.getSession();
+  session = data.session;
+  if (session) await loadMyProfile();
+  renderHeaderAccount();
+
+  sb.auth.onAuthStateChange(async (_event, newSession) => {
+    const wasLoggedIn = !!session;
+    session = newSession;
+    myProfile = null;
+    if (session) await loadMyProfile();
+    renderHeaderAccount();
+    if (!wasLoggedIn && session && !document.getElementById("view-account").hidden) {
+      showAccount(); // ログイン直後にアカウント画面を更新
+    }
+  });
+}
+
+async function loadMyProfile() {
+  if (!session) { myProfile = null; return; }
+  const { data } = await sb.from("profiles").select("*").eq("id", session.user.id).maybeSingle();
+  myProfile = data ? profileFromRow(data) : null;
+  if (myProfile) cloud.profiles[myProfile.id] = myProfile;
+}
+
 function showAccount() {
-  const acc = getAccount();
   const body = document.getElementById("account-body");
 
-  if (!acc) {
+  if (!session) {
+    // 未ログイン → ログイン/新規登録フォーム
     body.innerHTML = `
     <div class="panel">
-      <h1 class="panel-title">アカウント作成</h1>
-      <p class="panel-lead">アカウントを作ると、デザインを投稿できるようになります。<br>
-      ホームページやSNSのリンクはあなたの全作品のページに表示されます。</p>
-      ${accountFormHtml({ name: "", bio: "", avatarColor: "#4f46e5", links: {} }, "アカウントを作成する")}
+      <h1 class="panel-title">ログイン / 新規登録</h1>
+      <p class="panel-lead">メールアドレスとパスワードでアカウントを作成できます。<br>
+      登録すると、デザインの投稿とプロフィール公開ができるようになります。</p>
+      <form class="nice-form" id="auth-form">
+        <label>メールアドレス<input type="email" id="auth-email" required placeholder="you@example.com"></label>
+        <label>パスワード（8文字以上）<input type="password" id="auth-pass" required minlength="8" placeholder="パスワード"></label>
+        <div class="ad-footer">
+          <button type="button" class="btn btn-ghost" id="auth-signup">新規登録</button>
+          <button type="submit" class="btn btn-primary" id="auth-login">ログイン</button>
+        </div>
+      </form>
     </div>`;
-  } else {
-    const works = designsByCreator(MY_ID);
-    body.innerHTML = `
-    <div class="panel">
-      <div class="panel-head-row">
-        <h1 class="panel-title">マイページ</h1>
-        <button class="btn btn-ghost btn-sm" onclick="showCreator('${MY_ID}')">公開プロフィールを確認</button>
+    showView("account");
+
+    const email = () => document.getElementById("auth-email").value.trim();
+    const pass = () => document.getElementById("auth-pass").value;
+
+    document.getElementById("auth-form").addEventListener("submit", async e => {
+      e.preventDefault();
+      const { error } = await sb.auth.signInWithPassword({ email: email(), password: pass() });
+      if (error) { toast("ログインできませんでした: " + error.message); return; }
+      toast("ログインしました");
+      showAccount();
+    });
+    document.getElementById("auth-signup").addEventListener("click", async () => {
+      if (!email() || pass().length < 8) { toast("メールアドレスと8文字以上のパスワードを入力してください"); return; }
+      const { data, error } = await sb.auth.signUp({ email: email(), password: pass() });
+      if (error) { toast("登録できませんでした: " + error.message); return; }
+      if (!data.session) {
+        toast("確認メールを送りました。メール内のリンクを開いてからログインしてください");
+        return;
+      }
+      toast("登録しました！続けてプロフィールを設定しましょう");
+      showAccount();
+    });
+    return;
+  }
+
+  // ログイン済み
+  const acc = myProfile || { name: "", bio: "", avatarColor: "#4f46e5", links: {} };
+  const works = session ? designsByCreator(session.user.id) : [];
+  body.innerHTML = `
+  <div class="panel">
+    <div class="panel-head-row">
+      <h1 class="panel-title">${myProfile ? "マイページ" : "プロフィール設定"}</h1>
+      <div>
+        ${myProfile ? `<button class="btn btn-ghost btn-sm" onclick="showCreator('${session.user.id}')">公開プロフィールを確認</button>` : ""}
+        <button class="btn btn-ghost btn-sm" onclick="logout()">ログアウト</button>
       </div>
-      <h2 class="panel-sub">プロフィール編集</h2>
-      ${accountFormHtml(acc, "保存する")}
+    </div>
+    ${myProfile ? "" : `<p class="panel-lead">あと一歩！公開用のプロフィールを設定すると投稿できるようになります。</p>`}
+    <h2 class="panel-sub">プロフィール${myProfile ? "編集" : "作成"}</h2>
+    ${accountFormHtml(acc, myProfile ? "保存する" : "プロフィールを作成する")}
+    ${myProfile ? `
       <h2 class="panel-sub">自分の投稿（${works.length}件)</h2>
       ${works.length
         ? `<ul class="my-works">${works.map(d => `
@@ -425,20 +489,19 @@ function showAccount() {
               <button class="text-danger" onclick="deleteUserDesign('${d.id}')">削除</button>
             </li>`).join("")}</ul>`
         : `<p class="empty-note">まだ投稿がありません。<a href="#" onclick="showSubmit(); return false;">最初のデザインを投稿してみましょう →</a></p>`}
-    </div>`;
-  }
-
+    ` : ""}
+  </div>`;
   showView("account");
 
-  document.getElementById("account-form").addEventListener("submit", e => {
+  document.getElementById("account-form").addEventListener("submit", async e => {
     e.preventDefault();
     const name = document.getElementById("ac-name").value.trim();
     if (!name) return;
-    saveAccount({
-      id: MY_ID,
+    const row = {
+      id: session.user.id,
       name,
       initial: name.slice(0, 1),
-      avatarColor: document.getElementById("ac-color").value,
+      avatar_color: document.getElementById("ac-color").value,
       bio: document.getElementById("ac-bio").value.trim(),
       links: {
         homepage: document.getElementById("ac-homepage").value.trim(),
@@ -446,8 +509,14 @@ function showAccount() {
         instagram: document.getElementById("ac-instagram").value.trim(),
         youtube: document.getElementById("ac-youtube").value.trim(),
       },
-    });
-    toast(acc ? "プロフィールを保存しました" : `ようこそ、${name}さん！これでデザインを投稿できます`);
+    };
+    const { error } = await sb.from("profiles").upsert(row);
+    if (error) { toast("保存に失敗しました: " + error.message); return; }
+    const isFirst = !myProfile;
+    myProfile = profileFromRow(row);
+    cloud.profiles[myProfile.id] = myProfile;
+    renderHeaderAccount();
+    toast(isFirst ? `ようこそ、${name}さん！これでデザインを投稿できます` : "プロフィールを保存しました");
     showAccount();
   });
 }
@@ -467,24 +536,34 @@ function accountFormHtml(acc, submitLabel) {
   </form>`;
 }
 
-function deleteUserDesign(id) {
+async function logout() {
+  await sb.auth.signOut();
+  session = null;
+  myProfile = null;
+  renderHeaderAccount();
+  toast("ログアウトしました");
+  showHome();
+}
+
+async function deleteUserDesign(id) {
   if (!confirm("この投稿を削除しますか？")) return;
-  saveUserDesigns(getUserDesigns().filter(d => d.id !== id));
+  const { error } = await sb.from("designs").delete().eq("id", id);
+  if (error) { toast("削除に失敗しました: " + error.message); return; }
+  cloud.designs = cloud.designs.filter(d => d.id !== id);
   toast("投稿を削除しました");
   showAccount();
 }
 
 // ---------- デザイン投稿 ----------
 function showSubmit() {
-  const acc = getAccount();
   const body = document.getElementById("submit-body");
 
-  if (!acc) {
+  if (!session || !myProfile) {
     body.innerHTML = `
     <div class="panel center">
       <h1 class="panel-title">デザインを投稿するには</h1>
-      <p class="panel-lead">投稿にはアカウントが必要です。<br>30秒で作れます（メールアドレス不要）。</p>
-      <button class="btn btn-primary" onclick="showAccount()">アカウントを作成する</button>
+      <p class="panel-lead">投稿には${!session ? "アカウント登録" : "プロフィール設定"}が必要です。<br>1分で終わります。</p>
+      <button class="btn btn-primary" onclick="showAccount()">${!session ? "ログイン / 新規登録へ" : "プロフィールを設定する"}</button>
     </div>`;
     showView("submit");
     return;
@@ -493,7 +572,7 @@ function showSubmit() {
   body.innerHTML = `
   <div class="panel">
     <h1 class="panel-title">デザインを投稿</h1>
-    <p class="panel-lead">あなたのデザインの「作り方」をスキルとして共有しましょう。投稿者として「${escapeHtml(acc.name)}」が表示されます。</p>
+    <p class="panel-lead">あなたのデザインの「作り方」をスキルとして共有しましょう。投稿者として「${escapeHtml(myProfile.name)}」が表示されます。</p>
     <form class="nice-form" id="submit-form">
       <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP"></label>
       <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発"></label>
@@ -520,7 +599,7 @@ function showSubmit() {
 
   document.getElementById("sb-skill").value = skillTemplate();
 
-  document.getElementById("submit-form").addEventListener("submit", e => {
+  document.getElementById("submit-form").addEventListener("submit", async e => {
     e.preventDefault();
     const title = document.getElementById("sb-title").value.trim();
     const tags = document.getElementById("sb-tags").value
@@ -530,25 +609,24 @@ function showSubmit() {
     const c1 = document.getElementById("sb-color1").value;
     const c2 = document.getElementById("sb-color2").value;
 
-    const design = {
-      id: "user-" + Date.now(),
-      creator: MY_ID,
+    const row = {
+      id: "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      creator: session.user.id,
       title,
       tags: tags.length ? tags : ["オリジナル"],
-      desc: document.getElementById("sb-desc").value.trim(),
+      description: document.getElementById("sb-desc").value.trim(),
       category: document.getElementById("sb-category").value,
-      colorTone: document.getElementById("sb-colortone").value,
+      color_tone: document.getElementById("sb-colortone").value,
       price: Math.max(0, parseInt(document.getElementById("sb-price").value, 10) || 0),
-      createdAt: new Date().toISOString().slice(0, 10),
       features,
-      downloads: 0,
-      seedReviews: [],
       thumb: genThumb(c1, c2),
       skill: document.getElementById("sb-skill").value,
     };
-    saveUserDesigns([...getUserDesigns(), design]);
+    const { data, error } = await sb.from("designs").insert(row).select().single();
+    if (error) { toast("公開に失敗しました: " + error.message); return; }
+    cloud.designs.unshift(designFromRow(data));
     toast("デザインを公開しました！🎉");
-    showDetail(design.id);
+    showDetail(data.id);
   });
 }
 
@@ -613,7 +691,7 @@ function downloadSkill(id) {
   else openAdModal(d);
 }
 
-function doDownload(id) {
+async function doDownload(id) {
   const d = findDesign(id);
   if (!d) return;
   const blob = new Blob([d.skill], { type: "text/markdown;charset=utf-8" });
@@ -622,9 +700,11 @@ function doDownload(id) {
   a.download = `${d.id}-SKILL.md`;
   a.click();
   URL.revokeObjectURL(a.href);
-  bumpDownloads(id);
   closeModal();
   toast("スキルファイルをダウンロードしました。Claude に渡して使ってください！");
+  // DL数をクラウドでカウント
+  const { error } = await sb.rpc("bump_download", { d_id: id });
+  if (!error) cloud.stats[id] = (cloud.stats[id] || 0) + 1;
 }
 
 // ---------- モーダル ----------
@@ -700,6 +780,42 @@ function openPurchaseModal(d) {
 }
 
 // ---------- 制作代行 ----------
+function setOrderDesign(id, title) {
+  document.getElementById("order-design-id").value = id || "";
+  document.getElementById("order-design-label").value = title || "未定・相談したい";
+}
+
+function openDesignPicker() {
+  openModal(`
+    <h3 class="modal-title">ベースにしたいデザインを選ぶ</h3>
+    <input type="search" id="picker-q" class="search-box" placeholder="🔍 デザイン名・タグで検索">
+    <div class="picker-list" id="picker-list"></div>
+  `);
+  const render = (q = "") => {
+    const needle = q.trim().toLowerCase();
+    const list = allDesigns().filter(d =>
+      !needle ||
+      [d.title, d.desc, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
+    document.getElementById("picker-list").innerHTML = `
+      <button type="button" class="picker-item" onclick="setOrderDesign('', ''); closeModal()">
+        <span class="picker-title">未定・相談したい</span>
+        <span class="picker-sub">デザインを決めずに相談する</span>
+      </button>
+      ${list.map(d => {
+        const cr = findCreator(d.creator);
+        return `
+        <button type="button" class="picker-item"
+          onclick="setOrderDesign('${d.id}', '${escapeHtml(d.title)}'); closeModal()">
+          <span class="picker-title">${escapeHtml(d.title)} ${isPaid(d) ? `<span class="badge badge-paid">¥${d.price.toLocaleString()}</span>` : ""}</span>
+          <span class="picker-sub">by ${escapeHtml(cr.name)}　<code>ID: ${d.id}</code></span>
+        </button>`;
+      }).join("")}
+      ${list.length === 0 ? `<p class="empty-note">見つかりませんでした</p>` : ""}`;
+  };
+  render();
+  document.getElementById("picker-q").addEventListener("input", e => render(e.target.value));
+}
+
 function orderThis(id) {
   const d = findDesign(id);
   showHome();
@@ -756,6 +872,10 @@ function toast(msg) {
 }
 
 // ---------- 初期化 ----------
-initFilterBar();
-renderGallery();
-renderHeaderAccount();
+(async function init() {
+  initFilterBar();
+  renderGallery(); // まずシードデザインを即表示
+  renderHeaderAccount();
+  await Promise.all([initAuth(), loadCloudData()]);
+  renderGallery(); // クラウドの投稿・レビュー・DL数を反映
+})();
