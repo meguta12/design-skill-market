@@ -319,6 +319,38 @@ a { color: inherit; text-decoration: none; }
 .empty-note { color: var(--ink-faint); font-size: 14px; }
 .empty-note a { color: var(--accent); font-weight: 700; }
 
+/* ----- design picker（代行フォームのデザイン選択） ----- */
+.design-picker { display: flex; gap: 8px; margin-top: 6px; }
+.design-picker input[type="text"] {
+  margin-top: 0; cursor: pointer; background: #fff;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.picker-btn {
+  flex-shrink: 0; padding: 0 20px; border-radius: 10px; border: none;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 13px;
+  cursor: pointer; font-family: inherit;
+}
+.picker-btn:hover { background: var(--accent-dark); }
+.picker-list { max-height: 50vh; overflow-y: auto; margin-top: 4px; }
+.picker-item {
+  display: block; width: 100%; text-align: left; background: none;
+  border: none; border-bottom: 1px solid var(--line); padding: 13px 8px;
+  cursor: pointer; font-family: inherit;
+}
+.picker-item:hover { background: var(--accent-soft); }
+.picker-title { display: block; font-weight: 800; font-size: 14px; color: var(--ink); margin-bottom: 3px; }
+.picker-title .badge { font-size: 10px; padding: 2px 9px; }
+.picker-sub { display: block; font-size: 12px; color: var(--ink-faint); }
+.picker-sub code {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 5px;
+  padding: 1px 7px; font-size: 11px;
+}
+.design-id {
+  font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+  color: var(--ink-faint); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 2px 9px;
+}
+
 /* ----- toast ----- */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);

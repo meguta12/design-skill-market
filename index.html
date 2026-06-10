@@ -115,7 +115,11 @@
           <label>お名前<input type="text" id="order-name" required placeholder="山田 太郎"></label>
           <label>メールアドレス<input type="email" id="order-email" required placeholder="you@example.com"></label>
           <label>ベースにしたいデザイン
-            <select id="order-design"><option value="">未定・相談したい</option></select>
+            <div class="design-picker">
+              <input type="text" id="order-design-label" readonly value="未定・相談したい" onclick="openDesignPicker()">
+              <input type="hidden" id="order-design-id" value="">
+              <button type="button" class="picker-btn" onclick="openDesignPicker()">選ぶ</button>
+            </div>
           </label>
           <label>ご相談内容<textarea id="order-message" rows="4" required placeholder="例：美容室のホームページを作りたい。ページ数は5ページくらい…"></textarea></label>
           <button type="submit" class="btn btn-primary btn-block">この内容で相談メールを作成</button>

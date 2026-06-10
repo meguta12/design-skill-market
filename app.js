@@ -2,7 +2,7 @@
 // レビュー・DL数増分・アカウント・投稿デザインは localStorage に保存
 //（プロトタイプ段階。本番では API + DB に置き換える）
 
-const ORDER_EMAIL = "keita.1228.kendo@gmail.com";
+const ORDER_EMAIL = "megupen.sab@gmail.com";
 const MY_ID = "me"; // 自分のアカウントのクリエイターID
 
 const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "その他"];
@@ -213,15 +213,41 @@ function initFilterBar() {
   });
 }
 
-function renderOrderSelect() {
-  const sel = document.getElementById("order-design");
-  sel.querySelectorAll("option:not(:first-child)").forEach(o => o.remove());
-  allDesigns().forEach(d => {
-    const opt = document.createElement("option");
-    opt.value = d.title;
-    opt.textContent = d.title;
-    sel.appendChild(opt);
-  });
+// 代行フォームのデザイン選択（検索付きモーダル。件数が増えても破綻しない）
+function setOrderDesign(id, title) {
+  document.getElementById("order-design-id").value = id || "";
+  document.getElementById("order-design-label").value = title || "未定・相談したい";
+}
+
+function openDesignPicker() {
+  openModal(`
+    <h3 class="modal-title">ベースにしたいデザインを選ぶ</h3>
+    <input type="search" id="picker-q" class="search-box" placeholder="🔍 デザイン名・タグで検索">
+    <div class="picker-list" id="picker-list"></div>
+  `);
+  const render = (q = "") => {
+    const needle = q.trim().toLowerCase();
+    const list = allDesigns().filter(d =>
+      !needle ||
+      [d.title, d.desc, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
+    document.getElementById("picker-list").innerHTML = `
+      <button type="button" class="picker-item" onclick="setOrderDesign('', ''); closeModal()">
+        <span class="picker-title">未定・相談したい</span>
+        <span class="picker-sub">デザインを決めずに相談する</span>
+      </button>
+      ${list.map(d => {
+        const cr = findCreator(d.creator);
+        return `
+        <button type="button" class="picker-item"
+          onclick="setOrderDesign('${d.id}', '${escapeHtml(d.title)}'); closeModal()">
+          <span class="picker-title">${escapeHtml(d.title)} ${isPaid(d) ? `<span class="badge badge-paid">¥${d.price.toLocaleString()}</span>` : ""}</span>
+          <span class="picker-sub">by ${escapeHtml(cr.name)}　<code>ID: ${d.id}</code></span>
+        </button>`;
+      }).join("")}
+      ${list.length === 0 ? `<p class="empty-note">見つかりませんでした</p>` : ""}`;
+  };
+  render();
+  document.getElementById("picker-q").addEventListener("input", e => render(e.target.value));
 }
 
 function renderHeaderAccount() {
@@ -239,7 +265,6 @@ function showView(name) {
 
 function showHome() {
   renderGallery(); // 投稿・レビュー後の状態を反映
-  renderOrderSelect();
   showView("home");
 }
 
@@ -270,6 +295,7 @@ function renderDetail(d) {
         ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
         ${ratingMetaHtml(d)}
         <span class="dl-count">⬇ ${dl.toLocaleString()} DL</span>
+        <span class="design-id">ID: ${d.id}</span>
       </div>
       <div class="creator-box" onclick="showCreator('${d.creator}')">
         ${avatarHtml(cr, "sm")}
@@ -678,16 +704,17 @@ function orderThis(id) {
   const d = findDesign(id);
   showHome();
   setTimeout(() => {
-    if (d) document.getElementById("order-design").value = d.title;
+    if (d) setOrderDesign(d.id, d.title);
     document.getElementById("order").scrollIntoView({ behavior: "smooth" });
   }, 50);
 }
 
-document.getElementById("order-form").addEventListener("submit", e => {
-  e.preventDefault();
+function buildOrderMailto() {
   const name = document.getElementById("order-name").value.trim();
   const email = document.getElementById("order-email").value.trim();
-  const design = document.getElementById("order-design").value || "未定";
+  const designId = document.getElementById("order-design-id").value;
+  const designTitle = document.getElementById("order-design-label").value;
+  const design = designId ? `${designTitle}（ID: ${designId}）` : "未定・相談したい";
   const msg = document.getElementById("order-message").value.trim();
   const subject = encodeURIComponent(`【制作代行のご相談】${name}様より`);
   const body = encodeURIComponent(
@@ -699,7 +726,12 @@ document.getElementById("order-form").addEventListener("submit", e => {
 ${msg}
 
 （Design Skill Market の代行フォームから送信）`);
-  location.href = `mailto:${ORDER_EMAIL}?subject=${subject}&body=${body}`;
+  return `mailto:${ORDER_EMAIL}?subject=${subject}&body=${body}`;
+}
+
+document.getElementById("order-form").addEventListener("submit", e => {
+  e.preventDefault();
+  location.href = buildOrderMailto();
 });
 
 // ---------- ユーティリティ ----------
@@ -726,5 +758,4 @@ function toast(msg) {
 // ---------- 初期化 ----------
 initFilterBar();
 renderGallery();
-renderOrderSelect();
 renderHeaderAccount();
