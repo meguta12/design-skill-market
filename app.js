@@ -5,6 +5,48 @@
 const ORDER_EMAIL = "keita.1228.kendo@gmail.com";
 const MY_ID = "me"; // 自分のアカウントのクリエイターID
 
+const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "その他"];
+const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "その他"];
+const NEW_DAYS = 14; // この日数以内なら NEW バッジ
+
+// 検索・絞り込みの状態
+const filters = { q: "", category: "", color: "", price: "", sort: "recommend" };
+
+function isNew(d) {
+  if (!d.createdAt) return false;
+  return (Date.now() - new Date(d.createdAt).getTime()) / 86400000 <= NEW_DAYS;
+}
+function isPaid(d) {
+  return (d.price || 0) > 0;
+}
+function totalDownloads(d) {
+  return (d.downloads || 0) + extraDownloads(d.id);
+}
+
+function filteredDesigns() {
+  let list = allDesigns().filter(d => {
+    if (filters.category && (d.category || "その他") !== filters.category) return false;
+    if (filters.color && (d.colorTone || "その他") !== filters.color) return false;
+    if (filters.price === "free" && isPaid(d)) return false;
+    if (filters.price === "paid" && !isPaid(d)) return false;
+    if (filters.q) {
+      const q = filters.q.toLowerCase();
+      const haystack = [d.title, d.desc, d.category, d.colorTone, ...(d.tags || []), ...(d.features || [])]
+        .join(" ").toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+    return true;
+  });
+  if (filters.sort === "new") {
+    list.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+  } else if (filters.sort === "popular") {
+    list.sort((a, b) => totalDownloads(b) - totalDownloads(a));
+  } else if (filters.sort === "rating") {
+    list.sort((a, b) => avgRating(b) - avgRating(a));
+  }
+  return list;
+}
+
 // ---------- ストレージ ----------
 function loadUserReviews(designId) {
   try {
@@ -103,11 +145,21 @@ function ratingMetaHtml(d) {
     <span class="review-count">(${count}件)</span>`;
 }
 
+function priceBadgeHtml(d) {
+  return isPaid(d)
+    ? `<span class="badge badge-paid">¥${d.price.toLocaleString()}</span>`
+    : `<span class="badge badge-free">無料</span>`;
+}
+
 function cardHtml(d) {
-  const dl = (d.downloads || 0) + extraDownloads(d.id);
+  const dl = totalDownloads(d);
   const cr = findCreator(d.creator);
   return `
   <article class="design-card" onclick="showDetail('${d.id}')">
+    <div class="badge-row">
+      ${priceBadgeHtml(d)}
+      ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
+    </div>
     ${d.thumb}
     <div class="card-body">
       <div class="card-tags">${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
@@ -125,7 +177,40 @@ function cardHtml(d) {
 }
 
 function renderGallery() {
-  document.getElementById("card-grid").innerHTML = allDesigns().map(cardHtml).join("");
+  const list = filteredDesigns();
+  const grid = document.getElementById("card-grid");
+  grid.innerHTML = list.length
+    ? list.map(cardHtml).join("")
+    : `<p class="empty-note no-hit">条件に合うデザインが見つかりませんでした。条件をクリアして探し直してみてください。</p>`;
+  const hasFilter = filters.q || filters.category || filters.color || filters.price;
+  document.getElementById("result-count").textContent =
+    hasFilter ? `${list.length}件のデザインが見つかりました` : `全${list.length}件のデザイン`;
+}
+
+function initFilterBar() {
+  const cat = document.getElementById("f-category");
+  CATEGORIES.forEach(c => cat.add(new Option(c, c)));
+  const col = document.getElementById("f-color");
+  COLOR_TONES.forEach(c => col.add(new Option(c, c)));
+
+  document.getElementById("f-q").addEventListener("input", e => {
+    filters.q = e.target.value.trim();
+    renderGallery();
+  });
+  [["f-category", "category"], ["f-color", "color"], ["f-price", "price"], ["f-sort", "sort"]]
+    .forEach(([elId, key]) => {
+      document.getElementById(elId).addEventListener("change", e => {
+        filters[key] = e.target.value;
+        renderGallery();
+      });
+    });
+  document.getElementById("f-clear").addEventListener("click", () => {
+    Object.assign(filters, { q: "", category: "", color: "", price: "", sort: "recommend" });
+    document.getElementById("f-q").value = "";
+    ["f-category", "f-color", "f-price"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("f-sort").value = "recommend";
+    renderGallery();
+  });
 }
 
 function renderOrderSelect() {
@@ -170,7 +255,7 @@ function showDetail(id) {
 
 function renderDetail(d) {
   const reviews = allReviews(d);
-  const dl = (d.downloads || 0) + extraDownloads(d.id);
+  const dl = totalDownloads(d);
   const cr = findCreator(d.creator);
   pendingStars = 0;
 
@@ -181,6 +266,8 @@ function renderDetail(d) {
       <div class="card-tags">${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
       <h1>${escapeHtml(d.title)}</h1>
       <div class="detail-rating">
+        ${priceBadgeHtml(d)}
+        ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
         ${ratingMetaHtml(d)}
         <span class="dl-count">⬇ ${dl.toLocaleString()} DL</span>
       </div>
@@ -194,7 +281,9 @@ function renderDetail(d) {
       <p class="detail-desc">${escapeHtml(d.desc)}</p>
       <ul class="feature-list">${(d.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
       <div class="detail-actions">
-        <button class="btn btn-primary" onclick="downloadSkill('${d.id}')">⬇ スキルファイルをダウンロード（無料）</button>
+        <button class="btn btn-primary" onclick="downloadSkill('${d.id}')">
+          ${isPaid(d) ? `🛒 ¥${d.price.toLocaleString()} で購入してダウンロード` : "⬇ 無料ダウンロード（広告が表示されます）"}
+        </button>
         <button class="btn btn-ghost" onclick="orderThis('${d.id}')">このデザインで制作代行を頼む</button>
       </div>
     </div>
@@ -383,6 +472,12 @@ function showSubmit() {
       <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP"></label>
       <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発"></label>
       <label>説明文（必須）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト向けの、どんなデザインですか？"></textarea></label>
+      <div class="color-row">
+        <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option>${c}</option>`).join("")}</select></label>
+        <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option>${c}</option>`).join("")}</select></label>
+      </div>
+      <label>料金（円・0で無料）<input type="number" id="sb-price" value="0" min="0" max="50000" step="100"></label>
+      <p class="form-hint">💡 有料にした場合、購入時の決済機能は現在準備中です（価格表示と購入フローのみ動きます）。</p>
       <label>特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き"></textarea></label>
       <div class="color-row">
         <label>メインカラー<input type="color" id="sb-color1" value="#4f46e5"></label>
@@ -415,6 +510,10 @@ function showSubmit() {
       title,
       tags: tags.length ? tags : ["オリジナル"],
       desc: document.getElementById("sb-desc").value.trim(),
+      category: document.getElementById("sb-category").value,
+      colorTone: document.getElementById("sb-colortone").value,
+      price: Math.max(0, parseInt(document.getElementById("sb-price").value, 10) || 0),
+      createdAt: new Date().toISOString().slice(0, 10),
       features,
       downloads: 0,
       seedReviews: [],
@@ -480,7 +579,15 @@ description: （どんなサイト向けの、どんなデザインかを1〜2�
 }
 
 // ---------- スキルダウンロード ----------
+// 無料 → 広告ポップアップを挟んでDL ／ 有料 → 購入モーダル（決済はデモ）
 function downloadSkill(id) {
+  const d = findDesign(id);
+  if (!d) return;
+  if (isPaid(d)) openPurchaseModal(d);
+  else openAdModal(d);
+}
+
+function doDownload(id) {
   const d = findDesign(id);
   if (!d) return;
   const blob = new Blob([d.skill], { type: "text/markdown;charset=utf-8" });
@@ -490,7 +597,80 @@ function downloadSkill(id) {
   a.click();
   URL.revokeObjectURL(a.href);
   bumpDownloads(id);
+  closeModal();
   toast("スキルファイルをダウンロードしました。Claude に渡して使ってください！");
+}
+
+// ---------- モーダル ----------
+let adTimer;
+function openModal(html) {
+  closeModal();
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "modal-overlay";
+  overlay.innerHTML = `<div class="modal">${html}</div>`;
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+}
+function closeModal() {
+  clearInterval(adTimer);
+  const el = document.getElementById("modal-overlay");
+  if (el) el.remove();
+  document.body.style.overflow = "";
+}
+
+// 広告ポップアップ（5秒カウントダウン後にDLボタンが有効になる）
+const AD_WAIT = 5;
+function openAdModal(d) {
+  openModal(`
+    <div class="ad-label">広告</div>
+    <div class="ad-box">
+      <p class="ad-eyebrow">🎨 Design Skill Market からのお知らせ</p>
+      <h3 class="ad-title">あなたのデザイン、スキルにして出品しませんか？</h3>
+      <p class="ad-text">アカウントを作れば誰でもデザインスキルを公開できます。
+      有料出品にも今後対応予定。あなたの設計ノウハウが誰かのサイトになります。</p>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal(); showSubmit()">投稿について見てみる</button>
+    </div>
+    <div class="ad-footer">
+      <span class="ad-note">広告なしでDLできる有料プランを準備中です</span>
+      <button class="btn btn-primary" id="ad-dl-btn" disabled>あと ${AD_WAIT} 秒…</button>
+    </div>
+  `);
+  let remain = AD_WAIT;
+  adTimer = setInterval(() => {
+    remain--;
+    const btn = document.getElementById("ad-dl-btn");
+    if (!btn) { clearInterval(adTimer); return; }
+    if (remain > 0) {
+      btn.textContent = `あと ${remain} 秒…`;
+    } else {
+      clearInterval(adTimer);
+      btn.disabled = false;
+      btn.textContent = "⬇ ダウンロードへ進む";
+      btn.onclick = () => doDownload(d.id);
+    }
+  }, 1000);
+}
+
+// 購入モーダル（決済は未実装のデモ。Stripe導入で置き換える）
+function openPurchaseModal(d) {
+  const cr = findCreator(d.creator);
+  openModal(`
+    <h3 class="modal-title">🛒 スキルを購入</h3>
+    <div class="purchase-row">
+      <div>
+        <div class="purchase-name">${escapeHtml(d.title)}</div>
+        <div class="purchase-creator">by ${escapeHtml(cr.name)}</div>
+      </div>
+      <div class="purchase-price">¥${d.price.toLocaleString()}</div>
+    </div>
+    <p class="ad-note">⚠️ 決済機能は準備中です。今はデモとして、購入の流れだけ体験できます（実際の請求はありません）。</p>
+    <div class="ad-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="doDownload('${d.id}')">（デモ）購入してダウンロード</button>
+    </div>
+  `);
 }
 
 // ---------- 制作代行 ----------
@@ -544,6 +724,7 @@ function toast(msg) {
 }
 
 // ---------- 初期化 ----------
+initFilterBar();
 renderGallery();
 renderOrderSelect();
 renderHeaderAccount();

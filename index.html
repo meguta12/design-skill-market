@@ -68,7 +68,29 @@
   <section id="gallery" class="gallery">
     <div class="container">
       <h2 class="section-title">デザインギャラリー</h2>
-      <p class="section-lead">すべて無料ダウンロード。星評価とレビューはみんなで育てていきましょう。</p>
+      <p class="section-lead">気になるデザインを検索・絞り込みで探せます。星評価とレビューはみんなで育てていきましょう。</p>
+
+      <div class="toolbar">
+        <input type="search" id="f-q" class="search-box" placeholder="🔍 キーワードで検索（例：カフェ、ダーク、LP、和風…）">
+        <div class="filter-row">
+          <label>カテゴリ<select id="f-category"><option value="">すべて</option></select></label>
+          <label>カラー<select id="f-color"><option value="">すべて</option></select></label>
+          <label>料金<select id="f-price">
+            <option value="">すべて</option>
+            <option value="free">無料</option>
+            <option value="paid">有料</option>
+          </select></label>
+          <label>並び替え<select id="f-sort">
+            <option value="recommend">おすすめ順</option>
+            <option value="new">新着順</option>
+            <option value="popular">人気順（DL数）</option>
+            <option value="rating">評価が高い順</option>
+          </select></label>
+          <button type="button" class="clear-filters" id="f-clear">条件をクリア</button>
+        </div>
+        <p class="result-count" id="result-count"></p>
+      </div>
+
       <div class="card-grid" id="card-grid"><!-- JSで生成 --></div>
     </div>
   </section>
