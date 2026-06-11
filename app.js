@@ -626,6 +626,11 @@ function showAccount() {
       <h1 class="panel-title">ログイン / 新規登録</h1>
       <p class="panel-lead">メールアドレスとパスワードでアカウントを作成できます。<br>
       登録すると、デザインの投稿とプロフィール公開ができるようになります。</p>
+      <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.4l-6.5-5.5c-2.1 1.6-4.7 2.5-7.5 2.5-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.5 5.5C36.2 40.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        Google で続行（ログイン / 新規登録）
+      </button>
+      <div class="auth-divider"><span>または、メールアドレスで</span></div>
       <form class="nice-form" id="auth-form">
         <label>メールアドレス<input type="email" id="auth-email" required placeholder="you@example.com"></label>
         <label>パスワード（8文字以上）<input type="password" id="auth-pass" required minlength="8" placeholder="パスワード"></label>
@@ -751,6 +756,17 @@ function accountFormHtml(acc, submitLabel) {
     <label>▶ YouTube URL<input type="url" id="ac-youtube" value="${escapeHtml(links.youtube || "")}" placeholder="https://youtube.com/..."></label>
     <button type="submit" class="btn btn-primary btn-block">${submitLabel}</button>
   </form>`;
+}
+
+async function loginWithGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: location.origin + location.pathname },
+  });
+  if (error) {
+    toast("Googleログインを開始できませんでした: " + error.message);
+  }
+  // 成功時はGoogleの画面へ遷移し、戻ってきたら onAuthStateChange がログインを検知する
 }
 
 async function logout() {
