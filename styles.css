@@ -196,7 +196,9 @@ a { color: inherit; text-decoration: none; }
   height: 340px; display: flex; align-items: center; justify-content: center;
   padding: 18px;
 }
-.gallery-img { width: 100%; height: 340px; object-fit: contain; display: block; background: #f0f1f6; }
+.gallery-img { width: 100%; height: 340px; object-fit: contain; display: block; background: #f0f1f6; cursor: zoom-in; }
+.gallery-img.img-tall { object-fit: cover; object-position: top; }
+.gallery-img.expanded { height: auto; max-height: none; object-fit: contain; cursor: zoom-out; }
 .gallery-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
 .gallery-thumb {
   border: 1.5px solid var(--line); background: #fff; border-radius: 999px;
@@ -268,8 +270,15 @@ a { color: inherit; text-decoration: none; }
 }
 .badge-free { background: #18a058; color: #fff; }
 .badge-paid { background: #f5a623; color: #fff; }
+.badge-sample { background: #5b6270; color: #fff; }
 .badge-new { background: #e0455a; color: #fff; margin-left: auto; }
 .detail-rating .badge { box-shadow: none; }
+
+/* 実画像サムネイル */
+.thumb-photo { padding: 0; }
+.thumb-photo img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top; display: block;
+}
 
 /* ----- modal（広告・購入） ----- */
 .modal-overlay {

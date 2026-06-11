@@ -200,6 +200,18 @@ function priceBadgeHtml(d) {
     : `<span class="badge badge-free">無料</span>`;
 }
 
+function sampleBadgeHtml(d) {
+  return d.isSample ? `<span class="badge badge-sample">運営サンプル</span>` : "";
+}
+
+function cardThumbHtml(d) {
+  // 実画像があればそれをサムネイルに、なければCSSモック
+  if (d.imageUrls && d.imageUrls.length) {
+    return `<div class="thumb thumb-photo"><img src="${escapeHtml(d.imageUrls[0])}" alt="${escapeHtml(d.title)}の完成イメージ" loading="lazy"></div>`;
+  }
+  return d.thumb;
+}
+
 function cardHtml(d) {
   const dl = totalDownloads(d);
   const cr = findCreator(d.creator);
@@ -207,9 +219,10 @@ function cardHtml(d) {
   <article class="design-card" onclick="showDetail('${d.id}')">
     <div class="badge-row">
       ${priceBadgeHtml(d)}
+      ${sampleBadgeHtml(d)}
       ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
     </div>
-    ${d.thumb}
+    ${cardThumbHtml(d)}
     <div class="card-body">
       <div class="card-tags">
         <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
@@ -419,16 +432,20 @@ function autoSamples(d) {
 
 let detailGalleryItems = [];
 function galleryItemsFor(d) {
-  return [
-    ...autoSamples(d),
-    ...(d.imageUrls || []).slice(0, 10).map((u, i) => ({ label: `画像${i + 1}`, img: u })),
-  ];
+  // 実画像（完成イメージ）を先頭に、CSS自動生成モックを後ろに
+  const photos = (d.imageUrls || []).slice(0, 10).map((u, i) => ({
+    label: i === 0 ? "完成イメージ" : `画像${i + 1}`,
+    img: u,
+  }));
+  return [...photos, ...autoSamples(d)];
 }
 function showSampleIdx(i) {
   const item = detailGalleryItems[i];
   if (!item) return;
   document.getElementById("gallery-main").innerHTML = item.img
-    ? `<img class="gallery-img" src="${escapeHtml(item.img)}" alt="${escapeHtml(item.label)}">`
+    ? `<img class="gallery-img" src="${escapeHtml(item.img)}" alt="${escapeHtml(item.label)}"
+        onload="this.classList.add(this.naturalHeight > this.naturalWidth * 1.3 ? 'img-tall' : 'img-wide')"
+        onclick="this.classList.toggle('expanded')" title="クリックで全体表示/戻る">`
     : item.html;
   document.querySelectorAll(".gallery-thumb").forEach((b, idx) =>
     b.classList.toggle("active", idx === i));
@@ -468,6 +485,7 @@ function renderDetail(d) {
       <h1>${escapeHtml(d.title)}</h1>
       <div class="detail-rating">
         ${priceBadgeHtml(d)}
+        ${sampleBadgeHtml(d)}
         ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
         ${ratingMetaHtml(d)}
         <span class="dl-count">⬇ ${dl.toLocaleString()} DL</span>
