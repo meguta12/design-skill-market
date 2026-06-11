@@ -50,10 +50,18 @@ const DESIGNS = [
   {
     id: "corporate-clean",
     creator: "studio-hikari",
+    genre: "ホームページ",
     category: "コーポレート",
     colorTone: "ブルー系",
     price: 0,
     createdAt: "2026-03-10",
+    sampleSpec: { c1: "#1d4ed8", c2: "#f4f7fb" },
+    highlights: [
+      "ホームページを初めて作る中小企業・士業の方",
+      "奇抜さより「ちゃんとした会社に見える」ことを重視したい方",
+      "問い合わせにつながる導線を最初から組み込みたい方",
+    ],
+    longDesc: "企業サイトの王道をそのまま設計図にしました。ヘッダー・ヒーロー・事業内容・実績・会社概要・お知らせ・問い合わせと、BtoBサイトに必要な要素が正しい順番で並びます。\n配色は信頼感の青×白の2色構成。余白やボタンサイズまで数値で固定してあるので、AIに渡しても「なんか違う」になりにくいのが特徴です。",
     title: "コーポレート・クリーン",
     tags: ["企業サイト", "信頼感", "王道"],
     desc: "中小企業・士業向けの王道レイアウト。青×白の安心感ある配色で、会社案内・事業内容・採用・問い合わせまで一通り揃う構成。",
@@ -130,16 +138,32 @@ description: 青×白の信頼感あるコーポレートサイト（企業ホ�
 - [ ] ボタンの高さ・角丸がページ内で統一されているか（高さ48px / 角丸 999px）
 - [ ] h1→h2→h3 のサイズが逆転していないか
 - [ ] CTAが「ヒーロー」「CTAバンド」「ヘッダー」の3箇所にあるか
+
+## 画像の組み込み指示
+
+- ヒーロー: オフィス外観 or 働く人の写真1枚（横長）。青の半透明オーバーレイを重ねて文字を読みやすく
+- 会社概要: 社屋 or 代表者写真1枚（4:3）
+- 事業内容カード: 写真ではなく単色アイコン（--primary）を使う
+- AI画像生成のプロンプト例: 「明るいオフィスで働くビジネスパーソン、自然光、クリーンで信頼感のある雰囲気、写真風」
+- 用意できない画像は --bg-alt のプレースホルダ＋altテキストで代替
 `,
   },
 
   {
     id: "saas-modern",
     creator: "yuu-dev",
+    genre: "ホームページ",
     category: "LP・サービス",
     colorTone: "ダーク系",
     price: 980,
     createdAt: "2026-04-02",
+    sampleSpec: { c1: "#8b5cf6", c2: "#0f1024", dark: true },
+    highlights: [
+      "個人開発アプリ・SaaSのLPを今っぽく見せたい方",
+      "料金表・FAQまで含めた「売れるLP構成」が欲しい方",
+      "ダサいグラデにならない色指定が欲しい方",
+    ],
+    longDesc: "スタートアップのLPでよく見る「紫→青グラデーション×大きいタイポ」を、崩れない形でルール化した有料スキルです。\nヒーロー・機能・料金・FAQ・CTAのLP黄金構成に加えて、料金カードの「人気プラン」演出やFAQアコーディオンの実装ルールまで含みます。",
     title: "モダンSaaS・スタートアップLP",
     tags: ["LP", "SaaS", "グラデーション"],
     desc: "プロダクトを今っぽく見せたいスタートアップ向け。大胆なグラデーションと大きなタイポグラフィ、機能カード、料金表まで揃ったLP構成。",
@@ -219,10 +243,18 @@ description: 紫→青グラデーションのモダンなSaaS/スタートア�
   {
     id: "wa-modern",
     creator: "studio-hikari",
+    genre: "ホームページ",
     category: "和風・旅館",
     colorTone: "ベージュ・和色系",
     price: 1200,
     createdAt: "2026-03-28",
+    sampleSpec: { c1: "#2c3e6b", c2: "#f5f1e8" },
+    highlights: [
+      "旅館・和食店・和菓子店など「和」の業種の方",
+      "縦書きや明朝体をAIで崩さず再現したい方",
+      "安っぽくない高級感を出したい方",
+    ],
+    longDesc: "和風デザインはAIが最も崩しやすいジャンルです。縦書きの正しい実装、明朝体の指定、余白の取り方を厳密にルール化しました。\n生成り×藍色×墨色の限定パレットで、「間」を活かしたゆったりした構成。モバイルでは縦書きを自動解除する指示まで含みます。",
     title: "和モダン（旅館・和食店）",
     tags: ["和風", "店舗", "高級感"],
     desc: "旅館・和食店・茶室など「和」の業種向け。生成り×藍色、縦書きアクセント、ゆったりした余白で高級感を演出するデザイン。",
@@ -316,10 +348,18 @@ description: 旅館・和食店・和菓子店など和の業種向けの、生�
   {
     id: "minimal-portfolio",
     creator: "yuu-dev",
+    genre: "ホームページ",
     category: "ポートフォリオ",
     colorTone: "モノクロ系",
     price: 0,
     createdAt: "2026-05-01",
+    sampleSpec: { c1: "#111111", c2: "#ffffff" },
+    highlights: [
+      "デザイナー・写真家・エンジニアの個人サイトを作りたい方",
+      "作品を主役にして自分は控えめにしたい方",
+      "就活・転職用ポートフォリオが急ぎで必要な方",
+    ],
+    longDesc: "黒×白×グレーの4色だけで構成するミニマルポートフォリオ。装飾を「足さない」ためのルールを明文化しているのが他にない特徴です。\n崩れやすい作品グリッド（Masonry風）は、ライブラリ不使用のCSSだけで安全に組む実装を指定しています。",
     title: "ミニマル・ポートフォリオ",
     tags: ["ポートフォリオ", "モノクロ", "個人"],
     desc: "デザイナー・写真家・エンジニアの個人サイト向け。黒×白のモノクロ基調で、作品そのものを主役にするギャラリー構成。",
@@ -414,10 +454,18 @@ JSのMasonryライブラリは使わず、CSS columns で実装する：
   {
     id: "clinic-soft",
     creator: "keita-official",
+    genre: "ホームページ",
     category: "医療・クリニック",
     colorTone: "グリーン系",
     price: 0,
     createdAt: "2026-04-18",
+    sampleSpec: { c1: "#34a06b", c2: "#f2f9f4" },
+    highlights: [
+      "歯科・内科・整体院などのサイトを作りたい方",
+      "高齢の患者さんにも読みやすいサイトにしたい方",
+      "診療時間表がスマホで崩れて困ったことがある方",
+    ],
+    longDesc: "「怖くない・清潔・誠実」を伝えるやわらかいグリーンのクリニックサイト。本文16px以上・行間1.9など、高齢者にも読みやすい基準を最初から組み込んでいます。\n最大の難所である診療時間テーブルは、375pxでも横スクロールせずに収まる実装を指定。スマホでは予約ボタンが画面下に固定されます。",
     title: "クリニック・医療",
     tags: ["医療", "安心感", "やわらかい"],
     desc: "歯科・内科・整体院など向け。やわらかいグリーンと丸みのあるUIで「怖くない・清潔・誠実」を伝える。診療時間表と院内紹介を完備。",
@@ -513,10 +561,18 @@ description: 歯科・内科・整体院などのクリニック向けに、や�
   {
     id: "cafe-warm",
     creator: "keita-official",
+    genre: "ホームページ",
     category: "店舗・飲食",
     colorTone: "ブラウン系",
     price: 0,
     createdAt: "2026-06-05",
+    sampleSpec: { c1: "#8a5a36", c2: "#faf5ec" },
+    highlights: [
+      "カフェ・ベーカリー・レストランのサイトを作りたい方",
+      "メニュー表を上品に見せたい方",
+      "インスタからの集客につなげたい方",
+    ],
+    longDesc: "クリーム×ブラウンの温かい配色で「美味しそう」「行ってみたい」を作る飲食店サイト。営業時間と場所が迷わず見つかる情報設計を最優先にしています。\n見せ場はドットリーダーで価格が右端に揃うメニュー表と、Instagram風の正方形フォトグリッド。写真の差し替えだけで自分の店になります。",
     title: "カフェ・レストラン",
     tags: ["飲食店", "あたたかい", "写真映え"],
     desc: "カフェ・ベーカリー・レストラン向け。クリーム×ブラウンの温かい配色で、メニューと店内写真を美味しそうに見せる構成。",
@@ -613,6 +669,432 @@ description: カフェ・ベーカリー・レストラン向けに、クリー�
 - [ ] メニューの価格が右端で揃っているか（ドットリーダーが効いているか）
 - [ ] フォトグリッドが正方形を維持しているか
 - [ ] 電話番号が tel: リンクになっているか
+
+## 画像の組み込み指示
+
+- ヒーロー: 店内全景の写真を1枚（横長 16:9）。プレースホルダには「店内写真」と記載
+- コンセプト: 看板メニューの寄り写真1枚（正方形）
+- フォトグリッド: 正方形写真9枚（料理6・店内2・外観1 の配分を推奨）
+- AI画像生成を使う場合のプロンプト例: 「暖色の自然光が入る木目調のカフェ店内、奥行きのある構図、写真風」
+- 画像が用意できない箇所は \`background: var(--caramel)\` のプレースホルダにし、alt属性に内容を書いておく
+`,
+  },
+
+  // ===== スライド資料 =====
+  {
+    id: "slide-consul",
+    creator: "studio-hikari",
+    genre: "スライド資料",
+    category: "コーポレート",
+    colorTone: "ブルー系",
+    price: 0,
+    createdAt: "2026-06-08",
+    sampleSpec: { c1: "#1f3a68", c2: "#f3f6fa" },
+    title: "コンサル型・提案スライド",
+    tags: ["提案資料", "ビジネス", "ロジカル"],
+    desc: "外資コンサル風の提案資料テンプレート。1スライド1メッセージ、キーメッセージ行、整然としたチャートで「通る資料」を作る設計図。",
+    features: [
+      "全スライド共通のマスターレイアウト定義",
+      "キーメッセージ（So what?）を最上部に置く型",
+      "棒・円・比較表チャートの配色と使い分けルール",
+      "文字あふれ・図形ズレを防ぐ余白とグリッド",
+    ],
+    downloads: 412,
+    seedReviews: [
+      { name: "戦略部・齋藤", stars: 5, date: "2026-06-09", text: "社内提案がこの型にするだけで締まりました。キーメッセージ行のルールが秀逸。" },
+    ],
+    highlights: [
+      "社内提案・営業提案の資料をよく作るビジネスパーソン",
+      "「スライドがダサい」と言われたことがある方",
+      "AIにスライドを作らせると文字があふれて崩れる方",
+    ],
+    longDesc: "外資コンサルの資料に共通する「1スライド1メッセージ」「上部にSo what?を書く」「チャートは主張を支えるためだけに置く」という型を、AIに渡せるルールに落としました。\nHTMLスライドでもPowerPoint生成でも使えるよう、レイアウトはすべて比率（%）で定義しています。",
+    thumb: `<div class="thumb" style="background:#e8edf5;align-items:center;justify-content:center">
+      <div style="background:#fff;width:88%;aspect-ratio:16/9;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:9px 12px;display:flex;flex-direction:column;gap:6px">
+        <div class="t-bar" style="background:#1f3a68;width:70%;height:7px"></div>
+        <div class="t-bar" style="background:#d7dfeb;width:45%;height:5px"></div>
+        <div style="display:flex;gap:6px;flex:1;align-items:flex-end;padding-top:4px">
+          <div style="background:#9fb4d4;width:16%;height:40%"></div>
+          <div style="background:#5d7cab;width:16%;height:62%"></div>
+          <div style="background:#1f3a68;width:16%;height:88%"></div>
+          <div style="flex:1"></div>
+          <div style="display:flex;flex-direction:column;gap:4px;width:38%">
+            <div class="t-bar" style="background:#d7dfeb;height:5px"></div>
+            <div class="t-bar" style="background:#d7dfeb;height:5px;width:80%"></div>
+            <div class="t-bar" style="background:#d7dfeb;height:5px;width:90%"></div>
+          </div>
+        </div>
+      </div>
+    </div>`,
+    skill: `---
+name: consul-slide-deck
+description: 外資コンサル風の提案スライド（16:9）を作るスキル。1スライド1メッセージ、キーメッセージ行、ロジカルなチャート構成。提案資料・営業資料・社内稟議の依頼で使う。Claude/Codex/Antigravityなど任意のAIコーディングツールで利用可。
+---
+
+# コンサル型・提案スライド スキル
+
+HTMLスライド（16:9・1枚=1セクション）または PowerPoint 生成コードを出力する。
+どちらの場合も以下のルールに厳密に従うこと。
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --navy: #1f3a68;      /* メイン */
+  --navy-light: #5d7cab;
+  --gray-chart: #9fb4d4; /* チャート3色目 */
+  --ink: #2a2e35;
+  --bg: #ffffff;
+  --bg-alt: #f3f6fa;
+  --accent-warn: #c0392b; /* 強調は赤1色のみ・1スライド1箇所まで */
+}
+\`\`\`
+
+- フォント: 游ゴシック / Noto Sans JP。本文 18pt 相当以上、行間1.5
+- 文字色は --ink。薄グレー文字を本文に使わない
+
+## マスターレイアウト（全スライド共通）
+
+- 上から: ①キーメッセージ行（高さ18%）→ ②ボディ（70%）→ ③フッター（ページ番号・出所、12%）
+- キーメッセージ行: そのスライドの結論を**1文**で書く。体言止め禁止。「〜である」「〜すべき」まで言い切る
+- 余白: スライド外周に5%のマージン。ボディ内の要素間は3%以上
+
+## スライド構成（この順番で）
+
+1. 表紙: タイトル＋日付＋提出先。装飾なし
+2. エグゼクティブサマリー: 結論3点の箇条書き
+3. 現状・課題（チャート1点）
+4. 提案内容（比較表 or 構造図）
+5. 効果試算（棒グラフ）
+6. スケジュール（横帯ガントチャート）
+7. まとめ: サマリーの再掲＋ネクストアクション
+
+## チャートのルール
+
+- 色は navy → navy-light → gray-chart の順で使う。4色目が必要な構成にしない
+- 棒グラフは太さ均一・並び順は値の降順（時系列を除く）
+- 円グラフは5分割まで。それ以上は「その他」に集約
+- 凡例よりも直接ラベル（棒の上に数値）を優先
+
+## 画像・アイコンの組み込み指示
+
+- 写真は原則使わない（コンサル資料に写真は不要）
+- アイコンを使う場合は単色（--navy）の線画アイコンのみ。絵文字は禁止
+- 概念図は四角と矢印だけで構成する。立体・影・グラデーション禁止
+
+## 崩れ防止チェックリスト
+
+- [ ] 全スライドでキーメッセージ行の位置・サイズが揃っているか
+- [ ] 1スライドの文字量が7行以内か（超えるならスライドを分割）
+- [ ] チャートの色が3色以内か
+- [ ] フォントサイズが3種類以内か（タイトル/本文/注釈）
+- [ ] 文字が枠からあふれていないか（長文は自動縮小ではなく文章を削る）
+`,
+  },
+  {
+    id: "slide-pop-edu",
+    creator: "keita-official",
+    genre: "スライド資料",
+    category: "教育・学習",
+    colorTone: "カラフル",
+    price: 500,
+    createdAt: "2026-05-26",
+    sampleSpec: { c1: "#f0883c", c2: "#fdf6ec" },
+    title: "ポップ教育スライド",
+    tags: ["授業", "セミナー", "親しみやすい"],
+    desc: "授業・セミナー・YouTube解説向けのポップで見やすいスライド。大きな文字と丸いカードで、遠くからでも内容が伝わる設計。",
+    features: [
+      "最後列からも読める最小28pt基準",
+      "丸カード＋手書き風アンダーラインの親しみ演出",
+      "クイズ・まとめ・休憩などの定型スライド付き",
+      "色数を抑えて子どもっぽくなりすぎないバランス",
+    ],
+    downloads: 268,
+    seedReviews: [
+      { name: "塾講師タカハシ", stars: 5, date: "2026-06-01", text: "オンライン授業用に。生徒から「見やすくなった」と言われました。" },
+      { name: "セミナー講師M", stars: 4, date: "2026-06-07", text: "そのままYouTubeのスライド解説にも使えています。" },
+    ],
+    highlights: [
+      "塾講師・学校の先生・セミナー講師の方",
+      "YouTubeの解説動画用スライドを量産したい方",
+      "「ポップだけど安っぽくない」を狙いたい方",
+    ],
+    longDesc: "教育系スライドの失敗は「文字が小さい」「色が多すぎる」の2つ。このスキルは最小28ptと3色ルールで、後ろの席からでも読めてうるさくない画面を作ります。\nクイズ・まとめ・休憩スライドの定型も含むので、毎回の授業準備が早くなります。",
+    thumb: `<div class="thumb" style="background:#fdf6ec;align-items:center;justify-content:center">
+      <div style="background:#fff;width:88%;aspect-ratio:16/9;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:9px 12px;display:flex;flex-direction:column;gap:7px">
+        <div class="t-bar" style="background:#f0883c;width:55%;height:9px;border-radius:5px"></div>
+        <div style="display:flex;gap:7px;flex:1;padding-top:3px">
+          <div style="flex:1;background:#fbe3c8;border-radius:9px"></div>
+          <div style="flex:1;background:#cfe7da;border-radius:9px"></div>
+          <div style="flex:1;background:#fbd9d3;border-radius:9px"></div>
+        </div>
+      </div>
+    </div>`,
+    skill: `---
+name: pop-education-slide
+description: 授業・セミナー・YouTube解説向けのポップで読みやすいスライド（16:9）を作るスキル。大きな文字・丸カード・3色ルール。教育系スライドの依頼で使う。Claude/Codex/Antigravityなど任意のAIツールで利用可。
+---
+
+# ポップ教育スライド スキル
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --orange: #f0883c;   /* メイン */
+  --green: #4a9e78;    /* サブ */
+  --pink: #e8746a;     /* 強調（1スライド1回まで） */
+  --cream: #fdf6ec;    /* 背景 */
+  --ink: #3f3a33;
+  --card: #ffffff;
+}
+\`\`\`
+
+- フォント: Noto Sans JP / 游ゴシック の太め（Bold基本）
+- 最小フォントサイズ **28pt相当**。注釈でも24ptを下回らない
+- 角丸は大きめ（16〜24px）。影はごく薄く
+
+## スライド構成
+
+1. 表紙: 大きなタイトル＋今日のゴール1文
+2. 目次: 3〜5項目（多いと飽きる）
+3. 本文スライド: 「見出し＋丸カード3つまで」を基本形にする
+4. クイズスライド: 問題→（次のスライドで）答え。背景を --green の薄色に変えて場面転換を示す
+5. まとめスライド: 今日の3ポイント再掲
+6. 休憩スライド: 大きく「ちょっと休憩」＋再開時刻
+
+## レイアウトルール（崩れ防止）
+
+- 1スライドの情報は「見出し1＋カード3」まで。4つ目が必要ならスライドを分ける
+- カードの幅は均等（flexで等分）。高さは最も長いカードに揃える
+- 手書き風の波線アンダーラインは見出しのキーワード1箇所のみ
+- 文字の縁取り・ドロップシャドウは使わない（読みにくくなる）
+
+## 画像・アイコンの組み込み指示
+
+- 各カードに絵文字を1つずつ（📚🧠✏など）。サイズは文字の1.5倍
+- イラストを入れる場合は「フラットイラスト・線なし・3色以内」で統一
+- AI画像生成のプロンプト例: 「フラットデザインのイラスト、オレンジとグリーンの2色、白背景、シンプル、教育」
+- 写真は原則使わない（ポップさが消える）
+
+## チェックリスト
+
+- [ ] すべての文字が28pt以上か
+- [ ] 使用色が3色＋背景色に収まっているか
+- [ ] 1スライドにカードが3つ以内か
+- [ ] クイズの問題と答えが別スライドになっているか
+`,
+  },
+
+  // ===== アプリUI =====
+  {
+    id: "app-clean-mobile",
+    creator: "yuu-dev",
+    genre: "アプリUI",
+    category: "アプリ・ツール",
+    colorTone: "ブルー系",
+    price: 0,
+    createdAt: "2026-05-20",
+    sampleSpec: { c1: "#2f6df6", c2: "#f5f7fb", phone: true },
+    title: "クリーン・モバイルUI",
+    tags: ["スマホアプリ", "iOS風", "ツール系"],
+    desc: "iOS風のクリーンなモバイルアプリUI。ホーム・一覧・詳細・設定の4画面分のコンポーネントとレイアウトルールが揃った設計図。",
+    features: [
+      "44pxタップ領域・セーフエリアなどモバイルの基本を網羅",
+      "カード・リスト・タブバー・ボタンのコンポーネント定義",
+      "ライト/ダーク両対応のカラートークン",
+      "空状態（データなし画面）のデザインまで指定",
+    ],
+    downloads: 689,
+    seedReviews: [
+      { name: "flutter勢", stars: 5, date: "2026-05-24", text: "プロトタイプ作りが爆速になった。タップ領域の指定があるのが実務的。" },
+      { name: "uiux見習い", stars: 4, date: "2026-06-02", text: "FigmaなしでここまでできるならもうこれでOKかも。" },
+    ],
+    highlights: [
+      "個人開発でアプリのモックを素早く作りたい方",
+      "WebアプリのスマホUIを整えたい方",
+      "デザイナーなしでそれっぽいUIにしたいチーム",
+    ],
+    longDesc: "「ボタンが小さくて押せない」「画面ごとに見た目がバラバラ」というアプリUIの典型的な失敗を、コンポーネント定義で防ぎます。\nホーム・一覧・詳細・設定の4画面のレイアウトが揃っているので、これだけで小さなアプリのUI一式が完成します。HTMLモック・React・Flutterいずれの出力にも使えます。",
+    thumb: `<div class="thumb" style="background:#f5f7fb;align-items:center;justify-content:center">
+      <div style="background:#fff;width:36%;aspect-ratio:9/16;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.15);padding:7px;display:flex;flex-direction:column;gap:5px;max-height:92%">
+        <div class="t-bar" style="background:#dfe6f2;width:50%;height:5px;border-radius:3px"></div>
+        <div style="background:linear-gradient(135deg,#2f6df6,#6f9bff);border-radius:8px;height:26%"></div>
+        <div style="background:#eef2f9;border-radius:7px;flex:1"></div>
+        <div style="background:#eef2f9;border-radius:7px;flex:1"></div>
+        <div style="display:flex;gap:4px;height:9%">
+          <div style="flex:1;background:#2f6df6;border-radius:5px"></div>
+          <div style="flex:1;background:#dfe6f2;border-radius:5px"></div>
+          <div style="flex:1;background:#dfe6f2;border-radius:5px"></div>
+        </div>
+      </div>
+    </div>`,
+    skill: `---
+name: clean-mobile-app-ui
+description: iOS風のクリーンなモバイルアプリUI（ホーム・一覧・詳細・設定）を作るスキル。HTMLモック/React/Flutterに対応。アプリのUI・モックアップ・プロトタイプの依頼で使う。Claude/Codex/Antigravityなど任意のAIツールで利用可。
+---
+
+# クリーン・モバイルUI スキル
+
+スマホ幅（375〜430px）前提のアプリUIを生成する。HTMLモックの場合は1画面=1ファイル、
+フレームワーク指定があればそのコンポーネント形式で出力する。
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --primary: #2f6df6;
+  --primary-soft: #e8efff;
+  --ink: #16181d;
+  --ink-2: #6b7280;     /* セカンダリ文字。これより薄い文字を作らない */
+  --bg: #f5f7fb;        /* 画面背景 */
+  --card: #ffffff;
+  --line: #e5e9f0;
+  --danger: #e5484d;
+  --radius-card: 16px;
+  --radius-btn: 12px;
+}
+/* ダークモード */
+[data-theme="dark"] {
+  --ink: #f2f3f5; --ink-2: #9aa1ac;
+  --bg: #101216; --card: #1a1d23; --line: #2a2e36;
+}
+\`\`\`
+
+- フォント: system-ui（San Francisco / Roboto に自動で乗る）
+- 本文15px、見出し17〜22px、ラージタイトル28px bold
+
+## 4画面の構成
+
+1. **ホーム**: ラージタイトル → 主要アクションカード（グラデ可・1枚だけ）→ セクション見出し＋カードリスト
+2. **一覧**: 検索バー → フィルタチップ横スクロール → リスト（左アイコン/中2行/右シェブロン）
+3. **詳細**: ヒーロー領域 → 情報ブロック → 固定フッターの主ボタン
+4. **設定**: グループ化されたリスト（iOS設定アプリの形式）。セクション間に24px
+
+## コンポーネントルール
+
+- タップ可能要素は最小 **44×44px**
+- 主ボタン: 高さ50px・--primary・白文字・角丸12px。1画面に1つだけ
+- カード: --card 背景、影は \`0 1px 3px rgba(0,0,0,.06)\` まで
+- タブバー: 下部固定・5タブまで・アイコン＋10pxラベル。セーフエリア（env(safe-area-inset-bottom)）を確保
+- 空状態: アイコン＋一言＋アクションボタンの3点セットを中央配置
+
+## 画像・アイコンの組み込み指示
+
+- アイコンは絵文字 or 単色SVG（線幅1.5px統一）。混在させない
+- ユーザーアバターは円形40px、画像がない場合はイニシャル＋背景色
+- サムネイル画像は角丸12px・aspect-ratio 16/10 固定
+- AI画像生成のプロンプト例: 「アプリ用のシンプルな抽象グラデーション背景、青系、ノイズなし」
+
+## チェックリスト
+
+- [ ] タップ領域がすべて44px以上あるか
+- [ ] 文字色が2段階（--ink / --ink-2）に収まっているか
+- [ ] 主ボタンが1画面に1つだけか
+- [ ] 下部固定要素がセーフエリアを考慮しているか
+- [ ] ダークモードで線とカードの区別がつくか
+`,
+  },
+  {
+    id: "app-dashboard-dark",
+    creator: "yuu-dev",
+    genre: "アプリUI",
+    category: "アプリ・ツール",
+    colorTone: "ダーク系",
+    price: 1500,
+    createdAt: "2026-06-02",
+    sampleSpec: { c1: "#22d3a7", c2: "#0e1117", dark: true },
+    title: "ダーク・ダッシュボードUI",
+    tags: ["管理画面", "SaaS", "データ可視化"],
+    desc: "SaaSの管理画面・分析ダッシュボード向けのダークUI。サイドバー・KPIカード・チャート・データテーブルの完全な設計図。",
+    features: [
+      "12カラムグリッドによる崩れないレイアウト",
+      "KPIカード・折れ線・棒・テーブルの配色システム",
+      "ステータス色（成功/警告/エラー）の体系化",
+      "1920px〜1280pxまでのレスポンシブ規則",
+    ],
+    downloads: 357,
+    seedReviews: [
+      { name: "受託エンジニアK", stars: 5, date: "2026-06-06", text: "クライアントの管理画面に。チャート配色が揃っているだけで一気にプロっぽくなる。" },
+    ],
+    highlights: [
+      "SaaSの管理画面・社内ツールを作っている方",
+      "ダッシュボードが「Excelみたい」と言われた方",
+      "データ可視化の配色に自信がない方",
+    ],
+    longDesc: "ダッシュボードの完成度は配色システムで決まります。このスキルはチャート用5色とステータス3色を最初から定義し、どのグラフを置いても画面が揃うようにしました。\nサイドバー幅・カード余白・テーブル行高まで数値指定済み。Grafana風の本格的な画面が一発で出ます。",
+    thumb: `<div class="thumb" style="background:#0e1117;padding:12px 14px">
+      <div style="display:flex;gap:7px;height:100%">
+        <div style="width:18%;background:#161b24;border-radius:6px"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;gap:6px;height:30%">
+            <div style="flex:1;background:#161b24;border-radius:6px;border-bottom:2px solid #22d3a7"></div>
+            <div style="flex:1;background:#161b24;border-radius:6px;border-bottom:2px solid #5b8def"></div>
+            <div style="flex:1;background:#161b24;border-radius:6px;border-bottom:2px solid #e8b34b"></div>
+          </div>
+          <div style="flex:1;background:#161b24;border-radius:6px;display:flex;align-items:flex-end;gap:5px;padding:8px">
+            <div style="flex:1;height:30%;background:#22d3a7;opacity:.85;border-radius:2px"></div>
+            <div style="flex:1;height:55%;background:#22d3a7;opacity:.85;border-radius:2px"></div>
+            <div style="flex:1;height:40%;background:#22d3a7;opacity:.85;border-radius:2px"></div>
+            <div style="flex:1;height:75%;background:#22d3a7;opacity:.85;border-radius:2px"></div>
+            <div style="flex:1;height:60%;background:#22d3a7;opacity:.85;border-radius:2px"></div>
+          </div>
+        </div>
+      </div>
+    </div>`,
+    skill: `---
+name: dark-dashboard-ui
+description: SaaS管理画面・分析ダッシュボード向けのダークUIを作るスキル。サイドバー・KPIカード・チャート・テーブルの設計とデータ可視化の配色システム込み。管理画面/ダッシュボードの依頼で使う。Claude/Codex/Antigravityなど任意のAIツールで利用可。
+---
+
+# ダーク・ダッシュボードUI スキル
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --bg: #0e1117;
+  --surface: #161b24;     /* カード・サイドバー */
+  --surface-2: #1f2530;   /* ホバー・入力欄 */
+  --line: #2a3140;
+  --ink: #e6e9ef;
+  --ink-2: #8b93a3;
+  /* チャート専用5色（この順で使う） */
+  --c1: #22d3a7; --c2: #5b8def; --c3: #e8b34b; --c4: #c678dd; --c5: #56b6c2;
+  /* ステータス */
+  --ok: #22d3a7; --warn: #e8b34b; --error: #ef5b6a;
+  --radius: 10px;
+}
+\`\`\`
+
+- フォント: Inter / system-ui。数値は \`font-variant-numeric: tabular-nums\` で桁を揃える
+- 純黒(#000)・純白(#fff)は使わない
+
+## レイアウト
+
+- 左サイドバー固定 240px（1280px以下で64pxのアイコンのみに収縮）
+- メイン領域: 12カラムグリッド、ガター16px、外周24px
+- 行構成: ①ページタイトル＋期間選択 → ②KPIカード4枚（各3カラム）→ ③メインチャート（8）＋サブ（4）→ ④データテーブル（12）
+
+## コンポーネントルール
+
+- KPIカード: ラベル(12px --ink-2) → 数値(28px bold) → 前期比（▲▼＋ステータス色）。下辺にチャート色のアクセントボーダー2px
+- 折れ線チャート: 線2px・塗りは同色10%透過・グリッド線は --line の点線
+- テーブル: 行高48px・偶数行の背景差なし・ホバーで --surface-2・数値列は右揃え
+- ステータスバッジ: ステータス色の15%透過背景＋同色文字
+
+## 画像・アイコンの組み込み指示
+
+- アイコンは線画SVG（線幅1.5px）で統一。サイドバーは20px、ボタン内は16px
+- 写真・イラストは使わない。空状態のみ単色の簡易イラスト可
+- ロゴはサイドバー上部に高さ28pxで配置（白抜き版を使用）
+
+## チェックリスト
+
+- [ ] チャートの色が --c1〜--c5 の順で使われているか
+- [ ] 数値が tabular-nums で揃っているか
+- [ ] 1280px幅でサイドバーが収縮し、KPIカードが2×2になるか
+- [ ] ステータス色がチャート色と混用されていないか
 `,
   },
 ];

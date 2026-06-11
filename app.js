@@ -6,8 +6,10 @@ const ORDER_EMAIL = "megupen.sab@gmail.com";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "その他"];
-const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "その他"];
+const GENRES = ["ホームページ", "スライド資料", "アプリUI"];
+const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱" };
+const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "教育・学習", "アプリ・ツール", "その他"];
+const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "カラフル", "その他"];
 const NEW_DAYS = 14; // この日数以内なら NEW バッジ
 
 // ---------- クラウドデータのキャッシュ ----------
@@ -28,10 +30,15 @@ function designFromRow(r) {
     title: r.title,
     tags: r.tags || [],
     desc: r.description || "",
+    genre: r.genre || "ホームページ",
     category: r.category || "その他",
     colorTone: r.color_tone || "その他",
     price: r.price || 0,
     features: r.features || [],
+    highlights: r.highlights || [],
+    longDesc: r.long_desc || "",
+    imageUrls: r.image_urls || [],
+    sampleSpec: r.sample_spec || null,
     thumb: r.thumb || "",
     skill: r.skill,
     createdAt: (r.created_at || "").slice(0, 10),
@@ -45,9 +52,14 @@ function profileFromRow(r) {
     name: r.name,
     initial: r.initial || r.name.slice(0, 1),
     avatarColor: r.avatar_color || "#4f46e5",
+    avatarUrl: r.avatar_url || "",
     bio: r.bio || "",
     links: r.links || {},
+    isAdmin: !!r.is_admin,
   };
+}
+function isAdminUser() {
+  return !!(myProfile && myProfile.isAdmin);
 }
 
 async function loadCloudData() {
@@ -108,7 +120,7 @@ function isMine(d) {
 }
 
 // ---------- 検索・絞り込み ----------
-const filters = { q: "", category: "", color: "", price: "", sort: "recommend" };
+const filters = { q: "", genre: "", category: "", color: "", price: "", sort: "recommend" };
 
 function isNew(d) {
   if (!d.createdAt) return false;
@@ -120,13 +132,14 @@ function isPaid(d) {
 
 function filteredDesigns() {
   let list = allDesigns().filter(d => {
+    if (filters.genre && (d.genre || "ホームページ") !== filters.genre) return false;
     if (filters.category && (d.category || "その他") !== filters.category) return false;
     if (filters.color && (d.colorTone || "その他") !== filters.color) return false;
     if (filters.price === "free" && isPaid(d)) return false;
     if (filters.price === "paid" && !isPaid(d)) return false;
     if (filters.q) {
       const q = filters.q.toLowerCase();
-      const haystack = [d.title, d.desc, d.category, d.colorTone, ...(d.tags || []), ...(d.features || [])]
+      const haystack = [d.title, d.desc, d.genre, d.category, d.colorTone, ...(d.tags || []), ...(d.features || [])]
         .join(" ").toLowerCase();
       if (!haystack.includes(q)) return false;
     }
@@ -152,8 +165,11 @@ function starsHtml(rating) {
 }
 
 function avatarHtml(creator, size) {
-  return `<span class="avatar ${size === "lg" ? "avatar-lg" : "avatar-sm"}"
-    style="background:${creator.avatarColor}">${escapeHtml(creator.initial)}</span>`;
+  const cls = size === "lg" ? "avatar-lg" : "avatar-sm";
+  if (creator.avatarUrl) {
+    return `<span class="avatar ${cls}"><img src="${escapeHtml(creator.avatarUrl)}" alt="${escapeHtml(creator.name)}" onerror="this.remove()"></span>`;
+  }
+  return `<span class="avatar ${cls}" style="background:${creator.avatarColor}">${escapeHtml(creator.initial)}</span>`;
 }
 
 function linkChipsHtml(links) {
@@ -195,7 +211,10 @@ function cardHtml(d) {
     </div>
     ${d.thumb}
     <div class="card-body">
-      <div class="card-tags">${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+      <div class="card-tags">
+        <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+        ${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+      </div>
       <h3 class="card-title">${escapeHtml(d.title)}</h3>
       <p class="card-desc">${escapeHtml(d.desc)}</p>
       <div class="card-creator" onclick="event.stopPropagation(); showCreator('${d.creator}')">
@@ -220,7 +239,28 @@ function renderGallery() {
     hasFilter ? `${list.length}件のデザインが見つかりました` : `全${list.length}件のデザイン`;
 }
 
+function renderGenreTabs() {
+  const counts = {};
+  allDesigns().forEach(d => {
+    const g = d.genre || "ホームページ";
+    counts[g] = (counts[g] || 0) + 1;
+  });
+  document.getElementById("genre-tabs").innerHTML =
+    [["", `すべて (${allDesigns().length})`],
+     ...GENRES.map(g => [g, `${GENRE_ICONS[g]} ${g} (${counts[g] || 0})`])]
+    .map(([val, label]) =>
+      `<button type="button" class="genre-tab ${filters.genre === val ? "active" : ""}"
+        onclick="setGenre('${val}')">${label}</button>`).join("");
+}
+
+function setGenre(g) {
+  filters.genre = g;
+  renderGenreTabs();
+  renderGallery();
+}
+
 function initFilterBar() {
+  renderGenreTabs();
   const cat = document.getElementById("f-category");
   CATEGORIES.forEach(c => cat.add(new Option(c, c)));
   const col = document.getElementById("f-color");
@@ -238,10 +278,11 @@ function initFilterBar() {
       });
     });
   document.getElementById("f-clear").addEventListener("click", () => {
-    Object.assign(filters, { q: "", category: "", color: "", price: "", sort: "recommend" });
+    Object.assign(filters, { q: "", genre: "", category: "", color: "", price: "", sort: "recommend" });
     document.getElementById("f-q").value = "";
     ["f-category", "f-color", "f-price"].forEach(id => document.getElementById(id).value = "");
     document.getElementById("f-sort").value = "recommend";
+    renderGenreTabs();
     renderGallery();
   });
 }
@@ -265,6 +306,133 @@ function showHome() {
   showView("home");
 }
 
+// ---------- 使用例ギャラリー（CSSモックを自動生成 + 投稿画像） ----------
+function autoSamples(d) {
+  const spec = d.sampleSpec || {};
+  const c1 = spec.c1 || "#4f46e5";
+  const c2 = spec.c2 || "#f5f5fa";
+  const dark = !!spec.dark;
+  const ink = dark ? "#ffffff22" : "#00000014";
+  const card = dark ? "#ffffff14" : "#ffffff";
+  const genre = d.genre || "ホームページ";
+
+  const bar = (w, c, h = 8) => `<div style="background:${c};width:${w};height:${h}px;border-radius:4px"></div>`;
+
+  if (genre === "スライド資料") {
+    const slide = inner => `
+      <div class="sample-stage" style="background:${c2}">
+        <div style="background:#fff;width:82%;aspect-ratio:16/9;border-radius:6px;box-shadow:0 6px 22px rgba(0,0,0,.16);padding:4% 5%;display:flex;flex-direction:column;gap:4%">${inner}</div>
+      </div>`;
+    return [
+      { label: "表紙", html: slide(`
+        <div style="flex:1"></div>${bar("62%", c1, 14)}${bar("38%", ink, 9)}<div style="flex:1"></div>
+        <div style="display:flex;justify-content:space-between">${bar("18%", ink, 7)}${bar("12%", ink, 7)}</div>`) },
+      { label: "本文スライド", html: slide(`
+        ${bar("70%", c1, 10)}${bar("45%", ink, 7)}
+        <div style="display:flex;gap:5%;flex:1;align-items:flex-end;padding-top:2%">
+          <div style="background:${c1}55;width:14%;height:42%"></div>
+          <div style="background:${c1}99;width:14%;height:64%"></div>
+          <div style="background:${c1};width:14%;height:90%"></div>
+          <div style="flex:1"></div>
+          <div style="display:flex;flex-direction:column;gap:8%;width:34%;height:80%;justify-content:center">
+            ${bar("100%", ink, 7)}${bar("85%", ink, 7)}${bar("92%", ink, 7)}</div>
+        </div>`) },
+      { label: "まとめ", html: slide(`
+        ${bar("40%", c1, 10)}
+        <div style="display:flex;gap:4%;flex:1;padding-top:2%">
+          <div style="flex:1;background:${c1}22;border-radius:8px"></div>
+          <div style="flex:1;background:${c1}22;border-radius:8px"></div>
+          <div style="flex:1;background:${c1}22;border-radius:8px"></div>
+        </div>`) },
+    ];
+  }
+
+  if (genre === "アプリUI") {
+    const phone = inner => `
+      <div class="sample-stage" style="background:${dark ? "#1a1f29" : c2}">
+        <div style="background:${dark ? c2 : "#fff"};width:30%;min-width:150px;aspect-ratio:9/17;border-radius:18px;box-shadow:0 8px 26px rgba(0,0,0,.22);padding:4% 3%;display:flex;flex-direction:column;gap:3%">${inner}</div>
+      </div>`;
+    return [
+      { label: "ホーム画面", html: phone(`
+        ${bar("44%", ink, 6)}
+        <div style="background:linear-gradient(135deg,${c1},${c1}bb);border-radius:10px;height:24%"></div>
+        <div style="background:${card};border:1px solid ${ink};border-radius:9px;flex:1"></div>
+        <div style="background:${card};border:1px solid ${ink};border-radius:9px;flex:1"></div>
+        <div style="display:flex;gap:3%;height:8%">
+          <div style="flex:1;background:${c1};border-radius:6px"></div>
+          <div style="flex:1;background:${ink};border-radius:6px"></div>
+          <div style="flex:1;background:${ink};border-radius:6px"></div>
+        </div>`) },
+      { label: "一覧画面", html: phone(`
+        <div style="background:${ink};border-radius:8px;height:9%"></div>
+        ${[1,2,3,4,5].map(() => `<div style="background:${card};border:1px solid ${ink};border-radius:9px;flex:1;display:flex;align-items:center;gap:5%;padding:0 5%">
+          <div style="width:18%;aspect-ratio:1;background:${c1}44;border-radius:50%"></div>
+          <div style="flex:1;height:7px;background:${ink};border-radius:4px"></div>
+        </div>`).join("")}`) },
+      { label: "詳細画面", html: phone(`
+        <div style="background:linear-gradient(135deg,${c1},${c1}99);border-radius:10px;height:34%"></div>
+        ${bar("70%", ink, 8)}${bar("50%", ink, 6)}
+        <div style="background:${card};border:1px solid ${ink};border-radius:9px;flex:1"></div>
+        <div style="background:${c1};border-radius:8px;height:10%"></div>`) },
+    ];
+  }
+
+  // ホームページ
+  const page = (inner, w = "86%") => `
+    <div class="sample-stage" style="background:${dark ? "#1a1f29" : "#e9ebf2"}">
+      <div style="background:${c2};width:${w};height:88%;border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.16);padding:2.5%;display:flex;flex-direction:column;gap:2.5%;overflow:hidden">${inner}</div>
+    </div>`;
+  return [
+    { label: "トップ画面", html: page(`
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:6px;align-items:center"><div style="width:14px;height:14px;border-radius:50%;background:${c1}"></div>${bar("60px", ink, 7)}</div>
+        <div style="background:${c1};width:14%;height:14px;border-radius:8px"></div>
+      </div>
+      <div style="background:linear-gradient(135deg,${c1},${c1}bb);border-radius:8px;height:42%;display:flex;flex-direction:column;justify-content:center;gap:6%;padding:0 4%">
+        ${bar("46%", "#ffffffcc", 11)}${bar("30%", "#ffffff88", 8)}</div>
+      <div style="display:flex;gap:2.5%;flex:1">
+        <div style="flex:1;background:${card};border:1px solid ${ink};border-radius:7px"></div>
+        <div style="flex:1;background:${card};border:1px solid ${ink};border-radius:7px"></div>
+        <div style="flex:1;background:${card};border:1px solid ${ink};border-radius:7px"></div>
+      </div>`) },
+    { label: "コンテンツ部分", html: page(`
+      ${bar("34%", c1, 10)}${bar("52%", ink, 7)}
+      <div style="display:flex;gap:2.5%;flex:1;padding-top:1%">
+        <div style="flex:1.2;background:${c1}22;border-radius:7px"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6%;justify-content:center">
+          ${bar("90%", ink, 7)}${bar("75%", ink, 7)}${bar("85%", ink, 7)}
+          <div style="background:${c1};width:34%;height:14px;border-radius:8px"></div>
+        </div>
+      </div>
+      <div style="background:${c1};border-radius:7px;height:14%"></div>`) },
+    { label: "スマホ表示", html: page(`
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="width:12px;height:12px;border-radius:50%;background:${c1}"></div>
+        <div style="display:flex;flex-direction:column;gap:3px">${bar("16px", ink, 3)}${bar("16px", ink, 3)}</div>
+      </div>
+      <div style="background:linear-gradient(135deg,${c1},${c1}bb);border-radius:7px;height:30%"></div>
+      <div style="background:${card};border:1px solid ${ink};border-radius:7px;flex:1"></div>
+      <div style="background:${card};border:1px solid ${ink};border-radius:7px;flex:1"></div>`, "32%") },
+  ];
+}
+
+let detailGalleryItems = [];
+function galleryItemsFor(d) {
+  return [
+    ...autoSamples(d),
+    ...(d.imageUrls || []).slice(0, 10).map((u, i) => ({ label: `画像${i + 1}`, img: u })),
+  ];
+}
+function showSampleIdx(i) {
+  const item = detailGalleryItems[i];
+  if (!item) return;
+  document.getElementById("gallery-main").innerHTML = item.img
+    ? `<img class="gallery-img" src="${escapeHtml(item.img)}" alt="${escapeHtml(item.label)}">`
+    : item.html;
+  document.querySelectorAll(".gallery-thumb").forEach((b, idx) =>
+    b.classList.toggle("active", idx === i));
+}
+
 // ---------- デザイン詳細 ----------
 let pendingStars = 0;
 
@@ -281,11 +449,21 @@ function renderDetail(d) {
   const cr = findCreator(d.creator);
   pendingStars = 0;
 
+  detailGalleryItems = galleryItemsFor(d);
   document.getElementById("detail-body").innerHTML = `
   <div class="detail-head">
-    <div class="detail-thumb">${d.thumb}</div>
+    <div class="detail-gallery">
+      <div class="gallery-main" id="gallery-main"></div>
+      <div class="gallery-thumbs">
+        ${detailGalleryItems.map((it, i) =>
+          `<button type="button" class="gallery-thumb" onclick="showSampleIdx(${i})">${escapeHtml(it.label)}</button>`).join("")}
+      </div>
+    </div>
     <div class="detail-info">
-      <div class="card-tags">${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+      <div class="card-tags">
+        <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+        ${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+      </div>
       <h1>${escapeHtml(d.title)}</h1>
       <div class="detail-rating">
         ${priceBadgeHtml(d)}
@@ -309,8 +487,24 @@ function renderDetail(d) {
         </button>
         <button class="btn btn-ghost" onclick="orderThis('${d.id}')">このデザインで制作代行を頼む</button>
       </div>
+      ${isAdminUser() && cloud.designs.some(x => x.id === d.id)
+        ? `<p class="admin-row">🛡 管理者: <button class="text-danger" onclick="deleteUserDesign('${d.id}')">この投稿を削除する</button></p>`
+        : ""}
     </div>
   </div>
+
+  ${(d.highlights || []).length ? `
+  <section class="lp-section lp-highlight">
+    <h2>✅ こんな方におすすめ</h2>
+    <ul class="highlight-list">${d.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>
+  </section>` : ""}
+
+  ${d.longDesc ? `
+  <section class="lp-section">
+    <h2>このデザインについて</h2>
+    ${d.longDesc.split("\n").filter(Boolean).map(p => `<p>${escapeHtml(p)}</p>`).join("")}
+    <p class="lp-tools">対応AIツール: <b>Claude / Codex / Antigravity / Cursor</b> ほか、Markdownの指示を読めるAIならどれでも使えます。</p>
+  </section>` : ""}
 
   <div class="reviews">
     <h2>レビュー（${reviews.length}件）</h2>
@@ -337,6 +531,8 @@ function renderDetail(d) {
       <button type="submit" class="btn btn-primary">投稿する</button>
     </form>
   </div>`;
+
+  showSampleIdx(0);
 
   // 星入力
   const starInput = document.getElementById("star-input");
@@ -502,6 +698,7 @@ function showAccount() {
       name,
       initial: name.slice(0, 1),
       avatar_color: document.getElementById("ac-color").value,
+      avatar_url: document.getElementById("ac-avatar-url").value.trim(),
       bio: document.getElementById("ac-bio").value.trim(),
       links: {
         homepage: document.getElementById("ac-homepage").value.trim(),
@@ -519,6 +716,19 @@ function showAccount() {
     toast(isFirst ? `ようこそ、${name}さん！これでデザインを投稿できます` : "プロフィールを保存しました");
     showAccount();
   });
+
+  // アバターのライブプレビュー
+  const updatePreview = () => {
+    const preview = {
+      name: document.getElementById("ac-name").value || "?",
+      initial: (document.getElementById("ac-name").value || "?").slice(0, 1),
+      avatarColor: document.getElementById("ac-color").value,
+      avatarUrl: document.getElementById("ac-avatar-url").value.trim(),
+    };
+    document.getElementById("ac-avatar-preview").innerHTML = avatarHtml(preview, "lg");
+  };
+  ["ac-name", "ac-color", "ac-avatar-url"].forEach(id =>
+    document.getElementById(id).addEventListener("input", updatePreview));
 }
 
 function accountFormHtml(acc, submitLabel) {
@@ -527,7 +737,14 @@ function accountFormHtml(acc, submitLabel) {
   <form class="nice-form" id="account-form">
     <label>表示名（必須）<input type="text" id="ac-name" required maxlength="30" value="${escapeHtml(acc.name || "")}" placeholder="例：keita design"></label>
     <label>自己紹介<textarea id="ac-bio" rows="3" maxlength="300" placeholder="どんなデザインを作っていますか？">${escapeHtml(acc.bio || "")}</textarea></label>
-    <label>アバターカラー<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
+    <label>プロフィール画像URL
+      <div class="avatar-input-row">
+        <span id="ac-avatar-preview">${avatarHtml(acc.name ? acc : { ...acc, name: "?", initial: "?" }, "lg")}</span>
+        <input type="url" id="ac-avatar-url" value="${escapeHtml(acc.avatarUrl || "")}" placeholder="https://...（XやインスタのアイコンのURLでもOK）">
+      </div>
+      <span class="form-hint">SNSと同じアイコンにすると、フォロワーがあなただと分かりやすくなります。空欄なら下の色＋頭文字になります。</span>
+    </label>
+    <label>アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
     <label>🌐 ホームページURL<input type="url" id="ac-homepage" value="${escapeHtml(links.homepage || "")}" placeholder="https://..."></label>
     <label>𝕏 X (Twitter) URL<input type="url" id="ac-x" value="${escapeHtml(links.x || "")}" placeholder="https://x.com/..."></label>
     <label>📷 Instagram URL<input type="url" id="ac-instagram" value="${escapeHtml(links.instagram || "")}" placeholder="https://instagram.com/..."></label>
@@ -551,7 +768,8 @@ async function deleteUserDesign(id) {
   if (error) { toast("削除に失敗しました: " + error.message); return; }
   cloud.designs = cloud.designs.filter(d => d.id !== id);
   toast("投稿を削除しました");
-  showAccount();
+  if (!document.getElementById("view-account").hidden) showAccount();
+  else showHome();
 }
 
 // ---------- デザイン投稿 ----------
@@ -574,9 +792,16 @@ function showSubmit() {
     <h1 class="panel-title">デザインを投稿</h1>
     <p class="panel-lead">あなたのデザインの「作り方」をスキルとして共有しましょう。投稿者として「${escapeHtml(myProfile.name)}」が表示されます。</p>
     <form class="nice-form" id="submit-form">
+      <label>ジャンル（必須）<select id="sb-genre">${GENRES.map(g => `<option>${g}</option>`).join("")}</select></label>
       <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP"></label>
       <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発"></label>
-      <label>説明文（必須）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト向けの、どんなデザインですか？"></textarea></label>
+      <label>説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？"></textarea></label>
+      <label>こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム"></textarea></label>
+      <label>詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。"></textarea></label>
+      <label>使用例画像のURL（1行に1つ・10枚まで）
+        <textarea id="sb-images" rows="3" placeholder="https://...png&#10;https://...jpg"></textarea>
+        <span class="form-hint">実際にこのスキルで作った画面のスクリーンショットがあると、ダウンロード率が大きく上がります。</span>
+      </label>
       <div class="color-row">
         <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option>${c}</option>`).join("")}</select></label>
         <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option>${c}</option>`).join("")}</select></label>
@@ -609,16 +834,26 @@ function showSubmit() {
     const c1 = document.getElementById("sb-color1").value;
     const c2 = document.getElementById("sb-color2").value;
 
+    const highlights = document.getElementById("sb-highlights").value
+      .split("\n").map(h => h.trim()).filter(Boolean).slice(0, 3);
+    const imageUrls = document.getElementById("sb-images").value
+      .split("\n").map(u => u.trim()).filter(u => /^https?:\/\//.test(u)).slice(0, 10);
+
     const row = {
       id: "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       creator: session.user.id,
       title,
       tags: tags.length ? tags : ["オリジナル"],
       description: document.getElementById("sb-desc").value.trim(),
+      genre: document.getElementById("sb-genre").value,
       category: document.getElementById("sb-category").value,
       color_tone: document.getElementById("sb-colortone").value,
       price: Math.max(0, parseInt(document.getElementById("sb-price").value, 10) || 0),
       features,
+      highlights,
+      long_desc: document.getElementById("sb-longdesc").value.trim(),
+      image_urls: imageUrls,
+      sample_spec: { c1, c2 },
       thumb: genThumb(c1, c2),
       skill: document.getElementById("sb-skill").value,
     };
@@ -687,6 +922,7 @@ description: （どんなサイト向けの、どんなデザインかを1〜2�
 function downloadSkill(id) {
   const d = findDesign(id);
   if (!d) return;
+  if (isAdminUser()) { doDownload(id); return; } // 管理者は広告・購入なしで即DL
   if (isPaid(d)) openPurchaseModal(d);
   else openAdModal(d);
 }
@@ -795,7 +1031,7 @@ function openDesignPicker() {
     const needle = q.trim().toLowerCase();
     const list = allDesigns().filter(d =>
       !needle ||
-      [d.title, d.desc, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
+      [d.title, d.desc, d.genre, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
     document.getElementById("picker-list").innerHTML = `
       <button type="button" class="picker-item" onclick="setOrderDesign('', ''); closeModal()">
         <span class="picker-title">未定・相談したい</span>
@@ -877,5 +1113,6 @@ function toast(msg) {
   renderGallery(); // まずシードデザインを即表示
   renderHeaderAccount();
   await Promise.all([initAuth(), loadCloudData()]);
-  renderGallery(); // クラウドの投稿・レビュー・DL数を反映
+  renderGenreTabs(); // 件数を更新
+  renderGallery();   // クラウドの投稿・レビュー・DL数を反映
 })();

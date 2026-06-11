@@ -28,13 +28,17 @@
 
   <section class="hero">
     <div class="container">
-      <p class="hero-eyebrow">AI時代のデザインテンプレート配布所</p>
-      <h1>好きなデザインを選ぶだけで、<br>Claude がそのデザインを<strong>正確に</strong>作れるようになる。</h1>
+      <p class="hero-eyebrow">AI時代のデザインスキル配布所</p>
+      <h1>好きなデザインを選ぶだけで、<br>AIがそのデザインを<strong>正確に</strong>作れるようになる。</h1>
       <p class="hero-lead">
         「指定したものしか選べない」「作ってみたら形が崩れた」——そんな経験はありませんか？<br>
-        ここで配布しているのは画像でもHTMLでもなく、<b>スキルファイル（.md）</b>。
-        Claude に渡すだけで、配色・余白・レイアウトのルールまで含めてそのデザインを再現できます。
+        ここで配布しているのは画像でもHTMLでもなく、デザインの設計図 <b>スキルファイル（.md）</b>。<br>
+        <b>Claude・Codex・Antigravity・Cursor</b> など、お使いのAIツールに渡すだけで、
+        配色・余白・レイアウトのルールまで含めてそのデザインを再現できます。
       </p>
+      <div class="hero-genres">
+        <span>🌐 ホームページ</span><span>📊 スライド資料</span><span>📱 アプリUI</span>
+      </div>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#gallery">デザインを見る</a>
         <a class="btn btn-ghost" href="#about">スキルファイルとは？</a>
@@ -49,17 +53,17 @@
         <div class="step">
           <div class="step-num">1</div>
           <h3>デザインを選ぶ</h3>
-          <p>ギャラリーから好きなデザインを選択。レビューと星評価も参考にできます。</p>
+          <p>ホームページ・スライド資料・アプリUIの3ジャンルから好きなデザインを選択。レビューと星評価も参考にできます。</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
           <h3>スキルをダウンロード</h3>
-          <p>そのデザインの「作り方」が書かれた .md ファイルをダウンロード。</p>
+          <p>そのデザインの「作り方」が書かれた .md ファイルをダウンロード。配色・レイアウト・画像の入れ方まで書いてあります。</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>Claude に渡す</h3>
-          <p>Claude Code のスキルフォルダに置くか、チャットに添付して「このデザインで作って」と言うだけ。</p>
+          <h3>お使いのAIに渡す</h3>
+          <p>Claude・Codex・Antigravity・Cursor など、いつものAIツールにファイルを添付して「このデザインで作って」と言うだけ。</p>
         </div>
       </div>
     </div>
@@ -69,6 +73,8 @@
     <div class="container">
       <h2 class="section-title">デザインギャラリー</h2>
       <p class="section-lead">気になるデザインを検索・絞り込みで探せます。星評価とレビューはみんなで育てていきましょう。</p>
+
+      <div class="genre-tabs" id="genre-tabs"><!-- JSで生成 --></div>
 
       <div class="toolbar">
         <input type="search" id="f-q" class="search-box" placeholder="🔍 キーワードで検索（例：カフェ、ダーク、LP、和風…）">

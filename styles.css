@@ -166,6 +166,70 @@ a { color: inherit; text-decoration: none; }
 .order-form { background: #fff; border-radius: var(--radius); padding: 28px; color: var(--ink); }
 .order-note { font-size: 12px; color: var(--ink-faint); margin-top: 10px; text-align: center; }
 
+/* ----- hero genres ----- */
+.hero-genres { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+.hero-genres span {
+  background: #fff; border: 1px solid var(--line); border-radius: 999px;
+  padding: 8px 18px; font-size: 13px; font-weight: 700; color: var(--ink-soft);
+  box-shadow: var(--shadow);
+}
+
+/* ----- genre tabs ----- */
+.genre-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 22px; }
+.genre-tab {
+  border: 1.5px solid var(--line); background: #fff; border-radius: 999px;
+  padding: 11px 22px; font-size: 14px; font-weight: 700; color: var(--ink-soft);
+  cursor: pointer; font-family: inherit; transition: .15s;
+}
+.genre-tab:hover { border-color: var(--accent); color: var(--accent); }
+.genre-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.tag-genre { background: var(--ink); color: #fff; }
+
+/* ----- detail gallery（使用例ビューア） ----- */
+.detail-gallery { display: flex; flex-direction: column; gap: 10px; }
+.gallery-main {
+  border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line);
+  box-shadow: var(--shadow-hover); background: #fff;
+}
+.sample-stage {
+  height: 340px; display: flex; align-items: center; justify-content: center;
+  padding: 18px;
+}
+.gallery-img { width: 100%; height: 340px; object-fit: contain; display: block; background: #f0f1f6; }
+.gallery-thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.gallery-thumb {
+  border: 1.5px solid var(--line); background: #fff; border-radius: 999px;
+  padding: 7px 14px; font-size: 12px; font-weight: 700; color: var(--ink-soft);
+  cursor: pointer; font-family: inherit;
+}
+.gallery-thumb.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ----- LP sections（Amazon風 商品説明） ----- */
+.lp-section {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 30px 32px; margin-bottom: 24px;
+}
+.lp-section h2 { font-size: 19px; font-weight: 800; margin-bottom: 14px; }
+.lp-section p { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 12px; }
+.lp-highlight { background: var(--accent-soft); border-color: #dfe3ff; }
+.highlight-list { list-style: none; }
+.highlight-list li {
+  padding: 10px 0 10px 30px; position: relative; font-size: 14.5px; font-weight: 600;
+  border-bottom: 1px dashed #d6daf5;
+}
+.highlight-list li:last-child { border-bottom: none; }
+.highlight-list li::before { content: "👍"; position: absolute; left: 0; }
+.lp-tools { font-size: 12.5px; color: var(--ink-faint); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+
+/* ----- avatar image ----- */
+.avatar { overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.avatar-input-row { display: flex; gap: 14px; align-items: center; margin-top: 6px; }
+.avatar-input-row .avatar-lg { width: 56px; height: 56px; font-size: 22px; flex-shrink: 0; }
+.avatar-input-row input { flex: 1; margin-top: 0 !important; }
+.admin-row { margin-top: 14px; font-size: 13px; color: var(--ink-soft); }
+
 /* ----- search & filter toolbar ----- */
 .toolbar {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
