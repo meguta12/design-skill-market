@@ -430,6 +430,33 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid var(--line); border-radius: 6px; padding: 2px 9px;
 }
 
+/* ----- admin（管理ページ） ----- */
+.nav-admin { color: #b45309; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px 18px; text-align: center;
+}
+.stat-num { font-size: 30px; font-weight: 800; color: var(--accent); }
+.stat-label { font-size: 12px; color: var(--ink-soft); font-weight: 700; margin-top: 4px; }
+.admin-section { margin-bottom: 24px; }
+.panel-sub-plain { font-size: 17px; font-weight: 800; margin-bottom: 16px; }
+.table-wrap { overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.admin-table th {
+  text-align: left; color: var(--ink-faint); font-size: 11px; font-weight: 700;
+  padding: 8px 10px; border-bottom: 2px solid var(--line); white-space: nowrap;
+}
+.admin-table td { padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table a { color: var(--accent); font-weight: 700; }
+.admin-table a:hover { text-decoration: underline; }
+.admin-table .stars-cell { color: var(--star); }
+.review-body-cell { max-width: 320px; color: var(--ink-soft); }
+@media (max-width: 860px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ----- toast ----- */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);

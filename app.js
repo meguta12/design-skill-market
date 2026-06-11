@@ -292,10 +292,11 @@ function renderHeaderAccount() {
   if (myProfile) el.textContent = `👤 ${myProfile.name}`;
   else if (session) el.textContent = "プロフィール設定";
   else el.textContent = "ログイン / 登録";
+  document.getElementById("nav-admin").hidden = !isAdminUser();
 }
 
 // ---------- ビュー切り替え ----------
-const VIEWS = ["home", "detail", "creator", "account", "submit"];
+const VIEWS = ["home", "detail", "creator", "account", "submit", "admin"];
 function showView(name) {
   VIEWS.forEach(v => document.getElementById("view-" + v).hidden = (v !== name));
   window.scrollTo({ top: 0 });
@@ -784,8 +785,108 @@ async function deleteUserDesign(id) {
   if (error) { toast("削除に失敗しました: " + error.message); return; }
   cloud.designs = cloud.designs.filter(d => d.id !== id);
   toast("投稿を削除しました");
-  if (!document.getElementById("view-account").hidden) showAccount();
+  if (!document.getElementById("view-admin").hidden) renderAdmin();
+  else if (!document.getElementById("view-account").hidden) showAccount();
   else showHome();
+}
+
+// ---------- 管理ページ（管理者のみ・全部日本語） ----------
+function showAdmin() {
+  if (!isAdminUser()) { toast("管理者のみアクセスできます"); return; }
+  renderAdmin();
+  showView("admin");
+}
+
+function renderAdmin() {
+  const users = Object.values(cloud.profiles);
+  const designs = cloud.designs; // 投稿されたデザイン（シードは除く）
+  const reviews = cloud.reviews;
+  const totalDl = allDesigns().reduce((s, d) => s + totalDownloads(d), 0);
+
+  const designRows = designs.length ? designs.map(d => {
+    const cr = findCreator(d.creator);
+    return `<tr>
+      <td><a href="#" onclick="showDetail('${d.id}'); return false;">${escapeHtml(d.title)}</a></td>
+      <td>${escapeHtml(cr.name)}</td>
+      <td>${isPaid(d) ? "¥" + d.price.toLocaleString() : "無料"}</td>
+      <td>${d.createdAt}</td>
+      <td>${totalDownloads(d).toLocaleString()}</td>
+      <td><button class="text-danger" onclick="deleteUserDesign('${d.id}')">削除</button></td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty-note">ユーザー投稿はまだありません（サンプル6作品は管理対象外）</td></tr>`;
+
+  const reviewRows = reviews.length ? [...reviews].reverse().map(r => {
+    const d = findDesign(r.design_id);
+    return `<tr>
+      <td>${d ? escapeHtml(d.title) : "（削除済みの投稿）"}</td>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${"★".repeat(r.stars)}</td>
+      <td class="review-body-cell">${escapeHtml(r.body)}</td>
+      <td>${(r.created_at || "").slice(0, 10)}</td>
+      <td><button class="text-danger" onclick="deleteReviewAdmin('${r.id}')">削除</button></td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty-note">レビューはまだありません</td></tr>`;
+
+  const userRows = users.map(u => {
+    const works = designsByCreator(u.id).length;
+    return `<tr>
+      <td>${avatarHtml(u, "sm")} ${escapeHtml(u.name)}</td>
+      <td>${u.isAdmin ? "🛡 管理者" : "一般"}</td>
+      <td>${works}</td>
+      <td><a href="#" onclick="showCreator('${u.id}'); return false;">プロフィール</a></td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("admin-body").innerHTML = `
+  <h1 class="panel-title">🛡 管理ページ</h1>
+  <p class="panel-lead">サイトの運営状況の確認と、投稿・レビューの管理ができます（このページは管理者にしか表示されません）。</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">${users.length.toLocaleString()}</div><div class="stat-label">登録ユーザー</div></div>
+    <div class="stat-card"><div class="stat-num">${designs.length.toLocaleString()}</div><div class="stat-label">ユーザー投稿</div></div>
+    <div class="stat-card"><div class="stat-num">${reviews.length.toLocaleString()}</div><div class="stat-label">レビュー</div></div>
+    <div class="stat-card"><div class="stat-num">${totalDl.toLocaleString()}</div><div class="stat-label">累計ダウンロード</div></div>
+  </div>
+
+  <div class="panel admin-section">
+    <h2 class="panel-sub-plain">📋 投稿の管理（${designs.length}件）</h2>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>デザイン名</th><th>投稿者</th><th>料金</th><th>公開日</th><th>DL数</th><th></th></tr></thead>
+        <tbody>${designRows}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel admin-section">
+    <h2 class="panel-sub-plain">💬 レビューの管理（${reviews.length}件）</h2>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>対象デザイン</th><th>名前</th><th>評価</th><th>コメント</th><th>日付</th><th></th></tr></thead>
+        <tbody>${reviewRows}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel admin-section">
+    <h2 class="panel-sub-plain">👥 ユーザー一覧（${users.length}人）</h2>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>名前</th><th>権限</th><th>投稿数</th><th></th></tr></thead>
+        <tbody>${userRows}</tbody>
+      </table>
+    </div>
+    <p class="form-hint">💡 管理者権限の付与・剥奪は安全のためこの画面からはできません（データベース側でのみ変更可能）。</p>
+  </div>`;
+}
+
+async function deleteReviewAdmin(id) {
+  if (!confirm("このレビューを削除しますか？")) return;
+  const { error } = await sb.from("reviews").delete().eq("id", id);
+  if (error) { toast("削除に失敗しました: " + error.message); return; }
+  cloud.reviews = cloud.reviews.filter(r => r.id !== id);
+  toast("レビューを削除しました");
+  renderAdmin();
 }
 
 // ---------- デザイン投稿 ----------

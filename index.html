@@ -19,6 +19,7 @@
       <a href="#about" onclick="showHome()">使い方</a>
       <a href="#order" onclick="showHome()">制作代行</a>
       <a href="#" class="nav-post" onclick="showSubmit(); return false;">＋ 投稿する</a>
+      <a href="#" class="nav-admin" id="nav-admin" onclick="showAdmin(); return false;" hidden>🛡 管理</a>
       <a href="#" class="nav-account" id="nav-account" onclick="showAccount(); return false;">アカウント作成</a>
     </nav>
   </div>
@@ -159,6 +160,14 @@
   <div class="container detail-container narrow">
     <button class="back-link" onclick="showHome()">← デザイン一覧に戻る</button>
     <div id="account-body"><!-- JSで生成 --></div>
+  </div>
+</main>
+
+<!-- ===== 管理ページビュー（管理者のみ） ===== -->
+<main id="view-admin" hidden>
+  <div class="container detail-container">
+    <button class="back-link" onclick="showHome()">← デザイン一覧に戻る</button>
+    <div id="admin-body"><!-- JSで生成 --></div>
   </div>
 </main>
 
