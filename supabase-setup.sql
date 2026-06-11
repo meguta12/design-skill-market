@@ -22,7 +22,8 @@ create policy "profiles_update" on profiles for update using (auth.uid() = id);
 -- is_admin 列は本人でも書き換え不可にする（列単位の権限制御）
 revoke insert, update on table profiles from anon, authenticated;
 grant insert (id, name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
-grant update (name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
+-- update側にも id が必要（upsert の ON CONFLICT DO UPDATE が id 列も SET するため）
+grant update (id, name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
 
 -- 管理者判定（RLSポリシー内から使う）
 create or replace function is_admin(uid uuid)

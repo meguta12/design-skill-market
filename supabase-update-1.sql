@@ -14,7 +14,8 @@ alter table designs add column if not exists sample_spec jsonb default null;
 -- is_admin 列は本人でも書き換え不可にする
 revoke insert, update on table profiles from anon, authenticated;
 grant insert (id, name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
-grant update (name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
+-- update側にも id が必要（upsert の ON CONFLICT DO UPDATE が id 列も SET するため）
+grant update (id, name, initial, avatar_color, avatar_url, bio, links) on profiles to authenticated;
 
 -- 管理者判定関数
 create or replace function is_admin(uid uuid)
