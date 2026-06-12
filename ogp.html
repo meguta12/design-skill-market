@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif; }
+  .card {
+    width: 1200px; height: 630px; position: relative; overflow: hidden;
+    background: linear-gradient(150deg, #ffffff 0%, #eef0ff 55%, #e3e0ff 100%);
+    padding: 70px 80px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; gap: 18px; font-size: 40px; font-weight: 800; color: #1a1d29; }
+  .mark { width: 52px; height: 52px; border-radius: 12px; background: #4f46e5; display: flex; align-items: center; justify-content: center; }
+  .mark span { color: #fff; font-size: 30px; }
+  h1 { font-size: 54px; line-height: 1.5; font-weight: 800; color: #1a1d29; letter-spacing: .01em; white-space: nowrap; }
+  h1 b { color: #4f46e5; }
+  .chips { display: flex; gap: 14px; }
+  .chip {
+    background: #fff; border: 2px solid #dfe3ff; border-radius: 999px;
+    padding: 12px 24px; font-size: 22px; font-weight: 700; color: #4a4f63;
+    box-shadow: 0 4px 14px rgba(79,70,229,.10); white-space: nowrap;
+  }
+  .bottom { display: flex; justify-content: space-between; align-items: center; }
+  .free { font-size: 26px; font-weight: 800; color: #18a058; }
+  .deco { position: absolute; border-radius: 50%; background: #4f46e5; opacity: .08; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="deco" style="width:420px;height:420px;right:-140px;top:-160px"></div>
+  <div class="deco" style="width:260px;height:260px;left:-90px;bottom:-110px"></div>
+  <div class="logo"><div class="mark"><span>◆</span></div> Design Skill Market</div>
+  <h1>好きなデザインを選ぶだけで、<br>AIがそのデザインを<b>正確に</b>作れる。</h1>
+  <div class="chips">
+    <div class="chip">🌐 ホームページ</div>
+    <div class="chip">📊 スライド資料</div>
+    <div class="chip">📱 アプリUI</div>
+    <div class="chip">Claude / Codex / Cursor 対応</div>
+  </div>
+  <div class="bottom">
+    <div class="free">スキルはすべて無料ダウンロード</div>
+  </div>
+</div>
+</body>
+</html>
