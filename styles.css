@@ -466,6 +466,38 @@ a { color: inherit; text-decoration: none; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ----- side banner ads（ワイド画面のみ。AdSense導入時はこの枠を差し替え） ----- */
+.side-ad {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 170px; z-index: 50; display: none;
+}
+.side-ad.left { left: 20px; }
+.side-ad.right { right: 20px; }
+@media (min-width: 1520px) { .side-ad { display: block; } }
+.side-ad .ad-label { background: var(--surface); margin-bottom: 6px; }
+.side-ad-box {
+  border-radius: 16px; padding: 26px 18px; min-height: 440px;
+  display: flex; flex-direction: column; gap: 14px;
+  color: #fff; cursor: pointer; box-shadow: var(--shadow-hover);
+  transition: .2s;
+}
+.side-ad-box:hover { transform: translateY(-3px); }
+.side-ad-order { background: linear-gradient(165deg, #1a1d29, #343b55); }
+.side-ad-post { background: linear-gradient(165deg, #4f46e5, #8b5cf6); }
+.side-ad-eyebrow {
+  font-size: 11px; font-weight: 800; letter-spacing: .1em;
+  background: rgba(255,255,255,.18); border-radius: 999px;
+  padding: 5px 12px; align-self: flex-start;
+}
+.side-ad-box strong { font-size: 24px; line-height: 1.5; font-weight: 800; }
+.side-ad-box p { font-size: 12px; line-height: 1.8; color: rgba(255,255,255,.8); flex: 1; }
+.side-ad-btn {
+  background: #fff; color: var(--ink); border-radius: 999px;
+  padding: 11px 14px; font-size: 13px; font-weight: 800; text-align: center;
+}
+.side-ad-order .side-ad-btn { color: #1a1d29; }
+.side-ad-post .side-ad-btn { color: #4f46e5; }
+
 /* ----- toast ----- */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);

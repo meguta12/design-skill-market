@@ -120,7 +120,7 @@ function isMine(d) {
 }
 
 // ---------- 検索・絞り込み ----------
-const filters = { q: "", genre: "", category: "", color: "", price: "", sort: "recommend" };
+const filters = { q: "", genre: "", category: "", color: "", sort: "recommend" };
 
 function isNew(d) {
   if (!d.createdAt) return false;
@@ -135,8 +135,6 @@ function filteredDesigns() {
     if (filters.genre && (d.genre || "ホームページ") !== filters.genre) return false;
     if (filters.category && (d.category || "その他") !== filters.category) return false;
     if (filters.color && (d.colorTone || "その他") !== filters.color) return false;
-    if (filters.price === "free" && isPaid(d)) return false;
-    if (filters.price === "paid" && !isPaid(d)) return false;
     if (filters.q) {
       const q = filters.q.toLowerCase();
       const haystack = [d.title, d.desc, d.genre, d.category, d.colorTone, ...(d.tags || []), ...(d.features || [])]
@@ -247,7 +245,7 @@ function renderGallery() {
   grid.innerHTML = list.length
     ? list.map(cardHtml).join("")
     : `<p class="empty-note no-hit">条件に合うデザインが見つかりませんでした。条件をクリアして探し直してみてください。</p>`;
-  const hasFilter = filters.q || filters.category || filters.color || filters.price;
+  const hasFilter = filters.q || filters.genre || filters.category || filters.color;
   document.getElementById("result-count").textContent =
     hasFilter ? `${list.length}件のデザインが見つかりました` : `全${list.length}件のデザイン`;
 }
@@ -283,7 +281,7 @@ function initFilterBar() {
     filters.q = e.target.value.trim();
     renderGallery();
   });
-  [["f-category", "category"], ["f-color", "color"], ["f-price", "price"], ["f-sort", "sort"]]
+  [["f-category", "category"], ["f-color", "color"], ["f-sort", "sort"]]
     .forEach(([elId, key]) => {
       document.getElementById(elId).addEventListener("change", e => {
         filters[key] = e.target.value;
@@ -291,9 +289,9 @@ function initFilterBar() {
       });
     });
   document.getElementById("f-clear").addEventListener("click", () => {
-    Object.assign(filters, { q: "", genre: "", category: "", color: "", price: "", sort: "recommend" });
+    Object.assign(filters, { q: "", genre: "", category: "", color: "", sort: "recommend" });
     document.getElementById("f-q").value = "";
-    ["f-category", "f-color", "f-price"].forEach(id => document.getElementById(id).value = "");
+    ["f-category", "f-color"].forEach(id => document.getElementById(id).value = "");
     document.getElementById("f-sort").value = "recommend";
     renderGenreTabs();
     renderGallery();
@@ -941,8 +939,6 @@ function showSubmit() {
         <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option>${c}</option>`).join("")}</select></label>
         <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option>${c}</option>`).join("")}</select></label>
       </div>
-      <label>料金（円・0で無料）<input type="number" id="sb-price" value="0" min="0" max="50000" step="100"></label>
-      <p class="form-hint">💡 有料にした場合、購入時の決済機能は現在準備中です（価格表示と購入フローのみ動きます）。</p>
       <label>特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き"></textarea></label>
       <div class="color-row">
         <label>メインカラー<input type="color" id="sb-color1" value="#4f46e5"></label>
@@ -983,7 +979,7 @@ function showSubmit() {
       genre: document.getElementById("sb-genre").value,
       category: document.getElementById("sb-category").value,
       color_tone: document.getElementById("sb-colortone").value,
-      price: Math.max(0, parseInt(document.getElementById("sb-price").value, 10) || 0),
+      price: 0, // 全スキル無料（広告収益モデル）
       features,
       highlights,
       long_desc: document.getElementById("sb-longdesc").value.trim(),
@@ -1106,11 +1102,11 @@ function openAdModal(d) {
       <p class="ad-eyebrow">🎨 Design Skill Market からのお知らせ</p>
       <h3 class="ad-title">あなたのデザイン、スキルにして出品しませんか？</h3>
       <p class="ad-text">アカウントを作れば誰でもデザインスキルを公開できます。
-      有料出品にも今後対応予定。あなたの設計ノウハウが誰かのサイトになります。</p>
+      あなたの設計ノウハウが誰かのサイトになります。</p>
       <button class="btn btn-ghost btn-sm" onclick="closeModal(); showSubmit()">投稿について見てみる</button>
     </div>
     <div class="ad-footer">
-      <span class="ad-note">広告なしでDLできる有料プランを準備中です</span>
+      <span class="ad-note">広告収入でサイトを運営しています。ご協力ありがとうございます</span>
       <button class="btn btn-primary" id="ad-dl-btn" disabled>あと ${AD_WAIT} 秒…</button>
     </div>
   `);
