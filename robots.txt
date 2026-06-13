@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /ogp.html
 
-Sitemap: https://meguta12.github.io/design-skill-market/sitemap.xml
+Sitemap: https://designskillmarket.com/sitemap.xml

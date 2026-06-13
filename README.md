@@ -1,6 +1,6 @@
 # Design Skill Market
 
-**公開サイト: https://meguta12.github.io/design-skill-market/**
+**公開サイト: https://designskillmarket.com/**
 
 「好きなデザインを選ぶだけで、AIがそのデザインを正確に作れるようになる」デザインスキル配布プラットフォーム。ホームページ・スライド資料・アプリUIの3ジャンルに対応し、Claude / Codex / Antigravity / Cursor などのAIツールで使える。
 
