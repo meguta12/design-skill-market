@@ -301,6 +301,11 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(145deg, var(--accent-soft), #f6e9ff);
   border-radius: 12px; padding: 22px; margin-bottom: 16px;
 }
+.dl-safety {
+  font-size: 12px; line-height: 1.65; color: #7c4a02;
+  background: #fff7ed; border: 1px solid #fed7aa;
+  border-radius: 10px; padding: 10px 12px; margin: 0 0 14px;
+}
 .ad-eyebrow { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
 .ad-title { font-size: 18px; font-weight: 800; line-height: 1.5; margin-bottom: 10px; }
 .ad-text { font-size: 13px; color: var(--ink-soft); margin-bottom: 14px; }
