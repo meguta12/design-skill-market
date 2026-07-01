@@ -6,9 +6,9 @@ const ORDER_EMAIL = "megupen.sab@gmail.com";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const GENRES = ["ホームページ", "スライド資料", "アプリUI"];
-const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱" };
-const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "教育・学習", "アプリ・ツール", "その他"];
+const GENRES = ["ホームページ", "スライド資料", "アプリUI", "広告ポスター", "その他画像"];
+const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱", "広告ポスター": "📣", "その他画像": "🖼️" };
+const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "教育・学習", "アプリ・ツール", "イベント・告知", "SNS・サムネイル", "その他"];
 const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "カラフル", "その他"];
 const NEW_DAYS = 14; // この日数以内なら NEW バッジ
 
@@ -386,6 +386,66 @@ function autoSamples(d) {
         ${bar("70%", ink, 8)}${bar("50%", ink, 6)}
         <div style="background:${card};border:1px solid ${ink};border-radius:9px;flex:1"></div>
         <div style="background:${c1};border-radius:8px;height:10%"></div>`) },
+    ];
+  }
+
+  if (genre === "広告ポスター") {
+    // B判ポスター比率の縦長ステージ
+    const poster = inner => `
+      <div class="sample-stage" style="background:${dark ? "#1a1f29" : "#e9ebf2"}">
+        <div style="background:${c2};height:94%;aspect-ratio:210/297;border-radius:3px;box-shadow:0 8px 26px rgba(0,0,0,.28);padding:6% 6.5%;display:flex;flex-direction:column;gap:3.5%;overflow:hidden;position:relative">${inner}</div>
+      </div>`;
+    return [
+      { label: "全体レイアウト", html: poster(`
+        <div style="position:absolute;inset:0;background:linear-gradient(155deg,${c1}2e,transparent 55%)"></div>
+        <div style="flex:1.4;background:linear-gradient(135deg,${c1},${c1}88);border-radius:3px"></div>
+        ${bar("72%", dark ? "#ffffff66" : ink, 13)}
+        ${bar("48%", dark ? "#ffffff3a" : ink, 8)}
+        <div style="display:flex;justify-content:space-between;align-items:center">${bar("30%", c1, 8)}${bar("20%", dark ? "#ffffff3a" : ink, 7)}</div>`) },
+      { label: "タイトル・コピー", html: poster(`
+        <div style="position:absolute;top:6%;right:7%;width:12%;height:56%;background:${c1};border-radius:2px"></div>
+        <div style="flex:.6"></div>
+        ${bar("58%", dark ? "#ffffffcc" : "#1d2230", 18)}
+        ${bar("40%", dark ? "#ffffff88" : "#1d2230", 12)}
+        <div style="flex:1"></div>
+        ${bar("64%", dark ? "#ffffff3a" : ink, 7)}${bar("52%", dark ? "#ffffff3a" : ink, 7)}`) },
+      { label: "情報エリア", html: poster(`
+        <div style="flex:2"></div>
+        <div style="background:${dark ? "#ffffff14" : "#ffffff"};border:1px solid ${ink};border-radius:4px;padding:5%;display:flex;flex-direction:column;gap:6%">
+          ${bar("40%", c1, 9)}
+          <div style="display:flex;gap:4%">${bar("28%", ink, 7)}${bar("28%", ink, 7)}${bar("28%", ink, 7)}</div>
+          ${bar("80%", ink, 6)}${bar("66%", ink, 6)}
+        </div>
+        <div style="display:flex;justify-content:space-between">${bar("24%", ink, 6)}${bar("18%", ink, 6)}${bar("14%", ink, 6)}</div>`) },
+    ];
+  }
+
+  if (genre === "その他画像") {
+    // サムネ・バナー等の横長キャンバス
+    const canvasStage = (ratio, inner) => `
+      <div class="sample-stage" style="background:${dark ? "#1a1f29" : "#e9ebf2"}">
+        <div style="background:${c2};width:80%;aspect-ratio:${ratio};border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.22);padding:3.5% 4%;display:flex;flex-direction:column;gap:4%;overflow:hidden;position:relative">${inner}</div>
+      </div>`;
+    return [
+      { label: "メインレイアウト", html: canvasStage("16/9", `
+        <div style="position:absolute;top:0;right:0;width:42%;height:100%;background:linear-gradient(200deg,${c1}55,${c1}11)"></div>
+        <div style="flex:.5"></div>
+        ${bar("58%", dark ? "#ffffffd6" : "#1d2230", 16)}
+        ${bar("42%", c1, 11)}
+        <div style="flex:.6"></div>
+        <div style="display:flex;gap:3%">${bar("18%", dark ? "#ffffff3a" : ink, 7)}${bar("14%", dark ? "#ffffff3a" : ink, 7)}</div>`) },
+      { label: "文字強め", html: canvasStage("16/9", `
+        <div style="position:absolute;inset:0;background:linear-gradient(120deg,transparent 45%,${c1}22)"></div>
+        <div style="flex:.3"></div>
+        ${bar("80%", dark ? "#ffffffd6" : "#1d2230", 20)}
+        ${bar("56%", dark ? "#ffffff88" : ink, 12)}
+        <div style="flex:.4"></div>
+        <div style="display:flex;justify-content:flex-end">${bar("22%", c1, 9)}</div>`) },
+      { label: "バリエーション", html: canvasStage("1/1", `
+        <div style="flex:1;background:linear-gradient(135deg,${c1},${c1}77);border-radius:6px"></div>
+        ${bar("70%", dark ? "#ffffffcc" : "#1d2230", 11)}
+        ${bar("46%", dark ? "#ffffff3a" : ink, 7)}
+        <div style="display:flex;justify-content:space-between;align-items:center">${bar("26%", c1, 7)}${bar("16%", dark ? "#ffffff3a" : ink, 6)}</div>`) },
     ];
   }
 

@@ -1109,4 +1109,983 @@ description: SaaS管理画面・分析ダッシュボード向けのダークUI�
 - [ ] ステータス色がチャート色と混用されていないか
 `,
   },
+
+  // ===== 広告ポスター =====
+  {
+    id: "poster-cinema-red",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "ダーク系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#c1121f", c2: "#0d0b0e", dark: true },
+    highlights: [
+      "映画・アニメ・舞台など「作品もの」の告知ポスターを作りたい方",
+      "黒×深紅の重厚なドラマ性で、一目で世界観を伝えたい方",
+      "縦書きの巨大コピーで日本語ポスターらしい迫力を出したい方",
+    ],
+    longDesc: "劇場アニメの告知ポスターに代表される、黒×深紅の重厚スタイルを設計図にしました。画面を斜めに分断する赤のブロック、縦書き明朝の巨大キャッチコピー、白抜きで詰め込まれた作品情報——「静かなのに叫んでいる」ような緊張感を、レイヤー構成と数値ルールで再現します。\nビジュアル部分はプレースホルダー（グラデーション＋シルエット）で組むので、実写・イラストどちらの差し替えにも対応できます。",
+    title: "シネマティック・レッド",
+    tags: ["劇場版風", "縦書き", "重厚"],
+    desc: "黒×深紅の劇場アニメ告知風ポスター。斜めに走る赤ブロック、縦書き明朝の巨大コピー、白抜き情報組みで「作品の顔」を作る設計図。",
+    features: [
+      "画面を斜めに分断する赤ブロックのレイヤー構成",
+      "縦書き明朝キャッチコピーのサイズ・字間ルール",
+      "白抜き小組み（スタッフ・日付・クレジット）の詰め方",
+      "ビジュアルはプレースホルダー設計で差し替え自由",
+    ],
+    downloads: 214,
+    seedReviews: [
+      { name: "自主制作アニメ勢", stars: 5, date: "2026-07-01", text: "文化祭の上映会ポスターに使用。縦書きコピーの字間指定が効いていて、素人が作ったように見えません。" },
+    ],
+    thumb: `<div class="thumb" style="background:#0d0b0e">
+      <div style="position:absolute;top:-20%;right:8%;width:38%;height:150%;background:linear-gradient(#c1121f,#7a0c14);transform:rotate(14deg)"></div>
+      <div style="position:absolute;top:14px;left:18px;width:14px;height:70%;background:#f5f0e6;border-radius:2px"></div>
+      <div style="position:absolute;top:14px;left:40px;width:8px;height:46%;background:#f5f0e644;border-radius:2px"></div>
+      <div style="position:absolute;bottom:12px;left:18px;right:18px;display:flex;gap:6px"><div class="t-bar" style="background:#f5f0e666;width:30%"></div><div class="t-bar" style="background:#c1121f;width:20%"></div></div>
+    </div>`,
+    skill: `---
+name: poster-cinema-red
+description: 黒×深紅の劇場アニメ告知風ポスター（B判縦）をHTML/CSSで作るスキル。縦書き明朝の巨大コピー・斜めの赤ブロック・白抜き情報組みが特徴。「映画風のポスター」「アニメの告知ポスター」「重厚なイベントポスター」の依頼で使う。
+---
+
+# シネマティック・レッド デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚に全要素を入れる。サイズは **幅728px × 高さ1030px 固定**（B判縦 ≒ 1:1.414）
+- ポスター内は position:absolute のレイヤー構成で組む（通常のフローで組まない）
+- フォントは Google Fonts の **"Shippori Mincho"（明朝）** と **"Noto Sans JP"** を読み込む
+- 実在の作品名・人物写真・ロゴは使わない。ビジュアルはグラデーション＋シルエット等のプレースホルダーにして、差し替え位置をコメントで示す
+- 画像として使いたい場合の書き出し方（ブラウザのスクリーンショット等）を最後に一言添える
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --red: #c1121f;        /* 深紅 */
+  --red-dark: #7a0c14;
+  --black: #0d0b0e;      /* 墨黒 */
+  --paper: #f5f0e6;      /* 生成りの白（文字色） */
+  --paper-faint: rgba(245, 240, 230, .55);
+}
+\`\`\`
+
+## レイヤー構成（下から順に。この順番で重ねる）
+
+1. **背景**: --black 全面。上から --red の放射グラデ（中心は右上・透過15%）をうっすら
+2. **赤ブロック**: 画面を斜め（12〜16度）に分断する --red → --red-dark のグラデ帯。幅はポスターの35〜45%
+3. **メインビジュアル**: 赤ブロックに重なる位置に配置。プレースホルダーはシルエット（黒〜赤のグラデ）で描き、差し替えコメントを付ける
+4. **縦書き巨大コピー**: 後述のタイポルールで最前面に
+5. **情報エリア**: 最下部に白抜きの小組み
+
+## タイポグラフィ（このポスターの生命線）
+
+- キャッチコピー: **縦書き**（writing-mode: vertical-rl）・Shippori Mincho・**64〜88px**・font-weight 700・letter-spacing 0.18em・色は --paper。左端 or 右端に配置し、高さの60〜75%を使う
+- サブコピー: 縦書き・28px・--paper-faint。メインコピーに寄り添わせる（間隔20px）
+- 日付・タイトルロゴ的要素: 横書き・Noto Sans JP・900。日付数字だけ --red にして効かせる
+- 文字にはすべて text-shadow: 0 0 24px rgba(0,0,0,.6) を敷いて背景から浮かせる
+
+## 情報エリア（差し替え項目）
+
+最下部 高さ12%に横書きで詰める。すべて --paper-faint・10〜11px・letter-spacing 0.06em:
+- 作品/イベント名（正式表記）／日時・場所／主催・制作／クレジット行（スタッフ名の羅列風）
+- クレジット行は「役職:名前　役職:名前」を中黒や全角スペースで繋ぎ、2〜3行に
+
+## 禁止事項
+
+- 実在の作品・キャラクター・俳優の名前や似姿を入れない（プレースホルダーは「作品名」「EVENT TITLE」等に）
+- 赤・黒・生成り以外の色を追加しない（金 #b8973d のみ1箇所までアクセント可）
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で、はみ出し・スクロールが発生していないか
+- [ ] キャッチコピーが縦書きで、64px以上の迫力があるか
+- [ ] 色数が 赤・黒・生成り（＋金1箇所まで）に収まっているか
+- [ ] 情報エリアのクレジット行が「それっぽく」詰まっているか
+- [ ] 実在の作品名・人物を使っていないか
+`,
+  },
+  {
+    id: "poster-aquarelle-fes",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "カラフル",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#e85a9b", c2: "#ffffff" },
+    highlights: [
+      "学園祭・文化祭・音楽祭など、若さと勢いを見せたいイベントの方",
+      "白地に水彩の色彩が爆ぜる、明るく前向きなポスターにしたい方",
+      "タイトルは縦書きで、情報は整理して読みやすくしたい方",
+    ],
+    longDesc: "学園祭ポスターの王道、「白地×水彩スプラッシュ」を設計図にしました。中央のモチーフから色彩が飛び散るようなにじみ表現をCSSグラデーションの重ねで擬似再現し、左端の縦書き太タイトルと右下の整理された情報ブロックで「勢い」と「読みやすさ」を両立します。\nテーマカラーを差し替えれば、音楽祭・体育祭・地域イベントにも流用できます。",
+    title: "水彩スプラッシュ・フェス",
+    tags: ["学園祭", "水彩", "青春"],
+    desc: "白地に色彩が爆ぜる学園祭風ポスター。水彩にじみのCSS表現、縦書き太タイトル、右下の情報ブロック整理で「若い勢い」を作る設計図。",
+    features: [
+      "水彩のにじみ・飛沫をCSSグラデ多重で擬似再現",
+      "縦書き極太タイトル＋英字サブタイトルの組み方",
+      "企画一覧・日時・地図を右下に整理するブロック設計",
+      "テーマカラー3色を差し替えるだけで別イベントに転用可",
+    ],
+    downloads: 187,
+    seedReviews: [
+      { name: "文化祭実行委員", stars: 5, date: "2026-07-01", text: "高校の文化祭ポスターに。水彩の飛び散り方までCSSで指定されてるのがすごい。印刷しても映えました。" },
+    ],
+    thumb: `<div class="thumb" style="background:#ffffff">
+      <div style="position:absolute;top:8%;left:34%;width:52%;height:70%;background:radial-gradient(closest-side,#e85a9b66,transparent 70%),radial-gradient(closest-side at 70% 30%,#4cc3d966,transparent 60%),radial-gradient(closest-side at 30% 70%,#f6c34566,transparent 60%)"></div>
+      <div style="position:absolute;top:12px;left:16px;width:16px;height:72%;background:#2a2d3a;border-radius:2px"></div>
+      <div style="position:absolute;bottom:12px;right:16px;width:38%;display:flex;flex-direction:column;gap:5px"><div class="t-bar" style="background:#e85a9b;width:60%"></div><div class="t-bar" style="background:#d8dce6;width:100%"></div><div class="t-bar" style="background:#d8dce6;width:80%"></div></div>
+    </div>`,
+    skill: `---
+name: poster-aquarelle-fes
+description: 白地×水彩スプラッシュの学園祭・文化祭風ポスター（B判縦）をHTML/CSSで作るスキル。色彩のにじみ・縦書き太タイトル・整理された情報ブロックが特徴。「学園祭のポスター」「文化祭」「明るいイベントポスター」の依頼で使う。
+---
+
+# 水彩スプラッシュ・フェス デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**。内部は position:absolute レイヤー構成
+- フォントは Google Fonts の **"Zen Kaku Gothic New"（900含む）** と **"Kaisei Decol"** を読み込む
+- 人物イラスト・写真は使わず、水彩表現＋図形のみで構成。イラストを入れたい場合の差し替え位置はコメントで示す
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --pink: #e85a9b;
+  --cyan: #4cc3d9;
+  --yellow: #f6c345;
+  --violet: #9b7ede;
+  --ink: #2a2d3a;      /* タイトル・本文のほぼ黒 */
+  --bg: #ffffff;       /* 紙の白。ベージュにしない */
+}
+\`\`\`
+
+## 水彩スプラッシュの作り方（このデザインの核）
+
+中央やや右に「色彩の爆発」を置く。CSSのみで作る:
+
+1. **にじみ層**: radial-gradient を4〜6個重ねた大きめの div（各色30〜45%透過・closest-side・中心をずらす）
+2. **飛沫層**: 6〜14pxの小さな円を12〜20個、爆発の外周に散らす（透過60〜85%・大小混ぜる）
+3. **線の飛び**: 細長い楕円（transform: rotate）を3〜5本、放射方向に
+- すべて blur は使わず透過の重なりだけで「にじみ」を出す（印刷で濁らないため）
+
+## レイアウト
+
+- **左端**: 縦書きタイトル（writing-mode: vertical-rl・Zen Kaku Gothic New 900・72〜92px・--ink）。1〜2文字目だけ --pink にして遊ぶ
+- **タイトル右**: 英字サブタイトル（Kaisei Decol・18px・letter-spacing 0.3em・縦書き併走）
+- **中央〜右**: 水彩スプラッシュ（上記）
+- **右下**: 情報ブロック（後述）
+- **最上部**: 回数・主催の小さな帯（例「第26回」を円形バッジで）
+
+## 情報ブロック（差し替え項目）
+
+右下 幅42%に白カード（border: 2px solid --ink・角丸12px・影なし）:
+- 開催日時（日付は32px・--pink で最大強調）／会場・アクセス／企画一覧（■付き箇条書き・12px）／注意事項（10px・グレー）
+- 見出しには --cyan の下線マーカー（高さ8px・透過50%を文字に重ねる）
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で崩れがないか
+- [ ] 水彩が blur なし・透過の重なりだけで表現されているか
+- [ ] 縦書きタイトルが72px以上で、色差しが1〜2文字に留まっているか
+- [ ] 情報ブロックだけ見ればイベント概要が全部わかるか
+- [ ] 白地の余白が全体の3割以上残っているか（詰め込みすぎ防止）
+`,
+  },
+  {
+    id: "poster-impact-sports",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "モノクロ系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#d90429", c2: "#141414", dark: true },
+    highlights: [
+      "格闘技・スポーツ大会・ライブなど「強さ」を打ち出すイベントの方",
+      "モノクロ写真×赤ロゴの引き算で、極限の緊張感を出したい方",
+      "選手・演者の写真を主役に、文字は最小限で構成したい方",
+    ],
+    longDesc: "格闘技イベントのポスターに代表される「モノクロ×赤」スタイルの設計図です。粒子の粗いモノクロ写真（プレースホルダー設計）を全面に敷き、対角に巨大な縦書き白文字、中央下に赤の英字ロゴ帯——構図は引き算、質感は足し算という組み立てを数値で定義しています。\n写真を差し替えるだけで、ボクシング・バスケ・ダンスバトル・ライブ告知など「対決・熱量系」の告知に幅広く使えます。",
+    title: "モノクロ・インパクト",
+    tags: ["スポーツ", "格闘技風", "白黒×赤"],
+    desc: "粒子の粗いモノクロ写真×赤ロゴ帯のスポーツイベント風ポスター。対角の巨大縦書き文字と引き算の構図で「強さ」を作る設計図。",
+    features: [
+      "モノクロ粒子テクスチャのCSS再現（グレイン・ビネット）",
+      "対角に配置する巨大縦書き文字のルール",
+      "赤ロゴ帯＋日時・会場の白抜き1行の情報設計",
+      "写真プレースホルダー差し替えで他競技にも転用可",
+    ],
+    downloads: 156,
+    seedReviews: [
+      { name: "キック興行スタッフ", stars: 4, date: "2026-07-01", text: "アマ大会の告知に使いました。ビネットとグレインの数値指定のおかげで、写真がプロっぽく締まります。" },
+    ],
+    thumb: `<div class="thumb" style="background:linear-gradient(160deg,#3a3a3a,#141414)">
+      <div style="position:absolute;top:10px;left:14px;width:13px;height:58%;background:#f2f2f2;border-radius:2px"></div>
+      <div style="position:absolute;top:10px;right:14px;width:13px;height:58%;background:#f2f2f2cc;border-radius:2px"></div>
+      <div style="position:absolute;bottom:26px;left:20%;right:20%;height:16px;background:#d90429;border-radius:2px"></div>
+      <div style="position:absolute;bottom:12px;left:30%;right:30%;height:6px;background:#f2f2f266;border-radius:3px"></div>
+    </div>`,
+    skill: `---
+name: poster-impact-sports
+description: モノクロ写真×赤アクセントの格闘技・スポーツイベント風ポスター（B判縦）をHTML/CSSで作るスキル。粒子テクスチャ・巨大縦書き文字・赤ロゴ帯が特徴。「格闘技のポスター」「大会告知」「かっこいいスポーツポスター」の依頼で使う。
+---
+
+# モノクロ・インパクト デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**。position:absolute レイヤー構成
+- フォントは Google Fonts の **"Shippori Mincho B1"（800）** と **"Oswald"（英字）** を読み込む
+- 実在の選手・団体名は使わない。写真はプレースホルダー（後述）で組み、差し替え位置をコメントで示す
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --red: #d90429;
+  --white: #f2f2f2;
+  --black: #141414;
+  --gray: #8a8a8a;
+}
+\`\`\`
+
+## 背景＝メインビジュアル（プレースホルダー設計）
+
+1. **写真層**: 中央に人物シルエット（radial-gradient で明部を作り、シルエット形を重ねる）。「ここに選手のモノクロ写真。filter: grayscale(1) contrast(1.25) を適用」というコメントを必ず入れる
+2. **グレイン層**: 極小 radial-gradient の多重パターンで粒子感を全面に（透過8〜12%）
+3. **ビネット層**: 四辺から --black への radial-gradient（外周40%を暗く）
+4. **煙・飛沫**: 白の radial-gradient（透過10%前後）を人物の足元・背面に2〜3個
+
+## タイポグラフィ
+
+- **巨大縦書き文字（主役級）**: 左上と右上の対角に2語（2文字の漢字語を推奨）。Shippori Mincho B1・**110〜150px**・--white・writing-mode: vertical-rl。片方は透過85%にして主従を付ける
+- **大会ロゴ帯**: 中央下に --red のロゴ風英字（Oswald・700・letter-spacing 0.12em・42〜56px）。上下に細い白罫線（1px）を添える
+- **日時・会場**: ロゴ帯の直下に白1行（Oswald・16px・「2.12 MON ／ 16:00 OPEN 17:00 START ／ 会場名」形式）
+- 文字総数は極限まで絞る。**キャッチコピーは入れない**（文字で説明しない）
+
+## 構図ルール
+
+- 人物（プレースホルダー）は下から60%の高さで中央〜やや左
+- 縦書き文字は人物の「後ろ」に重ねる（z-indexで人物が手前）
+- 余白は作らない。四隅まで暗部で埋め、ビネットで視線を中央へ
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で崩れがないか
+- [ ] 色が 白・黒・グレー＋赤1色 に収まっているか
+- [ ] 縦書き文字が110px以上で、人物の背面に回っているか
+- [ ] グレイン・ビネットの質感が効いているか（のっぺりしていないか）
+- [ ] 実在の選手名・団体名を使っていないか
+`,
+  },
+  {
+    id: "poster-editorial-film",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "ダーク系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#e8c547", c2: "#1c1a17", dark: true },
+    highlights: [
+      "映画祭・展示会・トークイベントなど、品と格を見せたい主催者の方",
+      "写真1枚＋大きな欧文タイポだけで成立する洗練を求める方",
+      "スポンサーロゴ帯まで含めた「公式ポスター」の型が欲しい方",
+    ],
+    longDesc: "国際映画祭のポスターに代表される、エディトリアル（雑誌的）スタイルの設計図です。全面に敷いた1枚写真の上に、セリフ体の超大型英字タイトルを堂々と重ね、下部に会期・会場とスポンサー帯を細かく組む——「大きい文字と小さい文字しかない」構成が、そのまま格になります。\n写真はプレースホルダー設計。ファッション・アート・音楽イベントにもそのまま転用できます。",
+    title: "エディトリアル・フィルム",
+    tags: ["映画祭風", "タイポグラフィ", "上品"],
+    desc: "全面写真×超大型セリフ英字の映画祭風ポスター。大小の文字コントラストとスポンサー帯で「公式の風格」を作る設計図。",
+    features: [
+      "セリフ体英字タイトルの改行・重なりルール",
+      "写真の上に文字を効かせる減光・配色設計",
+      "会期表記（10.30 Sat—11.8 Mon 形式）の組み方",
+      "最下部スポンサーロゴ帯のグリッド設計",
+    ],
+    downloads: 132,
+    seedReviews: [
+      { name: "ミニシアター運営", stars: 5, date: "2026-07-01", text: "特集上映の告知に。文字サイズの対比ルールが明確で、誰が作っても様になると思います。" },
+    ],
+    thumb: `<div class="thumb" style="background:linear-gradient(150deg,#2e2a24,#1c1a17)">
+      <div style="position:absolute;top:16%;left:16px;right:16px;display:flex;flex-direction:column;gap:8px">
+        <div class="t-bar" style="background:#e8c547;width:82%;height:20px"></div>
+        <div class="t-bar" style="background:#e8c547;width:58%;height:20px"></div>
+        <div class="t-bar" style="background:#e8c54788;width:34%;height:9px"></div>
+      </div>
+      <div style="position:absolute;bottom:12px;left:16px;right:16px;display:flex;gap:5px">${Array(6).fill('<div style="flex:1;height:8px;background:#f0ead855;border-radius:2px"></div>').join("")}</div>
+    </div>`,
+    skill: `---
+name: poster-editorial-film
+description: 全面写真×超大型セリフ英字の映画祭・展示会風ポスター（B判縦）をHTML/CSSで作るスキル。品のあるタイポグラフィとスポンサー帯が特徴。「映画祭のポスター」「展示会の告知」「上品なイベントポスター」の依頼で使う。
+---
+
+# エディトリアル・フィルム デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**。position:absolute レイヤー構成
+- フォントは Google Fonts の **"Playfair Display"（700/900）** と **"Noto Sans JP"（300/500）** を読み込む
+- 写真はプレースホルダー（深い茶〜黒のグラデ＋人物シルエット）で組み、「ここにキービジュアル写真（暗め・被写体は右寄せ）」というコメントを付ける
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --gold: #e8c547;       /* タイトルの黄金色 */
+  --cream: #f0ead8;      /* 小さい文字の生成り */
+  --dark: #1c1a17;       /* 背景の焦げ茶黒 */
+  --scrim: rgba(20, 17, 12, .45);  /* 写真の減光 */
+}
+\`\`\`
+
+## レイヤー構成
+
+1. **写真層**: 全面（inset:0）。プレースホルダーは 150deg の暗いグラデ＋右寄せの人物シルエット
+2. **減光層**: 上40%と下25%に --scrim のグラデを敷き、文字の座る場所を暗くする
+3. **タイトル**: 上部に超大型英字（後述）
+4. **情報**: 中下部に会期・会場、最下部にスポンサー帯
+
+## タイポグラフィ（大小のコントラストがすべて）
+
+- **英字タイトル**: Playfair Display 900・--gold・**96〜130px**・line-height 0.92・2〜3行で改行（単語ごとに改行。例 TOKYO / FILM / 2026）。写真に**重ねる**ことを恐れない
+- **開催年・回数**: タイトルに続けて 24px・--gold・イタリック（例 34th International Film Festival）
+- **会期**: 「10.30 Sat—11.8 Mon」形式。数字は Playfair 700・36px・--cream。曜日は小さく（18px）
+- **会場・説明**: Noto Sans JP 300・13px・--cream・letter-spacing 0.12em。**2行まで**
+- タイトル以外の文字量を意図的に少なくし、「大きい／小さい」の2段しか作らない
+
+## スポンサー帯（公式ポスターの記号）
+
+最下部 高さ7%に横一列:
+- 5〜8個のダミーロゴ（--cream 55%透過の角丸長方形・高さ14px・幅は40〜80pxでばらつかせる）を等間隔で
+- 帯の上に「主催・協賛」の 9pxラベル
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で崩れがないか
+- [ ] 英字タイトルが96px以上・行間0.92で「壁」になっているか
+- [ ] 文字サイズが実質2段階（超大＋小）に収まっているか
+- [ ] 減光層のおかげで文字がどこでも読めるか
+- [ ] スポンサー帯が等間隔・同じ高さで整列しているか
+`,
+  },
+  {
+    id: "poster-retro-pop",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "カラフル",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#e63946", c2: "#ffd60a" },
+    highlights: [
+      "ドラマ・バラエティ・商店街イベントなど「賑やかで懐かしい」告知の方",
+      "昭和レトロ・大衆演劇風のコラージュで目を引きたい方",
+      "情報量が多くても破綻しない「詰め込みの作法」が欲しい方",
+    ],
+    longDesc: "昭和の映画看板やレトロ歌謡のジャケットのような、高彩度×コラージュ×装飾枠の「ジャパニーズ・レトロポップ」を設計図にしました。空色・黄・赤の派手な配色に、後光・虹・雲などの縁起物モチーフをCSSで描き、極太の縦書きタイトルをドンと据える——うるさいのに整っている、その境界線を数値ルールで定義します。\n出演者一覧や日時など情報が多い告知ほど映えるスタイルです。",
+    title: "レトロポップ・コラージュ",
+    tags: ["昭和レトロ", "コラージュ", "賑やか"],
+    desc: "空色×黄×赤の昭和レトロ風コラージュポスター。後光・虹・装飾枠のCSSモチーフと極太縦書きタイトルで「懐かしい賑やかさ」を作る設計図。",
+    features: [
+      "後光（放射ストライプ）・虹・雲のCSS描画レシピ",
+      "極太縦書きタイトル＋座布団（袋文字）の作り方",
+      "出演者一覧を右端に縦組みで流し込むルール",
+      "うるさくならない彩度・面積配分の数値指定",
+    ],
+    downloads: 173,
+    seedReviews: [
+      { name: "商店街青年部", stars: 5, date: "2026-07-01", text: "夏祭りのポスターがまさかの昭和風に。後光ストライプの作り方だけでも元が取れました。" },
+    ],
+    thumb: `<div class="thumb" style="background:repeating-conic-gradient(#4cc9f0 0 9deg,#eaf6ff 9deg 18deg)">
+      <div style="position:absolute;top:8px;left:12px;right:12px;height:14px;background:#ffd60a;border:2px solid #e63946;border-radius:3px"></div>
+      <div style="position:absolute;top:30%;left:38%;width:24%;height:52%;background:#e63946;border-radius:4px 4px 0 0"></div>
+      <div style="position:absolute;top:38%;left:14px;width:15px;height:48%;background:#1d3557;border-radius:2px"></div>
+      <div style="position:absolute;top:38%;right:14px;width:11px;height:42%;background:#1d3557aa;border-radius:2px"></div>
+    </div>`,
+    skill: `---
+name: poster-retro-pop
+description: 空色×黄×赤の昭和レトロ・コラージュ風ポスターをHTML/CSSで作るスキル。後光ストライプ・虹・装飾枠・極太縦書きタイトルが特徴。「レトロなポスター」「昭和風」「賑やかなイベント告知」の依頼で使う。
+---
+
+# レトロポップ・コラージュ デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚。縦なら **728×1030px**、横告知（TV番組風）なら **1030×728px**。ユーザー指定がなければ縦
+- フォントは Google Fonts の **"Yuji Syuku"**（タイトル）と **"Zen Maru Gothic"（700）** を読み込む
+- 人物写真はプレースホルダー（単色シルエット＋白フチ）で組み、差し替えコメントを付ける
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --sky: #4cc9f0;      /* 空色 */
+  --sky-pale: #eaf6ff;
+  --red: #e63946;      /* 祝いの赤 */
+  --yellow: #ffd60a;   /* 派手な黄 */
+  --navy: #1d3557;     /* 文字の紺 */
+  --white: #ffffff;
+}
+\`\`\`
+
+## モチーフのCSSレシピ（このデザインの飛び道具）
+
+- **後光ストライプ**: 背景に repeating-conic-gradient(from 0deg at 50% 38%, var(--sky) 0 9deg, var(--sky-pale) 9deg 18deg)
+- **虹**: 同心円の border を5本重ねる（赤橙黄緑青・各12px幅・下半分は overflow:hidden で隠す）
+- **雲**: 白の円（border-radius:50%）を3〜4個くっつけた形
+- **装飾枠**: 外周に --yellow の額縁（16px）＋内側に --red の細線（3px）＋四隅に丸飾り
+- モチーフは**3種類まで**。全部入れは禁止（うるさくなりすぎる）
+
+## レイアウト
+
+- **中央**: 主役のプレースホルダー（白フチ6px付きシルエット・高さの55%）。足元に「舞台」となる赤い台形
+- **タイトル**: 中央上〜左に**縦書き極太**（Yuji Syuku・80〜110px・--navy）。文字ごとに --white の座布団（袋文字: -webkit-text-stroke または8方向 text-shadow）
+- **右端**: 出演者・演目一覧を縦書きで流す（Zen Maru Gothic・16px・--navy。名前ごとに改行）
+- **左下 or 帯**: 放送日時・開催日を --red 地×--white 文字の帯で（角に切り込み風の三角）
+- **最上部**: 「毎週土曜 よる11時30分」のようなリボン帯（--yellow 地・--red 枠）
+
+## 配分ルール（うるさくしない保険）
+
+- 彩度の高い面（赤・黄）は合計で全体の35%以下
+- 空色ストライプは必ず背景に敷く（世界観の統一）
+- 文字色は --navy と --white の2色のみ。赤文字は使わない（帯の白抜きは可）
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 後光ストライプが背景に敷かれているか
+- [ ] タイトルが袋文字（座布団付き）で背景に負けていないか
+- [ ] モチーフが3種類以内に収まっているか
+- [ ] 赤・黄の面積が35%以下か
+- [ ] 出演者一覧が縦書きで右端に整列しているか
+`,
+  },
+  {
+    id: "poster-swiss-grid",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "モノクロ系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#e10600", c2: "#f5f5f2" },
+    highlights: [
+      "デザイン展・建築・音楽など、知的でモダンな告知をしたい方",
+      "写真なし・文字とグリッドだけで成立するポスターが欲しい方",
+      "余白を「怖がらずに」使う型を数値で知りたい方",
+    ],
+    longDesc: "スイス・スタイル（国際タイポグラフィ様式）のポスターを設計図にしました。オフホワイトの紙にグリッドを引き、Helvetica系の大きな文字を左揃えで積み、アクセントは赤1色の幾何学図形だけ——「何も足さない勇気」を、グリッド定義と余白の数値ルールで支えます。\n展示会・講演会・音楽イベントなど、内容で勝負する告知に向きます。",
+    title: "スイス・グリッドタイポ",
+    tags: ["ミニマル", "タイポグラフィ", "モダン"],
+    desc: "オフホワイト×赤1色のスイススタイル・ポスター。グリッドとHelvetica系タイポ、幾何学図形だけで知的な告知を作る設計図。",
+    features: [
+      "12分割グリッドとベースライン設計",
+      "見出し・本文の2ウェイト構成ルール",
+      "赤の幾何学図形（円・斜線・矩形）の置き方",
+      "余白を全体の50%以上残す配分指定",
+    ],
+    downloads: 149,
+    seedReviews: [
+      { name: "建築学生", stars: 5, date: "2026-07-01", text: "卒業設計展のポスターに使用。グリッドの引き方から書いてあるので、そのまま指導資料にもなりました。" },
+    ],
+    thumb: `<div class="thumb" style="background:#f5f5f2">
+      <div style="position:absolute;top:16px;left:16px;display:flex;flex-direction:column;gap:6px">
+        <div class="t-bar" style="background:#111;width:120px;height:16px"></div>
+        <div class="t-bar" style="background:#111;width:84px;height:16px"></div>
+      </div>
+      <div style="position:absolute;bottom:-18px;right:-18px;width:96px;height:96px;border-radius:50%;background:#e10600"></div>
+      <div style="position:absolute;bottom:18px;left:16px;display:flex;flex-direction:column;gap:4px"><div class="t-bar" style="background:#999;width:70px"></div><div class="t-bar" style="background:#999;width:54px"></div></div>
+    </div>`,
+    skill: `---
+name: poster-swiss-grid
+description: オフホワイト×赤1色のスイススタイル（国際タイポグラフィ様式）ポスターをHTML/CSSで作るスキル。グリッド・左揃えの大型サンセリフ・幾何学図形が特徴。「ミニマルなポスター」「デザイン展の告知」「モダンなポスター」の依頼で使う。
+---
+
+# スイス・グリッドタイポ デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**
+- フォントは Google Fonts の **"Inter"（400/800）** を読み込む（日本語は "Noto Sans JP" 400/700）
+- 写真・イラスト・グラデーションは使わない。単色の面と文字のみ
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --paper: #f5f5f2;   /* オフホワイトの紙 */
+  --ink: #111111;
+  --gray: #9a9a96;
+  --red: #e10600;     /* 唯一のアクセント */
+}
+\`\`\`
+
+## グリッド（すべての配置の根拠）
+
+- 外周マージン **56px**。内側を **12カラム**（ガター16px）に分割
+- 要素の左端は必ずカラム線に吸着させる。中央揃えは使わない（**全要素 左揃え**）
+- 縦方向は 8px のベースライングリッドに乗せる
+
+## タイポグラフィ
+
+- **タイトル**: Inter 800・**88〜120px**・line-height 0.95・letter-spacing -0.02em・--ink。単語ごとに改行して2〜4行の「塊」にする。位置は上から1/6あたり
+- **サブ情報**（日付・会場・主催）: Inter 400・14px・--gray・行間1.7。左下 or 右下の1カラム分に段組み
+- 使うサイズは **タイトル・14px・10px の3段階のみ**。中間サイズを作らない
+- 日本語タイトル併記時は Noto Sans JP 700・28px で英字の直下に
+
+## 幾何学図形（アクセントは1種類だけ）
+
+以下から**1つだけ**選んで置く。2つ以上は禁止:
+- 大きな円（直径 = 幅の45%）を右下に。ポスター外に1/3はみ出させる
+- 斜め45度の帯（幅80px）を左上から右下へ
+- 正方形の連なり（5個・等間隔）を下端に
+色は --red のみ。図形の上に文字を重ねる場合は --paper 色で
+
+## 余白ルール（このデザインの本体）
+
+- 何も置かれていない紙の面積を**50%以上**残す
+- タイトルと図形以外の要素は視界の端に「小さく」まとめる
+- 迷ったら要素を減らす（足すのは禁止）
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 全要素がグリッド線に吸着し、左揃えになっているか
+- [ ] 文字サイズが3段階に収まっているか
+- [ ] 赤い図形が1種類だけか
+- [ ] 余白が50%以上残っているか
+- [ ] グラデーション・影・装飾が混入していないか
+`,
+  },
+  {
+    id: "poster-neon-night",
+    creator: "keita-official",
+    isSample: true,
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "ダーク系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#8b5cf6", c2: "#0a0a14", dark: true },
+    highlights: [
+      "クラブイベント・テック系カンファレンス・ゲーム大会の告知の方",
+      "黒地にネオンが光る、夜の高揚感を出したい方",
+      "DJ・登壇者のラインナップを格好良く並べたい方",
+    ],
+    longDesc: "黒地×ネオングラデーションの「ナイトイベント」スタイルの設計図です。紫→シアンのグラデーションで光る英字タイトル、パースで寝かせたグリッド地平線、発光するラインナップ表記——CSSの text-shadow と gradient だけでネオンの光を再現します。\n音楽イベントのほか、eスポーツ大会・テック系ミートアップ・深夜配信の告知にも向きます。",
+    title: "ネオン・ナイトイベント",
+    tags: ["ネオン", "クラブ", "テック"],
+    desc: "黒地×紫シアンのネオングラデが光るナイトイベント風ポスター。発光タイポとグリッド地平線で「夜の高揚感」を作る設計図。",
+    features: [
+      "text-shadow多重によるネオン発光のレシピ",
+      "紫→シアンのグラデ文字と背景の光源設計",
+      "ラインナップ（DJ・登壇者）の階層的な並べ方",
+      "グリッド地平線・スキャンラインの背景装飾",
+    ],
+    downloads: 168,
+    seedReviews: [
+      { name: "学生DJサークル", stars: 4, date: "2026-07-01", text: "新歓パーティーの告知に。発光の作り方が text-shadow の値まで書いてあって助かりました。" },
+    ],
+    thumb: `<div class="thumb" style="background:#0a0a14">
+      <div style="position:absolute;top:22%;left:16px;right:16px;display:flex;flex-direction:column;gap:7px">
+        <div class="t-bar" style="background:linear-gradient(90deg,#8b5cf6,#22d3ee);width:78%;height:16px;box-shadow:0 0 14px #8b5cf688"></div>
+        <div class="t-bar" style="background:linear-gradient(90deg,#8b5cf6,#22d3ee);width:52%;height:16px;box-shadow:0 0 14px #22d3ee66"></div>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:34%;background:repeating-linear-gradient(90deg,#8b5cf622 0 1px,transparent 1px 24px),repeating-linear-gradient(0deg,#8b5cf622 0 1px,transparent 1px 12px);transform:perspective(80px) rotateX(38deg);transform-origin:bottom"></div>
+    </div>`,
+    skill: `---
+name: poster-neon-night
+description: 黒地×紫シアンのネオン発光ポスター（B判縦）をHTML/CSSで作るスキル。発光タイポ・グリッド地平線・ラインナップ表記が特徴。「クラブイベントのポスター」「eスポーツ大会告知」「ネオン風」の依頼で使う。
+---
+
+# ネオン・ナイトイベント デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**。position:absolute レイヤー構成
+- フォントは Google Fonts の **"Orbitron"（700/900）** と **"Noto Sans JP"（400）** を読み込む
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --violet: #8b5cf6;
+  --cyan: #22d3ee;
+  --pink: #f472b6;      /* 差し色。1箇所まで */
+  --black: #0a0a14;     /* 夜の黒（青みあり） */
+  --white: #eef2ff;
+}
+\`\`\`
+
+## 背景（夜の空間を作る）
+
+1. **ベース**: --black 全面
+2. **光源**: 上1/3に --violet 12%透過の radial-gradient（タイトルの後光になる）
+3. **グリッド地平線**: 下30%に repeating-linear-gradient の格子を transform: perspective(300px) rotateX(40deg) で寝かせる（線色は --violet 25%透過）
+4. **スキャンライン**: 全面に3px間隔の横線（白2%透過）で画面っぽい質感
+
+## ネオン発光のレシピ（コピペ推奨）
+
+\`\`\`css
+.neon {
+  background: linear-gradient(90deg, var(--violet), var(--cyan));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 6px rgba(139,92,246,.9)) drop-shadow(0 0 22px rgba(34,211,238,.5));
+}
+\`\`\`
+- 白文字の発光は text-shadow: 0 0 4px #fff, 0 0 12px var(--cyan), 0 0 30px var(--violet) の3重で
+
+## レイアウト
+
+- **タイトル**: 上1/3に Orbitron 900・**72〜96px**・.neon適用・全大文字・2行まで。直下に日本語サブ（Noto Sans JP・16px・--white 70%）
+- **日付**: タイトル上に「2026.07.26 SAT」形式（Orbitron 700・22px・--cyan・letter-spacing 0.3em）
+- **ラインナップ**: 中央帯に階層をつけて並べる——ヘッドライナー（36px・.neon）→ ゲスト2〜4名（22px・--white）→ その他（14px・--white 60%・「/」区切り1行）
+- **開場情報・会場・料金**: グリッド地平線の上に 13px・--white 70%・1〜2行
+- **チケットQR枠**: 右下に 90pxの白枠（中は「QR」プレースホルダー）
+
+## 禁止事項
+
+- 発光は タイトル・ヘッドライナー・日付 の3箇所まで（全部光らせると安っぽくなる）
+- --pink はどれか1要素だけ（差し色）
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で崩れがないか
+- [ ] 発光が3箇所以内に絞られているか
+- [ ] グリッド地平線がパースで寝ているか
+- [ ] ラインナップの階層（大→中→小）が明確か
+- [ ] 黒背景が「真っ黒」でなく青みのある夜色か
+`,
+  },
+
+  // ===== その他画像 =====
+  {
+    id: "img-yt-thumb",
+    creator: "keita-official",
+    isSample: true,
+    genre: "その他画像",
+    category: "SNS・サムネイル",
+    colorTone: "カラフル",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#ffd400", c2: "#111111", dark: true },
+    highlights: [
+      "YouTubeのクリック率を上げたい配信者・編集者の方",
+      "小さい表示でも読める「サムネ文字」の作法を知りたい方",
+      "人物切り抜き＋背景＋大文字の定番構成を量産したい方",
+    ],
+    longDesc: "「スマホの小さな一覧で勝つ」ことだけを目的にした、強コントラストのYouTubeサムネイル設計図です。黄×黒の高視認配色、白フチ＋黒フチの二重縁取り文字、人物切り抜きの配置ルール——感覚でやりがちなサムネ作りを、サイズと色の数値ルールに落とし込みました。\n1280×720のHTMLで組むので、文字の微調整も一瞬。書き出してそのままアップできます。",
+    title: "YouTubeサムネ・強コントラスト",
+    tags: ["YouTube", "サムネイル", "高CTR"],
+    desc: "黄×黒の強コントラストYouTubeサムネイル（1280×720）。二重縁取り文字と人物配置のルールで「一覧で目立つ」を作る設計図。",
+    features: [
+      "二重縁取り（白フチ＋黒フチ）文字のレシピ",
+      "3語以内・2行まで・最小90pxの文字ルール",
+      "人物切り抜きの位置・サイズ・光彩の指定",
+      "スマホ縮小表示を想定した視認性チェック付き",
+    ],
+    downloads: 342,
+    seedReviews: [
+      { name: "ゲーム実況者", stars: 5, date: "2026-07-01", text: "サムネ外注をやめられました。縁取りの数値がそのまま使えるのが最高。CTRも体感で上がってます。" },
+    ],
+    thumb: `<div class="thumb" style="background:linear-gradient(135deg,#1a1a1a,#111)">
+      <div style="position:absolute;top:18%;left:14px;display:flex;flex-direction:column;gap:7px">
+        <div class="t-bar" style="background:#ffd400;width:130px;height:22px;border-radius:4px"></div>
+        <div class="t-bar" style="background:#ffffff;width:96px;height:22px;border-radius:4px"></div>
+      </div>
+      <div style="position:absolute;bottom:-10%;right:6%;width:34%;height:80%;background:linear-gradient(#555,#222);border-radius:50% 50% 0 0"></div>
+      <div style="position:absolute;top:10px;right:10px;width:44px;height:16px;background:#e11d2e;border-radius:3px"></div>
+    </div>`,
+    skill: `---
+name: img-yt-thumb
+description: 黄×黒の強コントラストYouTubeサムネイル（1280×720）をHTML/CSSで作るスキル。二重縁取りの極太文字・人物切り抜き配置・高視認の配色ルールが特徴。「サムネ作って」「YouTubeのサムネイル」の依頼で使う。
+---
+
+# YouTubeサムネ・強コントラスト デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでサムネイル1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="thumb-canvas">\` 1枚、**幅1280px × 高さ720px 固定**。position:absolute レイヤー構成
+- フォントは Google Fonts の **"M PLUS Rounded 1c"（900）** または **"Noto Sans JP"（900）** を読み込む
+- 人物はプレースホルダー（シルエット＋差し替えコメント）で組む
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --yellow: #ffd400;   /* メイン文字色 */
+  --white: #ffffff;
+  --black: #111111;
+  --red: #e11d2e;      /* 緊急・煽り用。1箇所まで */
+}
+\`\`\`
+
+## 文字ルール（サムネの生死を分ける）
+
+- ワードは **3語以内・2行まで**。文は書かない（「衝撃の結末」ではなく「衝撃」＋「結末」のような塊）
+- サイズ: 1行目 **120〜160px**、2行目 **90〜120px**。90px未満の文字は入れない（チャンネル名等の小物のみ例外で32px可）
+- **二重縁取り**が必須:
+
+\`\`\`css
+.stroke {
+  color: var(--yellow);
+  text-shadow:
+    -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff, 3px 3px 0 #fff,
+    0 0 16px rgba(0,0,0,.9),
+    6px 6px 0 var(--black), -6px 6px 0 var(--black), 6px -6px 0 var(--black), -6px -6px 0 var(--black);
+}
+\`\`\`
+
+- 行ごとに色を変える（1行目 --yellow / 2行目 --white など）。3色目は使わない
+- 文字は左寄せで上下中央帯に。**右1/3は人物のために空ける**
+
+## 人物・背景
+
+- **人物切り抜き**: 右1/3に高さ90〜105%で配置（頭がわずかに見切れてよい）。輪郭に filter: drop-shadow(0 0 24px rgba(255,212,0,.55)) の光彩。「ここに人物切り抜き画像」コメント必須
+- **背景**: 暗めのグラデ（--black 基調）＋対角の集中線 or 放射グラデで中央に視線誘導。背景に文字と同系色を置かない
+- **小物**: 右上に「LIVE」「新発見」等の赤バッジ1個まで（--red・白文字・28px）
+
+## スマホ視認チェック（生成後、必ず自問する）
+
+- 320px幅に縮小した想定で、1行目のワードが読めるか
+- 顔（プレースホルダー）と文字が重なっていないか
+- 3秒で内容が伝わるか（伝わらないなら文字を減らす）
+
+## チェックリスト
+
+- [ ] 1280×720px固定か
+- [ ] ワードが3語以内・最小90px以上か
+- [ ] 二重縁取りが効いているか
+- [ ] 右1/3が人物用に空いているか
+- [ ] 色が黄・白・黒＋赤1箇所に収まっているか
+`,
+  },
+  {
+    id: "img-sns-square",
+    creator: "keita-official",
+    isSample: true,
+    genre: "その他画像",
+    category: "SNS・サムネイル",
+    colorTone: "ベージュ・和色系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#b08968", c2: "#f6f1ea" },
+    highlights: [
+      "Instagramでお知らせ・キャンペーン告知をするお店・個人の方",
+      "ごちゃつかない、上品で統一感のあるスクエア画像が欲しい方",
+      "毎回デザインに悩まず「型」で量産したい方",
+    ],
+    longDesc: "Instagramのフィード告知に最適化した、1080×1080のスクエア告知画像の設計図です。淡いベージュ地にセリフ体の見出し、細罫線のカード枠、下部の小さなアカウント名——「静かなのに目に留まる」上品系の型を数値で定義しました。\n新メニュー告知・営業時間変更・イベント案内・キャンペーンなど、文言を差し替えるだけで統一感のある投稿が量産できます。",
+    title: "SNS告知スクエア・上品ベージュ",
+    tags: ["Instagram", "告知", "上品"],
+    desc: "淡ベージュ×セリフ体の上品なInstagram告知画像（1080×1080）。細罫線カードと余白のルールで「静かに目に留まる」を作る設計図。",
+    features: [
+      "1080×1080の告知テンプレ（見出し・本文・日付・アカウント名）",
+      "セリフ体×細ゴシックのフォントペアリング",
+      "細罫線カード枠と角の飾りのレシピ",
+      "文言差し替えだけで統一感が続く運用ルール",
+    ],
+    downloads: 231,
+    seedReviews: [
+      { name: "カフェ店主", stars: 5, date: "2026-07-01", text: "新メニューのお知らせ用に。フォントの組み合わせまで決まってるので、投稿のたびに悩まなくなりました。" },
+    ],
+    thumb: `<div class="thumb" style="background:#f6f1ea">
+      <div style="position:absolute;inset:14px;border:1px solid #b08968;border-radius:2px"></div>
+      <div style="position:absolute;top:30%;left:20%;right:20%;display:flex;flex-direction:column;gap:8px;align-items:center">
+        <div class="t-bar" style="background:#5c4a38;width:70%;height:12px"></div>
+        <div class="t-bar" style="background:#b08968;width:40%;height:7px"></div>
+        <div class="t-bar" style="background:#cbb9a4;width:56%;height:7px"></div>
+      </div>
+      <div style="position:absolute;bottom:22px;left:35%;right:35%;height:6px;background:#b0896855;border-radius:3px"></div>
+    </div>`,
+    skill: `---
+name: img-sns-square
+description: 淡ベージュ×セリフ体の上品なInstagram告知スクエア画像（1080×1080）をHTML/CSSで作るスキル。細罫線カード・余白・フォントペアが特徴。「インスタの告知画像」「お知らせ画像」「キャンペーン画像」の依頼で使う。
+---
+
+# SNS告知スクエア・上品ベージュ デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSで画像1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="sq-canvas">\` 1枚、**幅1080px × 高さ1080px 固定**
+- フォントは Google Fonts の **"Shippori Mincho"（600）** と **"Zen Kaku Gothic New"（300/500）** を読み込む
+- 写真を使う場合は上半分に1枚だけ（プレースホルダー＋差し替えコメント）。使わない構成がデフォルト
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --bg: #f6f1ea;        /* 淡ベージュ */
+  --brown: #b08968;     /* 罫線・アクセント */
+  --ink: #5c4a38;       /* 見出しの焦げ茶 */
+  --ink-soft: #8a7a68;  /* 本文 */
+}
+\`\`\`
+
+## レイアウト（中央揃え・左右対称）
+
+1. **外枠**: 全面 --bg。内側40pxに --brown の細罫線（1px）カード枠。四隅に小さな菱形飾り（8px）
+2. **上部ラベル**: 上から140pxに英字ラベル（例 INFORMATION / NEW MENU）——Zen Kaku 300・28px・letter-spacing 0.5em・--brown
+3. **見出し**: 中央やや上に Shippori Mincho 600・**64〜80px**・--ink・行間1.4・**2行まで**
+4. **区切り**: 見出し下に幅120pxの --brown 罫線（1px）＋中央に菱形
+5. **本文**: 3行まで・Zen Kaku 300・26px・--ink-soft・行間2.0
+6. **日付・詳細**: 本文下に 32px・Shippori Mincho・--ink（日付は最も伝えたい情報として本文より大きく）
+7. **下部**: アカウント名（@xxx）を 22px・--brown で中央に
+
+## 余白ルール
+
+- 上下左右の「詰まり」を作らない。要素間は最低48px空ける
+- 文字は画面幅の70%以内に収める（両端15%は常に空白）
+- 要素は全部で6個まで。入り切らない情報は「詳しくはプロフィールへ」に逃す
+
+## バリエーション運用（統一感の保ち方）
+
+- 色・フォント・枠は固定。変えてよいのは 文言・英字ラベル・菱形の有無 のみ
+- 写真版にする場合: 上半分に写真、下半分に同ルールの文字組み（罫線カードは写真の上にかけない）
+
+## チェックリスト
+
+- [ ] 1080×1080px固定か
+- [ ] 要素が6個以内・要素間48px以上か
+- [ ] 見出しがセリフ体・本文が細ゴシックのペアになっているか
+- [ ] 文字が幅70%以内に収まっているか
+- [ ] 色が4色トークンだけで構成されているか
+`,
+  },
+  {
+    id: "img-ogp-eyecatch",
+    creator: "keita-official",
+    isSample: true,
+    genre: "その他画像",
+    category: "SNS・サムネイル",
+    colorTone: "ブルー系",
+    price: 0,
+    createdAt: "2026-07-01",
+    sampleSpec: { c1: "#2563eb", c2: "#eef4ff" },
+    highlights: [
+      "ブログ・note・技術記事のアイキャッチを統一したい方",
+      "SNSでシェアされたとき（OGP）にきちんと見える画像が欲しい方",
+      "記事タイトルを流し込むだけの量産テンプレが欲しい方",
+    ],
+    longDesc: "記事のOGP画像・アイキャッチに特化した1200×630の設計図です。ブランドカラーの帯とロゴ位置を固定し、記事タイトルを大きく流し込むだけ——X(Twitter)やSlackでシェアされたときの見え方（端の見切れ・縮小時の可読性）まで考慮したセーフエリア設計が特徴です。\nカラーを差し替えれば自分のブログのブランドに合わせられます。",
+    title: "OGP・記事アイキャッチ",
+    tags: ["OGP", "ブログ", "アイキャッチ"],
+    desc: "記事タイトルを流し込むだけのOGP画像テンプレ（1200×630）。セーフエリア設計とブランド帯で「シェアで映える」を作る設計図。",
+    features: [
+      "1200×630のOGP標準サイズ＋セーフエリア設計",
+      "タイトル文字数別のフォントサイズ自動ルール",
+      "ブランド帯・ロゴ・著者名の固定レイアウト",
+      "カラー差し替えで自ブログ仕様にできるトークン設計",
+    ],
+    downloads: 268,
+    seedReviews: [
+      { name: "技術ブログ運営", stars: 5, date: "2026-07-01", text: "記事ごとにタイトルを差し替えるだけになって、公開作業が5分短縮。文字数別のサイズ表が地味に便利です。" },
+    ],
+    thumb: `<div class="thumb" style="background:#eef4ff">
+      <div style="position:absolute;top:0;left:0;right:0;height:12px;background:#2563eb"></div>
+      <div style="position:absolute;top:30%;left:18px;right:18px;display:flex;flex-direction:column;gap:8px">
+        <div class="t-bar" style="background:#1e2a44;width:88%;height:14px"></div>
+        <div class="t-bar" style="background:#1e2a44;width:62%;height:14px"></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:18px;display:flex;gap:6px;align-items:center"><div class="t-dot" style="background:#2563eb"></div><div class="t-bar" style="background:#93a6c9;width:60px"></div></div>
+    </div>`,
+    skill: `---
+name: img-ogp-eyecatch
+description: ブログ・note記事のOGP画像/アイキャッチ（1200×630）をHTML/CSSで作るスキル。ブランド帯・セーフエリア・タイトル流し込みルールが特徴。「OGP画像」「記事のアイキャッチ」「ブログのサムネ」の依頼で使う。
+---
+
+# OGP・記事アイキャッチ デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSで画像1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="ogp-canvas">\` 1枚、**幅1200px × 高さ630px 固定**
+- フォントは Google Fonts の **"Noto Sans JP"（500/800）** を読み込む
+- 写真は使わない。色面・図形・文字のみで構成する
+
+## デザイントークン（ブランドに合わせて差し替え可）
+
+\`\`\`css
+:root {
+  --brand: #2563eb;       /* ブランドカラー */
+  --brand-pale: #eef4ff;  /* 背景 */
+  --ink: #1e2a44;         /* タイトル */
+  --sub: #64748b;         /* 著者名など */
+}
+\`\`\`
+
+## セーフエリア（OGP特有の注意）
+
+- 外周 **60px** はSNSのUIやトリミングで欠ける可能性がある。**文字・ロゴを置かない**
+- X(Twitter)の小サムネは中央が正方形に切られる場合がある → タイトルは**上下中央**に置く
+
+## レイアウト
+
+1. **背景**: --brand-pale 全面。右下に --brand 6%透過の大きな円（直径500px・1/3見切れ）で単調さ回避
+2. **ブランド帯**: 上端に --brand の帯（高さ20px）
+3. **タイトル**: セーフエリア内・上下中央・左揃え。Noto Sans JP 800・--ink・行間1.35
+4. **サイト名・著者**: 左下（セーフエリア内）にロゴ丸（40px・--brand）＋サイト名 24px・--sub
+5. **カテゴリラベル**: タイトル上に --brand 文字の小ラベル（20px・#TECH 等）
+
+## タイトル文字数別サイズ表（必ず従う）
+
+- 〜15文字: **72px**・1行
+- 16〜30文字: **60px**・2行
+- 31〜45文字: **48px**・2〜3行
+- 46文字以上: タイトルを要約して45文字以内に（そのまま流し込まない）
+
+## バリエーション運用
+
+- 色トークン4つを差し替えるだけで別ブログ仕様になる（レイアウトは固定）
+- カテゴリごとに --brand を変える運用も可（TECH=青 / DESIGN=紫 / LIFE=緑 など）
+
+## チェックリスト
+
+- [ ] 1200×630px固定か
+- [ ] 文字・ロゴがセーフエリア（外周60px）を侵していないか
+- [ ] タイトルサイズが文字数表に従っているか
+- [ ] 200px幅に縮小してもタイトルが読めるか
+- [ ] 色が4色トークンだけで構成されているか
+`,
+  },
 ];
