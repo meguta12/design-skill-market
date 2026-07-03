@@ -824,7 +824,7 @@ function accountFormHtml(acc, submitLabel) {
   const links = acc.links || {};
   return `
   <form class="nice-form" id="account-form">
-    <label>表示名（必須）<input type="text" id="ac-name" required maxlength="30" value="${escapeHtml(acc.name || "")}" placeholder="例：keita design"></label>
+    <label>表示名（必須）<input type="text" id="ac-name" required maxlength="30" value="${escapeHtml(acc.name || "")}" placeholder="例：みどり design"></label>
     <label>自己紹介<textarea id="ac-bio" rows="3" maxlength="300" placeholder="どんなデザインを作っていますか？">${escapeHtml(acc.bio || "")}</textarea></label>
     <label>プロフィール画像URL
       <div class="avatar-input-row">
