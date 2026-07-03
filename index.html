@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://designskillmarket.com/">
 <meta property="og:image" content="https://designskillmarket.com/assets/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="styles.css?v=20260704">
+<link rel="stylesheet" href="styles.css?v=20260705">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -106,6 +106,32 @@
         <span onclick="setGenre('ホームページ'); document.getElementById('gallery').scrollIntoView()">ホームページ</span><span onclick="setGenre('スライド資料'); document.getElementById('gallery').scrollIntoView()">スライド資料</span><span onclick="setGenre('アプリUI'); document.getElementById('gallery').scrollIntoView()">アプリUI</span><span onclick="setGenre('広告ポスター'); document.getElementById('gallery').scrollIntoView()">広告ポスター</span><span onclick="setGenre('サムネイル'); document.getElementById('gallery').scrollIntoView()">サムネイル</span><span onclick="setGenre('その他画像'); document.getElementById('gallery').scrollIntoView()">その他画像</span>
       </div>
     </div>
+
+    <!-- 配布中デザインが流れるマーキー（クリックでギャラリーへ） -->
+    <div class="hero-marquee" aria-hidden="true" onclick="document.getElementById('gallery').scrollIntoView()">
+      <div class="marquee-row">
+        <div class="marquee-track">
+          <img src="assets/samples/small/poster-cinema-red.jpg" alt="">
+          <img src="assets/samples/small/saas-modern.jpg" alt="">
+          <img src="assets/samples/small/poster-neon-night.jpg" alt="">
+          <img src="assets/samples/small/wa-modern.jpg" alt="">
+          <img src="assets/samples/small/img-yt-thumb.jpg" alt="">
+          <img src="assets/samples/small/poster-aquarelle-fes.jpg" alt="">
+          <img src="assets/samples/small/app-dashboard-dark.jpg" alt="">
+        </div>
+      </div>
+      <div class="marquee-row marquee-reverse">
+        <div class="marquee-track">
+          <img src="assets/samples/small/poster-retro-pop.jpg" alt="">
+          <img src="assets/samples/small/corporate-clean.jpg" alt="">
+          <img src="assets/samples/small/poster-campus-brush.jpg" alt="">
+          <img src="assets/samples/small/img-sns-square.jpg" alt="">
+          <img src="assets/samples/small/poster-editorial-film.jpg" alt="">
+          <img src="assets/samples/small/cafe-warm.jpg" alt="">
+          <img src="assets/samples/small/poster-swiss-grid.jpg" alt="">
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="about" class="about">
@@ -113,17 +139,17 @@
       <p class="section-eyebrow">HOW IT WORKS</p>
       <h2 class="section-title">使い方は3ステップ</h2>
       <div class="steps">
-        <div class="step">
+        <div class="step reveal">
           <div class="step-num">1</div>
           <h3>デザインを選ぶ</h3>
           <p>ホームページ・スライド資料・アプリUI・広告ポスター・サムネイル・その他画像の6ジャンルから好きなデザインを選択。レビューと星評価も参考にできます。</p>
         </div>
-        <div class="step">
+        <div class="step reveal">
           <div class="step-num">2</div>
           <h3>スキルをダウンロード</h3>
           <p>そのデザインの「作り方」が書かれた .md ファイルをダウンロード。配色・レイアウト・画像の入れ方まで書いてあります。</p>
         </div>
-        <div class="step">
+        <div class="step reveal">
           <div class="step-num">3</div>
           <h3>お使いのAIに渡す</h3>
           <p>Claude・Codex・Antigravity・Cursor など、いつものAIツールにファイルを添付して「このデザインで作って」と言うだけ。</p>
@@ -162,7 +188,7 @@
 
   <section id="order" class="order">
     <div class="container">
-      <div class="order-box">
+      <div class="order-box reveal">
         <div class="order-text">
           <h2>自分で作るのは大変？<br>制作代行も承ります。</h2>
           <p>
@@ -199,23 +225,23 @@
       <p class="section-eyebrow">FAQ</p>
       <h2 class="section-title">よくある質問</h2>
       <div class="faq-list">
-        <details class="faq-item">
+        <details class="faq-item reveal">
           <summary>デザインスキル（.mdファイル）とは何ですか？</summary>
           <p>デザインの完成イメージではなく「作り方」を記した設計図ファイルです。配色・余白・レイアウト・フォントなどのルールがMarkdown形式で書かれており、AIツールに渡すとそのデザインを正確に再現できます。</p>
         </details>
-        <details class="faq-item">
+        <details class="faq-item reveal">
           <summary>本当に無料ですか？アカウント登録は必要ですか？</summary>
           <p>掲載中のスキルはすべて無料で、アカウント登録なしでダウンロードできます。登録が必要になるのは、自分のデザインを投稿するときとレビューを書くときだけです。</p>
         </details>
-        <details class="faq-item">
+        <details class="faq-item reveal">
           <summary>どのAIツールで使えますか？</summary>
           <p>Claude・Codex・Antigravity・CursorなどMarkdownの指示を読めるAIツールならどれでも使えます。ダウンロードした.mdファイルを添付して「このデザインで作って」と伝えるだけです。</p>
         </details>
-        <details class="faq-item">
+        <details class="faq-item reveal">
           <summary>ダウンロードしたスキルはどう使いますか？</summary>
           <p>お使いのAIツールに.mdファイルを添付し、作りたい内容（例：カフェのホームページ）を伝えるだけです。ファイル冒頭には安全に使うための確認プロンプトも同梱しています。</p>
         </details>
-        <details class="faq-item">
+        <details class="faq-item reveal">
           <summary>自分のデザインを投稿できますか？</summary>
           <p>無料のアカウント登録とプロフィール設定をすれば誰でも投稿できます。投稿したスキルはプロフィール（SNSリンク付き）とともに公開され、実績づくりにも使えます。</p>
         </details>
@@ -288,6 +314,33 @@
   </div>
 </footer>
 
+<script>
+// LP演出：JSが有効な環境でだけアニメーションを有効化（クローラー・JS無効環境では最初から表示）
+document.documentElement.classList.add("js");
+// マーキーをシームレスにループさせるため中身を複製
+document.querySelectorAll(".marquee-track").forEach(t => { t.innerHTML += t.innerHTML; });
+// スクロールで要素をふわっと表示（軽量なスクロール監視。全要素表示済みになったら解除）
+const revealEls = [...document.querySelectorAll(".reveal")];
+function checkReveals() {
+  const vh = window.innerHeight || document.documentElement.clientHeight || 800;
+  let remaining = 0;
+  for (const el of revealEls) {
+    if (el.classList.contains("in")) continue;
+    const r = el.getBoundingClientRect();
+    if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add("in");
+    else remaining++;
+  }
+  if (!remaining) {
+    window.removeEventListener("scroll", checkReveals);
+    window.removeEventListener("resize", checkReveals);
+    clearInterval(revealTimer);
+  }
+}
+window.addEventListener("scroll", checkReveals, { passive: true });
+window.addEventListener("resize", checkReveals);
+const revealTimer = setInterval(checkReveals, 450); // scrollイベントが来ない環境への保険（全表示後に自動停止）
+checkReveals();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
