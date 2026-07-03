@@ -7,7 +7,6 @@ const ORDER_EMAIL = "megupen.sab@gmail.com";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const GENRES = ["ホームページ", "スライド資料", "アプリUI", "広告ポスター", "サムネイル", "その他画像"];
-const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱", "広告ポスター": "📣", "サムネイル": "🎬", "その他画像": "🖼️" };
 const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "教育・学習", "アプリ・ツール", "イベント・告知", "SNS・サムネイル", "その他"];
 const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "カラフル", "その他"];
 const NEW_DAYS = 14; // この日数以内なら NEW バッジ
@@ -172,10 +171,10 @@ function avatarHtml(creator, size) {
 
 function linkChipsHtml(links) {
   const defs = [
-    ["homepage", "🌐 ホームページ"],
-    ["x", "𝕏 X (Twitter)"],
-    ["instagram", "📷 Instagram"],
-    ["youtube", "▶ YouTube"],
+    ["homepage", "ホームページ"],
+    ["x", "X (Twitter)"],
+    ["instagram", "Instagram"],
+    ["youtube", "YouTube"],
   ];
   const chips = defs
     .filter(([key]) => links && links[key])
@@ -223,7 +222,7 @@ function cardHtml(d) {
     ${cardThumbHtml(d)}
     <div class="card-body">
       <div class="card-tags">
-        <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+        <span class="tag tag-genre">${escapeHtml(d.genre || "ホームページ")}</span>
         ${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
       </div>
       <h3 class="card-title">${escapeHtml(d.title)}</h3>
@@ -233,7 +232,7 @@ function cardHtml(d) {
       </div>
       <div class="card-meta">
         <span>${ratingMetaHtml(d)}</span>
-        <span class="dl-count">⬇ ${dl.toLocaleString()}</span>
+        <span class="dl-count">${dl.toLocaleString()} DL</span>
       </div>
     </div>
   </article>`;
@@ -258,7 +257,7 @@ function renderGenreTabs() {
   });
   document.getElementById("genre-tabs").innerHTML =
     [["", `すべて (${allDesigns().length})`],
-     ...GENRES.map(g => [g, `${GENRE_ICONS[g]} ${g} (${counts[g] || 0})`])]
+     ...GENRES.map(g => [g, `${g} (${counts[g] || 0})`])]
     .map(([val, label]) =>
       `<button type="button" class="genre-tab ${filters.genre === val ? "active" : ""}"
         onclick="setGenre('${val}')">${label}</button>`).join("");
@@ -300,7 +299,7 @@ function initFilterBar() {
 
 function renderHeaderAccount() {
   const el = document.getElementById("nav-account");
-  if (myProfile) el.textContent = `👤 ${myProfile.name}`;
+  if (myProfile) el.textContent = `${myProfile.name}`;
   else if (session) el.textContent = "プロフィール設定";
   else el.textContent = "ログイン / 登録";
   document.getElementById("nav-admin").hidden = !isAdminUser();
@@ -537,7 +536,7 @@ function renderDetail(d) {
     </div>
     <div class="detail-info">
       <div class="card-tags">
-        <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+        <span class="tag tag-genre">${escapeHtml(d.genre || "ホームページ")}</span>
         ${d.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
       </div>
       <h1>${escapeHtml(d.title)}</h1>
@@ -546,33 +545,37 @@ function renderDetail(d) {
         ${sampleBadgeHtml(d)}
         ${isNew(d) ? `<span class="badge badge-new">NEW</span>` : ""}
         ${ratingMetaHtml(d)}
-        <span class="dl-count">⬇ ${dl.toLocaleString()} DL</span>
+        <span class="dl-count">${dl.toLocaleString()} DL</span>
         <span class="design-id">ID: ${d.id}</span>
       </div>
-      <div class="creator-box" onclick="showCreator('${d.creator}')">
-        ${avatarHtml(cr, "sm")}
-        <div>
-          <div class="creator-box-name">${escapeHtml(cr.name)}</div>
-          <div class="creator-box-hint">プロフィールを見る →</div>
+      <div class="creator-box">
+        <div class="creator-box-head" onclick="showCreator('${d.creator}')">
+          ${avatarHtml(cr, "sm")}
+          <div>
+            <div class="creator-box-name">${escapeHtml(cr.name)}</div>
+            <div class="creator-box-hint">プロフィールを見る →</div>
+          </div>
         </div>
+        ${cr.bio ? `<p class="creator-box-bio">${escapeHtml(cr.bio.length > 90 ? cr.bio.slice(0, 90) + "…" : cr.bio)}</p>` : ""}
+        ${linkChipsHtml(cr.links)}
       </div>
       <p class="detail-desc">${escapeHtml(d.desc)}</p>
       <ul class="feature-list">${(d.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
       <div class="detail-actions">
         <button class="btn btn-primary" onclick="downloadSkill('${d.id}')">
-          ${isPaid(d) ? `🛒 ¥${d.price.toLocaleString()} で購入してダウンロード` : "⬇ 無料ダウンロード（広告が表示されます）"}
+          ${isPaid(d) ? `¥${d.price.toLocaleString()} で購入してダウンロード` : "無料ダウンロード（広告が表示されます）"}
         </button>
         <button class="btn btn-ghost" onclick="orderThis('${d.id}')">このデザインで制作代行を頼む</button>
       </div>
       ${isAdminUser() && cloud.designs.some(x => x.id === d.id)
-        ? `<p class="admin-row">🛡 管理者: <button class="text-danger" onclick="deleteUserDesign('${d.id}')">この投稿を削除する</button></p>`
+        ? `<p class="admin-row">管理者: <button class="text-danger" onclick="deleteUserDesign('${d.id}')">この投稿を削除する</button></p>`
         : ""}
     </div>
   </div>
 
   ${(d.highlights || []).length ? `
   <section class="lp-section lp-highlight">
-    <h2>✅ こんな方におすすめ</h2>
+    <h2>こんな方におすすめ</h2>
     <ul class="highlight-list">${d.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>
   </section>` : ""}
 
@@ -764,11 +767,11 @@ function showAccount() {
         ? `<ul class="my-works">${works.map(d => `
             <li class="my-work-row">
               <div class="my-work-main">
-                <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+                <span class="tag tag-genre">${escapeHtml(d.genre || "ホームページ")}</span>
                 <a href="#" onclick="showDetail('${d.id}'); return false;">${escapeHtml(d.title)}</a>
               </div>
               <div class="my-work-actions">
-                <span class="my-work-dl">⬇ ${totalDownloads(d).toLocaleString()}</span>
+                <span class="my-work-dl">${totalDownloads(d).toLocaleString()} DL</span>
                 <button class="btn btn-ghost btn-sm" onclick="editDesign('${d.id}')">編集</button>
                 <button class="text-danger" onclick="deleteUserDesign('${d.id}')">削除</button>
               </div>
@@ -834,10 +837,10 @@ function accountFormHtml(acc, submitLabel) {
       <span class="form-hint">SNSと同じアイコンにすると、フォロワーがあなただと分かりやすくなります。空欄なら下の色＋頭文字になります。</span>
     </label>
     <label class="field-full">アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
-    <label>🌐 ホームページURL<input type="url" id="ac-homepage" value="${escapeHtml(links.homepage || "")}" placeholder="https://..."></label>
-    <label>𝕏 X (Twitter) URL<input type="url" id="ac-x" value="${escapeHtml(links.x || "")}" placeholder="https://x.com/..."></label>
-    <label>📷 Instagram URL<input type="url" id="ac-instagram" value="${escapeHtml(links.instagram || "")}" placeholder="https://instagram.com/..."></label>
-    <label>▶ YouTube URL<input type="url" id="ac-youtube" value="${escapeHtml(links.youtube || "")}" placeholder="https://youtube.com/..."></label>
+    <label>ホームページURL<input type="url" id="ac-homepage" value="${escapeHtml(links.homepage || "")}" placeholder="https://..."></label>
+    <label>X (Twitter) URL<input type="url" id="ac-x" value="${escapeHtml(links.x || "")}" placeholder="https://x.com/..."></label>
+    <label>Instagram URL<input type="url" id="ac-instagram" value="${escapeHtml(links.instagram || "")}" placeholder="https://instagram.com/..."></label>
+    <label>YouTube URL<input type="url" id="ac-youtube" value="${escapeHtml(links.youtube || "")}" placeholder="https://youtube.com/..."></label>
     <button type="submit" class="btn btn-primary btn-block field-full">${submitLabel}</button>
   </form>`;
 }
@@ -914,14 +917,14 @@ function renderAdmin() {
     const works = designsByCreator(u.id).length;
     return `<tr>
       <td>${avatarHtml(u, "sm")} ${escapeHtml(u.name)}</td>
-      <td>${u.isAdmin ? "🛡 管理者" : "一般"}</td>
+      <td>${u.isAdmin ? "管理者" : "一般"}</td>
       <td>${works}</td>
       <td><a href="#" onclick="showCreator('${u.id}'); return false;">プロフィール</a></td>
     </tr>`;
   }).join("");
 
   document.getElementById("admin-body").innerHTML = `
-  <h1 class="panel-title">🛡 管理ページ</h1>
+  <h1 class="panel-title">管理ページ</h1>
   <p class="panel-lead">サイトの運営状況の確認と、投稿・レビューの管理ができます（このページは管理者にしか表示されません）。</p>
 
   <div class="stat-grid">
@@ -932,7 +935,7 @@ function renderAdmin() {
   </div>
 
   <div class="panel admin-section">
-    <h2 class="panel-sub-plain">📋 投稿の管理（${designs.length}件）</h2>
+    <h2 class="panel-sub-plain">投稿の管理（${designs.length}件）</h2>
     <div class="table-wrap">
       <table class="admin-table">
         <thead><tr><th>デザイン名</th><th>投稿者</th><th>料金</th><th>公開日</th><th>DL数</th><th></th></tr></thead>
@@ -942,7 +945,7 @@ function renderAdmin() {
   </div>
 
   <div class="panel admin-section">
-    <h2 class="panel-sub-plain">💬 レビューの管理（${reviews.length}件）</h2>
+    <h2 class="panel-sub-plain">レビューの管理（${reviews.length}件）</h2>
     <div class="table-wrap">
       <table class="admin-table">
         <thead><tr><th>対象デザイン</th><th>名前</th><th>評価</th><th>コメント</th><th>日付</th><th></th></tr></thead>
@@ -952,14 +955,14 @@ function renderAdmin() {
   </div>
 
   <div class="panel admin-section">
-    <h2 class="panel-sub-plain">👥 ユーザー一覧（${users.length}人）</h2>
+    <h2 class="panel-sub-plain">ユーザー一覧（${users.length}人）</h2>
     <div class="table-wrap">
       <table class="admin-table">
         <thead><tr><th>名前</th><th>権限</th><th>投稿数</th><th></th></tr></thead>
         <tbody>${userRows}</tbody>
       </table>
     </div>
-    <p class="form-hint">💡 管理者権限の付与・剥奪は安全のためこの画面からはできません（データベース側でのみ変更可能）。</p>
+    <p class="form-hint">管理者権限の付与・剥奪は安全のためこの画面からはできません（データベース側でのみ変更可能）。</p>
   </div>`;
 }
 
@@ -973,6 +976,65 @@ async function deleteReviewAdmin(id) {
 }
 
 // ---------- デザイン投稿 ----------
+// ---------- 投稿フォームの画像アップロード（クライアントでリサイズしてdata URL化。バックエンド変更不要） ----------
+let submitImages = []; // 現在フォームに入っている画像（data URL または既存URL）の配列
+
+function resizeImageFile(file, maxDim = 1280, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleImageFiles(input) {
+  const files = [...input.files].filter(f => f.type.startsWith("image/"));
+  for (const f of files) {
+    if (submitImages.length >= 5) { toast("画像は5枚までです"); break; }
+    try {
+      submitImages.push(await resizeImageFile(f));
+      renderImagePreviews();
+    } catch {
+      toast("画像を読み込めませんでした: " + (f.name || ""));
+    }
+  }
+  input.value = ""; // 同じファイルを選び直せるようにクリア
+}
+
+function removeSubmitImage(i) {
+  submitImages.splice(i, 1);
+  renderImagePreviews();
+}
+
+function renderImagePreviews() {
+  const wrap = document.getElementById("sb-image-previews");
+  if (!wrap) return;
+  wrap.innerHTML = submitImages.map((src, i) =>
+    `<div class="img-preview"><img src="${src}" alt="使用例${i + 1}">
+      <button type="button" class="img-remove" onclick="removeSubmitImage(${i})" aria-label="削除">×</button></div>`
+  ).join("");
+  const count = document.getElementById("sb-image-count");
+  if (count) count.textContent = `${submitImages.length} / 5 枚`;
+}
+
 function editDesign(id) {
   const d = findDesign(id);
   if (!session || !d || d.creator !== session.user.id) {
@@ -1003,6 +1065,7 @@ function showSubmit(editId) {
   }
   const isEdit = !!editId;
   const spec = (d && d.sampleSpec) || {};
+  submitImages = d ? [...(d.imageUrls || [])] : [];
 
   body.innerHTML = `
   <div class="panel">
@@ -1017,10 +1080,11 @@ function showSubmit(editId) {
       <label class="field-full">説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？">${escapeHtml(d ? d.desc : "")}</textarea></label>
       <label class="field-full">こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム">${escapeHtml(d ? (d.highlights || []).join("\n") : "")}</textarea></label>
       <label class="field-full">詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。">${escapeHtml(d ? d.longDesc : "")}</textarea></label>
-      <label class="field-full">使用例画像のURL（1行に1つ・10枚まで）
-        <textarea id="sb-images" rows="3" placeholder="https://...png&#10;https://...jpg">${escapeHtml(d ? (d.imageUrls || []).join("\n") : "")}</textarea>
-        <span class="form-hint">実際にこのスキルで作った画面のスクリーンショットがあると、ダウンロード率が大きく上がります。</span>
+      <label class="field-full">使用例画像（JPEG / PNG / JPG・5枚まで）
+        <input type="file" id="sb-images" accept="image/jpeg,image/png,image/webp" multiple onchange="handleImageFiles(this)">
+        <span class="form-hint">スマホ・PCから画像ファイルを直接選べます（現在 <span id="sb-image-count">0 / 5 枚</span>）。実際にこのスキルで作った画面のスクリーンショットがあると、ダウンロード率が大きく上がります。</span>
       </label>
+      <div class="img-previews field-full" id="sb-image-previews"></div>
       <div class="color-row">
         <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option ${d && d.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
         <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option ${d && d.colorTone === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
@@ -1033,7 +1097,7 @@ function showSubmit(editId) {
       <label class="field-full">スキル本文（.mdの中身）
         <textarea id="sb-skill" rows="14" required spellcheck="false"></textarea>
       </label>
-      <p class="form-hint field-full">💡 テンプレートを用意してあります。デザイントークン・構成・チェックリストを埋めると、Claude が再現しやすい良いスキルになります。</p>
+      <p class="form-hint field-full">テンプレートを用意してあります。デザイントークン・構成・チェックリストを埋めると、Claude が再現しやすい良いスキルになります。</p>
       <div class="submit-actions">
         <button type="submit" class="btn btn-primary btn-block">${isEdit ? "変更を保存する" : "このデザインを公開する"}</button>
         ${isEdit ? `<button type="button" class="btn btn-ghost" onclick="showDetail('${editId}')">キャンセル</button>` : ""}
@@ -1043,6 +1107,7 @@ function showSubmit(editId) {
   showView("submit");
 
   document.getElementById("sb-skill").value = d ? d.skill : skillTemplate();
+  renderImagePreviews();
 
   document.getElementById("submit-form").addEventListener("submit", async e => {
     e.preventDefault();
@@ -1056,8 +1121,7 @@ function showSubmit(editId) {
 
     const highlights = document.getElementById("sb-highlights").value
       .split("\n").map(h => h.trim()).filter(Boolean).slice(0, 3);
-    const imageUrls = document.getElementById("sb-images").value
-      .split("\n").map(u => u.trim()).filter(u => /^https?:\/\//.test(u)).slice(0, 10);
+    const imageUrls = submitImages.slice(0, 5);
 
     const row = {
       title,
@@ -1091,7 +1155,7 @@ function showSubmit(editId) {
     const { data, error } = await sb.from("designs").insert(row).select().single();
     if (error) { toast("公開に失敗しました: " + error.message); return; }
     cloud.designs.unshift(designFromRow(data));
-    toast("デザインを公開しました！🎉");
+    toast("デザインを公開しました！");
     showDetail(data.id);
   });
 }
@@ -1139,7 +1203,7 @@ description: （どんなサイト向けの、どんなデザインかを1〜2�
 
 - コンテンツ幅は max-width のコンテナで統一する
 - 画像は max-width: 100%
-- ○px以下では1カラムにする
+- 指定した幅以下では1カラムにする
 
 ## チェックリスト（生成後に必ず確認）
 
@@ -1165,7 +1229,7 @@ function skillSafetyHeader() {
   return [
     "<!--",
     "============================================================",
-    "  ⚠️ Design Skill Market — 安全のための確認のお願い",
+    "  【重要】Design Skill Market — 安全のための確認のお願い",
     "============================================================",
     "  このファイルは第三者（投稿者）が作成したデザインスキルです。",
     "  運営は内容を自動審査していません。ごくまれに、デザインの指示を",
@@ -1175,7 +1239,7 @@ function skillSafetyHeader() {
     "============================================================",
     "-->",
     "",
-    "# ⚠️ 使う前にお読みください",
+    "# 【重要】使う前にお読みください",
     "",
     "このスキルは **投稿者が作成したファイル** です。AIに本番の作業をさせる前に、",
     "下の「**確認プロンプト**」をそのまま AI（Claude / Codex など）に貼り付けて、",
@@ -1188,7 +1252,7 @@ function skillSafetyHeader() {
     "",
     "---",
     "",
-    "## 📋 確認プロンプト（これをコピーして、スキルと一緒にAIへ貼ってください）",
+    "## 確認プロンプト（これをコピーして、スキルと一緒にAIへ貼ってください）",
     "",
     "```",
     "あなたはセキュリティ確認の担当です。",
@@ -1263,13 +1327,13 @@ function openAdModal(d) {
   openModal(`
     <div class="ad-label">広告</div>
     <div class="ad-box">
-      <p class="ad-eyebrow">🎨 Design Skill Market からのお知らせ</p>
+      <p class="ad-eyebrow">Design Skill Market からのお知らせ</p>
       <h3 class="ad-title">あなたのデザイン、スキルにして出品しませんか？</h3>
       <p class="ad-text">アカウントを作れば誰でもデザインスキルを公開できます。
       あなたの設計ノウハウが誰かのサイトになります。</p>
       <button class="btn btn-ghost btn-sm" onclick="closeModal(); showSubmit()">投稿について見てみる</button>
     </div>
-    <p class="dl-safety">⚠️ これは投稿者が作成したスキルです。AIに渡す前に、ダウンロードしたファイル冒頭の「確認プロンプト」で安全チェックをしてから使ってください。</p>
+    <p class="dl-safety">注意：これは投稿者が作成したスキルです。AIに渡す前に、ダウンロードしたファイル冒頭の「確認プロンプト」で安全チェックをしてから使ってください。</p>
     <div class="ad-footer">
       <span class="ad-note">広告収入でサイトを運営しています。ご協力ありがとうございます</span>
       <button class="btn btn-primary" id="ad-dl-btn" disabled>あと ${AD_WAIT} 秒…</button>
@@ -1285,7 +1349,7 @@ function openAdModal(d) {
     } else {
       clearInterval(adTimer);
       btn.disabled = false;
-      btn.textContent = "⬇ ダウンロードへ進む";
+      btn.textContent = "ダウンロードへ進む";
       btn.onclick = () => doDownload(d.id);
     }
   }, 1000);
@@ -1295,7 +1359,7 @@ function openAdModal(d) {
 function openPurchaseModal(d) {
   const cr = findCreator(d.creator);
   openModal(`
-    <h3 class="modal-title">🛒 スキルを購入</h3>
+    <h3 class="modal-title">スキルを購入</h3>
     <div class="purchase-row">
       <div>
         <div class="purchase-name">${escapeHtml(d.title)}</div>
@@ -1303,7 +1367,7 @@ function openPurchaseModal(d) {
       </div>
       <div class="purchase-price">¥${d.price.toLocaleString()}</div>
     </div>
-    <p class="ad-note">⚠️ 決済機能は準備中です。今はデモとして、購入の流れだけ体験できます（実際の請求はありません）。</p>
+    <p class="ad-note">注意：決済機能は準備中です。今はデモとして、購入の流れだけ体験できます（実際の請求はありません）。</p>
     <div class="ad-footer">
       <button class="btn btn-ghost btn-sm" onclick="closeModal()">キャンセル</button>
       <button class="btn btn-primary" onclick="doDownload('${d.id}')">（デモ）購入してダウンロード</button>
@@ -1320,7 +1384,7 @@ function setOrderDesign(id, title) {
 function openDesignPicker() {
   openModal(`
     <h3 class="modal-title">ベースにしたいデザインを選ぶ</h3>
-    <input type="search" id="picker-q" class="search-box" placeholder="🔍 デザイン名・タグで検索">
+    <input type="search" id="picker-q" class="search-box" placeholder="デザイン名・タグで検索">
     <div class="picker-list" id="picker-list"></div>
   `);
   const render = (q = "") => {

@@ -47,11 +47,7 @@ const DESIGNS = [
       "問い合わせCTAを3箇所に配置する黄金パターン",
       "スマホで崩れないグリッド設計ルール込み",
     ],
-    downloads: 1284,
-    seedReviews: [
-      { name: "factory-web担当", stars: 5, date: "2026-05-12", text: "製造業の自社サイトに使用。Claudeに渡したら一発でそれっぽくなって驚きました。" },
-      { name: "ばんない", stars: 4, date: "2026-05-28", text: "余白のルールが数値で書いてあるので、修正指示も出しやすいです。" },
-    ],
+    downloads: 28,
     thumb: `<div class="thumb" style="background:#f4f7fb">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:#1d4ed8"></div><div class="t-bar" style="background:#cbd5e8;width:40%"></div></div>
       <div class="t-block" style="background:linear-gradient(135deg,#1d4ed8,#3b82f6);min-height:60px"></div>
@@ -152,12 +148,7 @@ description: 青×白の信頼感あるコーポレートサイト（企業ホ�
       "ダークセクションとの交互配置でメリハリ",
       "CTAボタンのマイクロインタラクション付き",
     ],
-    downloads: 2041,
-    seedReviews: [
-      { name: "indie_dev_ken", stars: 5, date: "2026-04-30", text: "個人開発アプリのLPに。料金表のレイアウトが秀逸でそのまま使ってます。" },
-      { name: "marina", stars: 5, date: "2026-05-15", text: "グラデーションの色指定が具体的で、ありがちな「ダサいグラデ」にならない。" },
-      { name: "t.okada", stars: 4, date: "2026-06-01", text: "FAQのアコーディオンもスキル内に書いてあって助かりました。" },
-    ],
+    downloads: 26,
     thumb: `<div class="thumb" style="background:#0f1024">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)"></div><div class="t-bar" style="background:#2a2c4a;width:35%"></div></div>
       <div class="t-block" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6,#06b6d4);min-height:64px"></div>
@@ -248,11 +239,7 @@ description: 紫→青グラデーションのモダンなSaaS/スタートア�
       "「間」を活かした余白ルール（通常の1.5倍）",
       "予約・アクセスへの動線を絞ったシンプル構成",
     ],
-    downloads: 763,
-    seedReviews: [
-      { name: "京都の宿", stars: 5, date: "2026-05-20", text: "縦書きが崩れずに出たのは初めてです。明朝の指定も的確。" },
-      { name: "wabisabi", stars: 4, date: "2026-06-03", text: "余白が広めなので情報量の多い店には不向きかも。雰囲気は最高。" },
-    ],
+    downloads: 25,
     thumb: `<div class="thumb" style="background:#f5f1e8">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:#2c3e6b"></div><div class="t-bar" style="background:#d9d2c0;width:30%"></div></div>
       <div class="t-row">
@@ -358,11 +345,7 @@ description: 旅館・和食店・和菓子店など和の業種向けの、生�
       "ホバーで作品情報が出るオーバーレイ",
       "About / Works / Contact の3ページ分構成",
     ],
-    downloads: 1547,
-    seedReviews: [
-      { name: "photo_yuki", stars: 5, date: "2026-05-08", text: "写真が主役になるレイアウト。余計な装飾がなくて良い。" },
-      { name: "dezagaku", stars: 4, date: "2026-05-25", text: "就活用ポートフォリオに使いました。Masonryが崩れない書き方になってるのが偉い。" },
-    ],
+    downloads: 23,
     thumb: `<div class="thumb" style="background:#ffffff">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:#111"></div><div class="t-bar" style="background:#e2e2e2;width:25%"></div></div>
       <div class="t-row">
@@ -467,11 +450,7 @@ JSのMasonryライブラリは使わず、CSS columns で実装する：
       "Web予約ボタンを常時表示（追従）",
       "やさしい配色のアクセシビリティ確保（コントラスト基準クリア）",
     ],
-    downloads: 892,
-    seedReviews: [
-      { name: "shika-in", stars: 5, date: "2026-04-22", text: "診療時間の表がスマホでもきれいに出ます。患者さんからも見やすいと好評。" },
-      { name: "seitai-aoki", stars: 3, date: "2026-05-30", text: "良いけど緑が業種に合わなかったので青に変えてもらった。色変更の指示方法も書いてあると嬉しい。" },
-    ],
+    downloads: 22,
     thumb: `<div class="thumb" style="background:#f2f9f4">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:#34a06b"></div><div class="t-bar" style="background:#cfe6d6;width:38%"></div></div>
       <div class="t-block" style="background:#a8d8bc;min-height:54px;border-radius:14px"></div>
@@ -577,11 +556,7 @@ description: 歯科・内科・整体院などのクリニック向けに、や�
       "営業時間・定休日が迷わず見つかる配置",
       "Googleマップ・インスタへの外部リンク動線",
     ],
-    downloads: 1108,
-    seedReviews: [
-      { name: "komugi_bakery", stars: 5, date: "2026-05-18", text: "パン屋のサイトに。メニューの価格がドットリーダーで揃うのが上品で気に入ってます。" },
-      { name: "cafe-mado", stars: 4, date: "2026-06-05", text: "雰囲気がとても良い。写真を入れ替えるだけで自分の店っぽくなりました。" },
-    ],
+    downloads: 21,
     thumb: `<div class="thumb" style="background:#faf5ec">
       <div style="display:flex;gap:8px;align-items:center"><div class="t-dot" style="background:#8a5a36"></div><div class="t-bar" style="background:#e6d9c4;width:32%"></div></div>
       <div class="t-block" style="background:linear-gradient(135deg,#b98756,#8a5a36);min-height:56px;border-radius:10px"></div>
@@ -698,10 +673,7 @@ description: カフェ・ベーカリー・レストラン向けに、クリー�
       "棒・円・比較表チャートの配色と使い分けルール",
       "文字あふれ・図形ズレを防ぐ余白とグリッド",
     ],
-    downloads: 412,
-    seedReviews: [
-      { name: "戦略部・齋藤", stars: 5, date: "2026-06-09", text: "社内提案がこの型にするだけで締まりました。キーメッセージ行のルールが秀逸。" },
-    ],
+    downloads: 19,
     highlights: [
       "社内提案・営業提案の資料をよく作るビジネスパーソン",
       "「スライドがダサい」と言われたことがある方",
@@ -812,11 +784,7 @@ HTMLスライド（16:9・1枚=1セクション）または PowerPoint 生成コ
       "クイズ・まとめ・休憩などの定型スライド付き",
       "色数を抑えて子どもっぽくなりすぎないバランス",
     ],
-    downloads: 268,
-    seedReviews: [
-      { name: "塾講師タカハシ", stars: 5, date: "2026-06-01", text: "オンライン授業用に。生徒から「見やすくなった」と言われました。" },
-      { name: "セミナー講師M", stars: 4, date: "2026-06-07", text: "そのままYouTubeのスライド解説にも使えています。" },
-    ],
+    downloads: 18,
     highlights: [
       "塾講師・学校の先生・セミナー講師の方",
       "YouTubeの解説動画用スライドを量産したい方",
@@ -913,11 +881,7 @@ description: 授業・セミナー・YouTube解説向けのポップで読みや
       "ライト/ダーク両対応のカラートークン",
       "空状態（データなし画面）のデザインまで指定",
     ],
-    downloads: 689,
-    seedReviews: [
-      { name: "flutter勢", stars: 5, date: "2026-05-24", text: "プロトタイプ作りが爆速になった。タップ領域の指定があるのが実務的。" },
-      { name: "uiux見習い", stars: 4, date: "2026-06-02", text: "FigmaなしでここまでできるならもうこれでOKかも。" },
-    ],
+    downloads: 17,
     highlights: [
       "個人開発でアプリのモックを素早く作りたい方",
       "WebアプリのスマホUIを整えたい方",
@@ -1024,10 +988,7 @@ description: iOS風のクリーンなモバイルアプリUI（ホーム・一�
       "ステータス色（成功/警告/エラー）の体系化",
       "1920px〜1280pxまでのレスポンシブ規則",
     ],
-    downloads: 357,
-    seedReviews: [
-      { name: "受託エンジニアK", stars: 5, date: "2026-06-06", text: "クライアントの管理画面に。チャート配色が揃っているだけで一気にプロっぽくなる。" },
-    ],
+    downloads: 15,
     highlights: [
       "SaaSの管理画面・社内ツールを作っている方",
       "ダッシュボードが「Excelみたい」と言われた方",
@@ -1137,10 +1098,7 @@ description: SaaS管理画面・分析ダッシュボード向けのダークUI�
       "白抜き小組み（スタッフ・日付・クレジット）の詰め方",
       "ビジュアルはプレースホルダー設計で差し替え自由",
     ],
-    downloads: 214,
-    seedReviews: [
-      { name: "自主制作アニメ勢", stars: 5, date: "2026-07-01", text: "文化祭の上映会ポスターに使用。縦書きコピーの字間指定が効いていて、素人が作ったように見えません。" },
-    ],
+    downloads: 14,
     thumb: `<div class="thumb" style="background:#0d0b0e">
       <div style="position:absolute;top:-20%;right:8%;width:38%;height:150%;background:linear-gradient(#c1121f,#7a0c14);transform:rotate(14deg)"></div>
       <div style="position:absolute;top:14px;left:18px;width:14px;height:70%;background:#f5f0e6;border-radius:2px"></div>
@@ -1238,10 +1196,7 @@ description: 黒×深紅の劇場アニメ告知風ポスター（B判縦）をH
       "企画一覧・日時・地図を右下に整理するブロック設計",
       "テーマカラー3色を差し替えるだけで別イベントに転用可",
     ],
-    downloads: 187,
-    seedReviews: [
-      { name: "文化祭実行委員", stars: 5, date: "2026-07-01", text: "高校の文化祭ポスターに。水彩の飛び散り方までCSSで指定されてるのがすごい。印刷しても映えました。" },
-    ],
+    downloads: 13,
     thumb: `<div class="thumb" style="background:#ffffff">
       <div style="position:absolute;top:8%;left:34%;width:52%;height:70%;background:radial-gradient(closest-side,#e85a9b66,transparent 70%),radial-gradient(closest-side at 70% 30%,#4cc3d966,transparent 60%),radial-gradient(closest-side at 30% 70%,#f6c34566,transparent 60%)"></div>
       <div style="position:absolute;top:12px;left:16px;width:16px;height:72%;background:#2a2d3a;border-radius:2px"></div>
@@ -1334,10 +1289,7 @@ description: 白地×水彩スプラッシュの学園祭・文化祭風ポス�
       "赤ロゴ帯＋日時・会場の白抜き1行の情報設計",
       "写真プレースホルダー差し替えで他競技にも転用可",
     ],
-    downloads: 156,
-    seedReviews: [
-      { name: "キック興行スタッフ", stars: 4, date: "2026-07-01", text: "アマ大会の告知に使いました。ビネットとグレインの数値指定のおかげで、写真がプロっぽく締まります。" },
-    ],
+    downloads: 12,
     thumb: `<div class="thumb" style="background:linear-gradient(160deg,#3a3a3a,#141414)">
       <div style="position:absolute;top:10px;left:14px;width:13px;height:58%;background:#f2f2f2;border-radius:2px"></div>
       <div style="position:absolute;top:10px;right:14px;width:13px;height:58%;background:#f2f2f2cc;border-radius:2px"></div>
@@ -1426,10 +1378,7 @@ description: モノクロ写真×赤アクセントの格闘技・スポーツ�
       "会期表記（10.30 Sat—11.8 Mon 形式）の組み方",
       "最下部スポンサーロゴ帯のグリッド設計",
     ],
-    downloads: 132,
-    seedReviews: [
-      { name: "ミニシアター運営", stars: 5, date: "2026-07-01", text: "特集上映の告知に。文字サイズの対比ルールが明確で、誰が作っても様になると思います。" },
-    ],
+    downloads: 11,
     thumb: `<div class="thumb" style="background:linear-gradient(150deg,#2e2a24,#1c1a17)">
       <div style="position:absolute;top:16%;left:16px;right:16px;display:flex;flex-direction:column;gap:8px">
         <div class="t-bar" style="background:#e8c547;width:82%;height:20px"></div>
@@ -1521,10 +1470,7 @@ description: 全面写真×超大型セリフ英字の映画祭・展示会風�
       "出演者一覧を右端に縦組みで流し込むルール",
       "うるさくならない彩度・面積配分の数値指定",
     ],
-    downloads: 173,
-    seedReviews: [
-      { name: "商店街青年部", stars: 5, date: "2026-07-01", text: "夏祭りのポスターがまさかの昭和風に。後光ストライプの作り方だけでも元が取れました。" },
-    ],
+    downloads: 10,
     thumb: `<div class="thumb" style="background:repeating-conic-gradient(#4cc9f0 0 9deg,#eaf6ff 9deg 18deg)">
       <div style="position:absolute;top:8px;left:12px;right:12px;height:14px;background:#ffd60a;border:2px solid #e63946;border-radius:3px"></div>
       <div style="position:absolute;top:30%;left:38%;width:24%;height:52%;background:#e63946;border-radius:4px 4px 0 0"></div>
@@ -1617,10 +1563,7 @@ description: 空色×黄×赤の昭和レトロ・コラージュ風ポスター
       "赤の幾何学図形（円・斜線・矩形）の置き方",
       "余白を全体の50%以上残す配分指定",
     ],
-    downloads: 149,
-    seedReviews: [
-      { name: "建築学生", stars: 5, date: "2026-07-01", text: "卒業設計展のポスターに使用。グリッドの引き方から書いてあるので、そのまま指導資料にもなりました。" },
-    ],
+    downloads: 9,
     thumb: `<div class="thumb" style="background:#f5f5f2">
       <div style="position:absolute;top:16px;left:16px;display:flex;flex-direction:column;gap:6px">
         <div class="t-bar" style="background:#111;width:120px;height:16px"></div>
@@ -1718,10 +1661,7 @@ description: オフホワイト×赤1色のスイススタイル（国際タイ�
       "ラインナップ（DJ・登壇者）の階層的な並べ方",
       "グリッド地平線・スキャンラインの背景装飾",
     ],
-    downloads: 168,
-    seedReviews: [
-      { name: "学生DJサークル", stars: 4, date: "2026-07-01", text: "新歓パーティーの告知に。発光の作り方が text-shadow の値まで書いてあって助かりました。" },
-    ],
+    downloads: 8,
     thumb: `<div class="thumb" style="background:#0a0a14">
       <div style="position:absolute;top:22%;left:16px;right:16px;display:flex;flex-direction:column;gap:7px">
         <div class="t-bar" style="background:linear-gradient(90deg,#8b5cf6,#22d3ee);width:78%;height:16px;box-shadow:0 0 14px #8b5cf688"></div>
@@ -1823,10 +1763,7 @@ description: 黒地×紫シアンのネオン発光ポスター（B判縦）をH
       "写真の左端を白にフェードして文字を乗せる合成",
       "スクリプト装飾・円バッジ・フッター帯の配置ルール",
     ],
-    downloads: 246,
-    seedReviews: [
-      { name: "専門学校 広報", stars: 5, date: "2026-07-03", text: "オープンキャンパスの告知に。筆ストロークの角度や大小ミックスの指定が具体的で、写真を差し替えるだけで“それっぽく”仕上がりました。" },
-    ],
+    downloads: 7,
     thumb: `<div class="thumb" style="background:linear-gradient(160deg,#ffffff,#eef2fb)">
       <div style="position:absolute;top:8%;left:-10%;width:72%;height:14px;background:linear-gradient(90deg,transparent,#8b5cf6);transform:rotate(-16deg);border-radius:8px"></div>
       <div style="position:absolute;top:42%;left:-6%;width:60%;height:10px;background:linear-gradient(90deg,transparent,#c2e830);transform:rotate(-16deg);border-radius:8px"></div>
@@ -1937,10 +1874,7 @@ description: 写真×絵筆ストローク×大型和文タイポの、明るく
       "人物切り抜きの位置・サイズ・光彩の指定",
       "スマホ縮小表示を想定した視認性チェック付き",
     ],
-    downloads: 342,
-    seedReviews: [
-      { name: "ゲーム実況者", stars: 5, date: "2026-07-01", text: "サムネ外注をやめられました。縁取りの数値がそのまま使えるのが最高。CTRも体感で上がってます。" },
-    ],
+    downloads: 6,
     thumb: `<div class="thumb" style="background:linear-gradient(135deg,#1a1a1a,#111)">
       <div style="position:absolute;top:18%;left:14px;display:flex;flex-direction:column;gap:7px">
         <div class="t-bar" style="background:#ffd400;width:130px;height:22px;border-radius:4px"></div>
@@ -2042,10 +1976,7 @@ description: 黄×黒の強コントラストYouTubeサムネイル（1280×720�
       "細罫線カード枠と角の飾りのレシピ",
       "文言差し替えだけで統一感が続く運用ルール",
     ],
-    downloads: 231,
-    seedReviews: [
-      { name: "カフェ店主", stars: 5, date: "2026-07-01", text: "新メニューのお知らせ用に。フォントの組み合わせまで決まってるので、投稿のたびに悩まなくなりました。" },
-    ],
+    downloads: 5,
     thumb: `<div class="thumb" style="background:#f6f1ea">
       <div style="position:absolute;inset:14px;border:1px solid #b08968;border-radius:2px"></div>
       <div style="position:absolute;top:30%;left:20%;right:20%;display:flex;flex-direction:column;gap:8px;align-items:center">
@@ -2138,10 +2069,7 @@ description: 淡ベージュ×セリフ体の上品なInstagram告知スクエ�
       "ブランド帯・ロゴ・著者名の固定レイアウト",
       "カラー差し替えで自ブログ仕様にできるトークン設計",
     ],
-    downloads: 268,
-    seedReviews: [
-      { name: "技術ブログ運営", stars: 5, date: "2026-07-01", text: "記事ごとにタイトルを差し替えるだけになって、公開作業が5分短縮。文字数別のサイズ表が地味に便利です。" },
-    ],
+    downloads: 4,
     thumb: `<div class="thumb" style="background:#eef4ff">
       <div style="position:absolute;top:0;left:0;right:0;height:12px;background:#2563eb"></div>
       <div style="position:absolute;top:30%;left:18px;right:18px;display:flex;flex-direction:column;gap:8px">
@@ -2237,10 +2165,7 @@ description: ブログ・note記事のOGP画像/アイキャッチ（1200×630�
       "日時バッジと『オンライン開催』ラベルの型",
       "connpass/Peatix/YouTube Liveで見切れないセーフエリア",
     ],
-    downloads: 176,
-    seedReviews: [
-      { name: "勉強会主催", stars: 5, date: "2026-07-02", text: "毎月の勉強会サムネがこれで統一できました。登壇者枠の位置が決まっているのが本当に楽です。" },
-    ],
+    downloads: 3,
     thumb: `<div class="thumb" style="background:linear-gradient(150deg,#1e3a8a,#0f172a)">
       <div style="position:absolute;top:20%;left:14px;display:flex;flex-direction:column;gap:7px">
         <div class="t-bar" style="background:#ffffff;width:120px;height:16px"></div>
@@ -2327,10 +2252,7 @@ description: 濃紺×青のウェビナー・セミナー告知サムネイル�
       "プロフィールアイコン被りを逃がす左下の空け方",
       "モノトーン基調＋1アクセントの上品な配色ルール",
     ],
-    downloads: 198,
-    seedReviews: [
-      { name: "フリーランスデザイナー", stars: 5, date: "2026-07-02", text: "Xのヘッダーで文字が丸アイコンに隠れる問題がやっと解決。セーフエリアの数値が神です。" },
-    ],
+    downloads: 2,
     thumb: `<div class="thumb" style="background:#f3f4f6">
       <div style="position:absolute;inset:12px;border:2px dashed #d1d5db;border-radius:4px"></div>
       <div style="position:absolute;top:38%;left:24%;right:24%;display:flex;flex-direction:column;gap:6px;align-items:center">
