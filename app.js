@@ -1468,9 +1468,56 @@ function toast(msg) {
 }
 
 // ---------- 初期化 ----------
+// ---------- ヒーローのマーキー（配布デザインをDLランキング上位順に流す） ----------
+function buildHeroMarquee() {
+  const row1 = document.getElementById("mq-row-1");
+  const row2 = document.getElementById("mq-row-2");
+  if (!row1 || !row2) return;
+  const ranked = allDesigns()
+    .filter(d => d.imageUrls && d.imageUrls.length)
+    .sort((a, b) => totalDownloads(b) - totalDownloads(a));
+  if (!ranked.length) return;
+  const smallSrc = url => url.startsWith("assets/samples/")
+    ? url.replace("assets/samples/", "assets/samples/small/") : url;
+  const imgsFor = list => list
+    .map(d => `<img src="${escapeHtml(smallSrc(d.imageUrls[0]))}" alt="" draggable="false">`)
+    .join("");
+  // 上位順を2列に交互配分（両列とも上位が先頭に来る）。各列は同じ並びを2回繰り返してシームレスループ
+  const even = ranked.filter((_, i) => i % 2 === 0);
+  const odd = ranked.filter((_, i) => i % 2 === 1);
+  row1.innerHTML = imgsFor(even) + imgsFor(even);
+  row2.innerHTML = imgsFor(odd.length ? odd : even) + imgsFor(odd.length ? odd : even);
+  startMarquee(row1, 100);
+  startMarquee(row2, 84);
+}
+
+// 画像のロード完了を待ってから、速度一定（px/秒）でアニメーションを開始する。
+// これで width が確定する前にアニメが走って基準がズレる「カクつき」を防ぐ。
+function startMarquee(track, pxPerSec) {
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const begin = () => {
+    if (reduce) return; // モーション低減設定なら静止のまま
+    const oneCopy = track.scrollWidth / 2; // 複製前（1周分）の幅
+    if (oneCopy <= 0) return;
+    track.style.animationName = "marquee-move";
+    track.style.animationTimingFunction = "linear";
+    track.style.animationIterationCount = "infinite";
+    track.style.animationDuration = (oneCopy / pxPerSec).toFixed(1) + "s";
+  };
+  const pending = [...track.querySelectorAll("img")].filter(im => !im.complete);
+  if (!pending.length) { begin(); return; }
+  let left = pending.length;
+  const done = () => { if (--left === 0) begin(); };
+  pending.forEach(im => {
+    im.addEventListener("load", done, { once: true });
+    im.addEventListener("error", done, { once: true });
+  });
+}
+
 (async function init() {
   initFilterBar();
   renderGallery(); // まずシードデザインを即表示
+  buildHeroMarquee();
   renderHeaderAccount();
   await Promise.all([initAuth(), loadCloudData()]);
   renderGenreTabs(); // 件数を更新

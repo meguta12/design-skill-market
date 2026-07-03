@@ -621,15 +621,16 @@ a { color: inherit; text-decoration: none; }
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
-.marquee-track { display: flex; width: max-content; animation: marquee-move 46s linear infinite; }
+/* アニメーションは app.js が画像ロード後に付与する（先に走らせると width 未確定でカクつくため） */
+.marquee-track { display: flex; width: max-content; will-change: transform; }
 .marquee-track img {
-  height: 132px; width: auto; display: block; margin-right: 14px;
+  height: 128px; width: auto; display: block; margin-right: 12px;
   border-radius: 10px; border: 1px solid rgba(255, 255, 255, .14);
   box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
 }
-.marquee-reverse .marquee-track { animation-direction: reverse; animation-duration: 52s; }
+.marquee-reverse .marquee-track { animation-direction: reverse; }
 .marquee-row:hover .marquee-track { animation-play-state: paused; }
-@keyframes marquee-move { to { transform: translateX(-50%); } }
+@keyframes marquee-move { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @keyframes grad-shift { from { background-position: 0% 0; } to { background-position: 100% 0; } }

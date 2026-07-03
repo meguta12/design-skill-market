@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://designskillmarket.com/">
 <meta property="og:image" content="https://designskillmarket.com/assets/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="styles.css?v=20260705">
+<link rel="stylesheet" href="styles.css?v=20260706">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -107,30 +107,10 @@
       </div>
     </div>
 
-    <!-- 配布中デザインが流れるマーキー（クリックでギャラリーへ） -->
+    <!-- 配布中デザインをDLランキング上位順に流すマーキー（中身は app.js の buildHeroMarquee が生成。クリックでギャラリーへ） -->
     <div class="hero-marquee" aria-hidden="true" onclick="document.getElementById('gallery').scrollIntoView()">
-      <div class="marquee-row">
-        <div class="marquee-track">
-          <img src="assets/samples/small/poster-cinema-red.jpg" alt="">
-          <img src="assets/samples/small/saas-modern.jpg" alt="">
-          <img src="assets/samples/small/poster-neon-night.jpg" alt="">
-          <img src="assets/samples/small/wa-modern.jpg" alt="">
-          <img src="assets/samples/small/img-yt-thumb.jpg" alt="">
-          <img src="assets/samples/small/poster-aquarelle-fes.jpg" alt="">
-          <img src="assets/samples/small/app-dashboard-dark.jpg" alt="">
-        </div>
-      </div>
-      <div class="marquee-row marquee-reverse">
-        <div class="marquee-track">
-          <img src="assets/samples/small/poster-retro-pop.jpg" alt="">
-          <img src="assets/samples/small/corporate-clean.jpg" alt="">
-          <img src="assets/samples/small/poster-campus-brush.jpg" alt="">
-          <img src="assets/samples/small/img-sns-square.jpg" alt="">
-          <img src="assets/samples/small/poster-editorial-film.jpg" alt="">
-          <img src="assets/samples/small/cafe-warm.jpg" alt="">
-          <img src="assets/samples/small/poster-swiss-grid.jpg" alt="">
-        </div>
-      </div>
+      <div class="marquee-row"><div class="marquee-track" id="mq-row-1"></div></div>
+      <div class="marquee-row marquee-reverse"><div class="marquee-track" id="mq-row-2"></div></div>
     </div>
   </section>
 
@@ -317,8 +297,7 @@
 <script>
 // LP演出：JSが有効な環境でだけアニメーションを有効化（クローラー・JS無効環境では最初から表示）
 document.documentElement.classList.add("js");
-// マーキーをシームレスにループさせるため中身を複製
-document.querySelectorAll(".marquee-track").forEach(t => { t.innerHTML += t.innerHTML; });
+// マーキーの生成・開始は app.js の buildHeroMarquee（DLランキング連動＋画像ロード後に開始）が担当
 // スクロールで要素をふわっと表示（軽量なスクロール監視。全要素表示済みになったら解除）
 const revealEls = [...document.querySelectorAll(".reveal")];
 function checkReveals() {
@@ -343,7 +322,7 @@ checkReveals();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
-<script src="data.js"></script>
-<script src="app.js"></script>
+<script src="data.js?v=20260706"></script>
+<script src="app.js?v=20260706"></script>
 </body>
 </html>
