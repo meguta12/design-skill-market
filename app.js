@@ -826,19 +826,19 @@ function accountFormHtml(acc, submitLabel) {
   <form class="nice-form" id="account-form">
     <label>表示名（必須）<input type="text" id="ac-name" required maxlength="30" value="${escapeHtml(acc.name || "")}" placeholder="例：みどり design"></label>
     <label>自己紹介<textarea id="ac-bio" rows="3" maxlength="300" placeholder="どんなデザインを作っていますか？">${escapeHtml(acc.bio || "")}</textarea></label>
-    <label>プロフィール画像URL
+    <label class="field-full">プロフィール画像URL
       <div class="avatar-input-row">
         <span id="ac-avatar-preview">${avatarHtml(acc.name ? acc : { ...acc, name: "?", initial: "?" }, "lg")}</span>
         <input type="url" id="ac-avatar-url" value="${escapeHtml(acc.avatarUrl || "")}" placeholder="https://...（XやインスタのアイコンのURLでもOK）">
       </div>
       <span class="form-hint">SNSと同じアイコンにすると、フォロワーがあなただと分かりやすくなります。空欄なら下の色＋頭文字になります。</span>
     </label>
-    <label>アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
+    <label class="field-full">アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
     <label>🌐 ホームページURL<input type="url" id="ac-homepage" value="${escapeHtml(links.homepage || "")}" placeholder="https://..."></label>
     <label>𝕏 X (Twitter) URL<input type="url" id="ac-x" value="${escapeHtml(links.x || "")}" placeholder="https://x.com/..."></label>
     <label>📷 Instagram URL<input type="url" id="ac-instagram" value="${escapeHtml(links.instagram || "")}" placeholder="https://instagram.com/..."></label>
     <label>▶ YouTube URL<input type="url" id="ac-youtube" value="${escapeHtml(links.youtube || "")}" placeholder="https://youtube.com/..."></label>
-    <button type="submit" class="btn btn-primary btn-block">${submitLabel}</button>
+    <button type="submit" class="btn btn-primary btn-block field-full">${submitLabel}</button>
   </form>`;
 }
 
@@ -1013,11 +1013,11 @@ function showSubmit(editId) {
     <form class="nice-form" id="submit-form">
       <label>ジャンル（必須）<select id="sb-genre">${GENRES.map(g => `<option ${d && d.genre === g ? "selected" : ""}>${g}</option>`).join("")}</select></label>
       <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP" value="${escapeHtml(d ? d.title : "")}"></label>
-      <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発" value="${escapeHtml(d ? (d.tags || []).join(", ") : "")}"></label>
-      <label>説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？">${escapeHtml(d ? d.desc : "")}</textarea></label>
-      <label>こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム">${escapeHtml(d ? (d.highlights || []).join("\n") : "")}</textarea></label>
-      <label>詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。">${escapeHtml(d ? d.longDesc : "")}</textarea></label>
-      <label>使用例画像のURL（1行に1つ・10枚まで）
+      <label class="field-full">タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発" value="${escapeHtml(d ? (d.tags || []).join(", ") : "")}"></label>
+      <label class="field-full">説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？">${escapeHtml(d ? d.desc : "")}</textarea></label>
+      <label class="field-full">こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム">${escapeHtml(d ? (d.highlights || []).join("\n") : "")}</textarea></label>
+      <label class="field-full">詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。">${escapeHtml(d ? d.longDesc : "")}</textarea></label>
+      <label class="field-full">使用例画像のURL（1行に1つ・10枚まで）
         <textarea id="sb-images" rows="3" placeholder="https://...png&#10;https://...jpg">${escapeHtml(d ? (d.imageUrls || []).join("\n") : "")}</textarea>
         <span class="form-hint">実際にこのスキルで作った画面のスクリーンショットがあると、ダウンロード率が大きく上がります。</span>
       </label>
@@ -1025,15 +1025,15 @@ function showSubmit(editId) {
         <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option ${d && d.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
         <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option ${d && d.colorTone === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
       </div>
-      <label>特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き">${escapeHtml(d ? (d.features || []).join("\n") : "")}</textarea></label>
+      <label class="field-full">特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き">${escapeHtml(d ? (d.features || []).join("\n") : "")}</textarea></label>
       <div class="color-row">
         <label>メインカラー<input type="color" id="sb-color1" value="${spec.c1 || "#4f46e5"}"></label>
         <label>背景カラー<input type="color" id="sb-color2" value="${spec.c2 || "#f5f5fa"}"></label>
       </div>
-      <label>スキル本文（.mdの中身）
+      <label class="field-full">スキル本文（.mdの中身）
         <textarea id="sb-skill" rows="14" required spellcheck="false"></textarea>
       </label>
-      <p class="form-hint">💡 テンプレートを用意してあります。デザイントークン・構成・チェックリストを埋めると、Claude が再現しやすい良いスキルになります。</p>
+      <p class="form-hint field-full">💡 テンプレートを用意してあります。デザイントークン・構成・チェックリストを埋めると、Claude が再現しやすい良いスキルになります。</p>
       <div class="submit-actions">
         <button type="submit" class="btn btn-primary btn-block">${isEdit ? "変更を保存する" : "このデザインを公開する"}</button>
         ${isEdit ? `<button type="button" class="btn btn-ghost" onclick="showDetail('${editId}')">キャンセル</button>` : ""}
