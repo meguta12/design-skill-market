@@ -1797,6 +1797,119 @@ description: 黒地×紫シアンのネオン発光ポスター（B判縦）をH
 `,
   },
 
+  {
+    id: "poster-campus-brush",
+    creator: "keita-official",
+    isSample: true,
+    imageUrls: ["assets/samples/poster-campus-brush.jpg"],
+    genre: "広告ポスター",
+    category: "イベント・告知",
+    colorTone: "カラフル",
+    price: 0,
+    createdAt: "2026-07-03",
+    sampleSpec: { c1: "#8b5cf6", c2: "#ffffff" },
+    highlights: [
+      "専門学校・スクール・講座のオープンキャンパスや募集告知を作りたい方",
+      "写真を主役に、明るく爽やかで前向きな印象にしたい方",
+      "絵筆ストロークと大型タイポで“今っぽい”動きを出したい方",
+    ],
+    longDesc: "専門学校やスクールのオープンキャンパス告知に代表される、写真×絵筆ストローク×大型和文タイポの明るいポスターを設計図にしました。紫とライムイエローの筆ブラシが斜めに走り、巨大な明朝の漢字に中サイズの仮名を添えた「大小ミックス」のタイトルが主役。白基調の抜け感と人物写真の爽やかさを両立させる型を、数値ルールで固定しています。\n写真はプレースホルダー設計なので、スクール募集のほか、企業の採用・説明会・ワークショップ告知にも転用できます。",
+    title: "スクール告知・ブラッシュスプラッシュ",
+    tags: ["スクール", "オープンキャンパス", "筆タイポ"],
+    desc: "写真×紫ライムの絵筆×大型明朝タイポの、明るいスクール/オープンキャンパス告知ポスター。大小ミックスのタイトルと白基調の抜け感で「前向きな募集」を作る設計図。",
+    features: [
+      "紫×ライムの絵筆ストローク（かすれ・奥行き）のCSSレシピ",
+      "超特大の漢字＋中サイズ仮名の“大小ミックス”タイトル",
+      "写真の左端を白にフェードして文字を乗せる合成",
+      "スクリプト装飾・円バッジ・フッター帯の配置ルール",
+    ],
+    downloads: 246,
+    seedReviews: [
+      { name: "専門学校 広報", stars: 5, date: "2026-07-03", text: "オープンキャンパスの告知に。筆ストロークの角度や大小ミックスの指定が具体的で、写真を差し替えるだけで“それっぽく”仕上がりました。" },
+    ],
+    thumb: `<div class="thumb" style="background:linear-gradient(160deg,#ffffff,#eef2fb)">
+      <div style="position:absolute;top:8%;left:-10%;width:72%;height:14px;background:linear-gradient(90deg,transparent,#8b5cf6);transform:rotate(-16deg);border-radius:8px"></div>
+      <div style="position:absolute;top:42%;left:-6%;width:60%;height:10px;background:linear-gradient(90deg,transparent,#c2e830);transform:rotate(-16deg);border-radius:8px"></div>
+      <div style="position:absolute;top:12px;left:16px;display:flex;flex-direction:column;gap:6px">
+        <div class="t-bar" style="background:linear-gradient(#a78bfa,#8b5cf6);width:74px;height:24px;border-radius:3px"></div>
+        <div class="t-bar" style="background:#c2e830;width:56px;height:24px;border-radius:3px"></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:16px;display:flex;flex-direction:column;gap:5px"><div class="t-bar" style="background:#1e2233;width:60%"></div><div class="t-bar" style="background:#1e2233;width:46%"></div></div>
+      <div style="position:absolute;bottom:16px;right:14px;width:50px;height:50px;border-radius:50%;border:1.5px solid #8b5cf6"></div>
+    </div>`,
+    skill: `---
+name: poster-campus-brush
+description: 写真×絵筆ストローク×大型和文タイポの、明るく爽やかなスクール/オープンキャンパス告知ポスター（B判縦）をHTML/CSSで作るスキル。紫×ライムの筆ブラシ・巨大な明朝＋仮名の大小ミックス・人物写真が特徴。「学校の募集ポスター」「オープンキャンパス告知」「スクールの案内」「爽やかな募集ポスター」の依頼で使う。
+---
+
+# スクール告知・ブラッシュスプラッシュ デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでポスター1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="poster">\` 1枚、**幅728px × 高さ1030px 固定**（B判縦 ≒ 1:1.414）。position:absolute レイヤー構成
+- フォントは Google Fonts の **"Shippori Mincho"（明朝・700/800）**、本文用に **"Zen Kaku Gothic New"**、スクリプトに **"Parisienne"** を読み込む
+- 人物写真はプレースホルダー（明るいグラデ＋人物シルエット）で組み、差し替えコメントを付ける。実在の人物・学校名・ロゴは使わない
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --purple: #8b5cf6;
+  --purple-light: #a78bfa;
+  --lime: #c2e830;       /* ライムイエロー（差し色） */
+  --ink: #1e2233;        /* 文字のほぼ黒 */
+  --white: #ffffff;
+  --paper: #f4f7fb;      /* うっすら青みの白 */
+}
+\`\`\`
+
+## レイヤー構成（下から順に）
+
+1. **背景**: --white〜--paper。右半分に人物写真プレースホルダー（明るい都市＋上を見上げる人物のポーズ）。「ここに人物写真。明るく・淡い色調で」コメント必須。写真の左端は白へフェードさせ、左側の文字が乗るようにする
+2. **絵筆ストローク**: --purple と --lime の筆ブラシを右上がりの斜めに走らせる（後述）
+3. **巨大タイトル**: 左上〜中央に和文の大型タイポ（後述）
+4. **メッセージボックス・スクリプト装飾・円バッジ・フッター帯**
+
+## 絵筆ストロークの作り方（このデザインの核）
+
+- 筆ストローク1本 = 細長い要素に \`transform: rotate(-18deg)\`、端を border-radius で丸め、\`filter: blur(.4px)\` で軽くにじませる。片端をグラデで透明にして「かすれ」を出す
+- --purple 4〜6本・--lime 2〜3本を、画面の対角線方向にリズムよく配置（太い・細い・短いを混ぜる）
+- 不透明度は60〜90%。人物や文字の「上」にも1〜2本重ねる（前後の奥行きが出る）
+- 左下と右上に小さなドットパターン（4×4程度の小四角の集合）を --purple で添える
+
+## タイポグラフィ（巨大和文の大小ミックスが主役）
+
+- タイトルは2フレーズを縦に積む。**漢字1文字だけを超特大**にし、送り仮名を中サイズで添える:
+  - 1段目の例「**好**きを、」— 「好」は Shippori Mincho 800・**150〜190px**・--purple→--purple-light の縦グラデ、「きを、」は 70〜90px・--ink
+  - 2段目の例「**武器**に。」— 「武」を --lime、「器」を --ink（ともに Shippori Mincho 800・150〜190px）、「に。」は 70px・--ink
+- 明朝の縦画・ハネを活かし、文字同士を少し重ねて詰める（letter-spacing: -0.02em）
+- **スクリプト装飾**: 右側に "Design / Plan / Share" を Parisienne・--purple-light・44px で3行、縦に流す（写真に軽く重ねる）
+
+## メッセージボックス
+
+タイトル下・左寄せ。3行程度の細ゴシック（Zen Kaku Gothic New・22px・--ink・行間2.0）:
+- 各行の左に --ink の細い縦線マーカー（幅3px・行の高さ）を付ける
+- キーワード（例 "好き"）は “ ” で囲み、少しだけ大きく、または --purple にする
+
+## 円バッジ・フッター
+
+- **円バッジ**: 右下に細い --purple の輪郭円（直径150px・塗りは白60%透過）。中にコール文言（例「OPEN CAMPUS」）を --purple・Zen Kaku 700・26px・2行で
+- **フッター帯**: 最下部に白帯。中央にブランド/学校名を --purple・letter-spacing 0.3em の英字大文字で（例 MIRAI DESIGN LAB）。両脇に細いライン＋小さな星（✦）の飾り
+
+## チェックリスト（生成後に必ず確認）
+
+- [ ] 728×1030px固定で崩れ・スクロールが無いか
+- [ ] 筆ストロークが紫×ライムで対角に流れ、かすれ感があるか
+- [ ] タイトルが「超特大の漢字＋中サイズの仮名」の大小ミックスになっているか
+- [ ] 明朝（タイトル）と細ゴシック（本文）が混在し、役割分担できているか
+- [ ] 全体が白基調で明るく、余白と抜け感があるか（暗くベタ塗りにしない）
+- [ ] 実在の人物・学校名・ロゴを使っていないか
+`,
+  },
+
   // ===== サムネイル / その他画像 =====
   {
     id: "img-yt-thumb",
