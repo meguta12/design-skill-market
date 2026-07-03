@@ -6,8 +6,8 @@ const ORDER_EMAIL = "megupen.sab@gmail.com";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const GENRES = ["ホームページ", "スライド資料", "アプリUI", "広告ポスター", "その他画像"];
-const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱", "広告ポスター": "📣", "その他画像": "🖼️" };
+const GENRES = ["ホームページ", "スライド資料", "アプリUI", "広告ポスター", "サムネイル", "その他画像"];
+const GENRE_ICONS = { "ホームページ": "🌐", "スライド資料": "📊", "アプリUI": "📱", "広告ポスター": "📣", "サムネイル": "🎬", "その他画像": "🖼️" };
 const CATEGORIES = ["コーポレート", "LP・サービス", "店舗・飲食", "医療・クリニック", "ポートフォリオ", "和風・旅館", "教育・学習", "アプリ・ツール", "イベント・告知", "SNS・サムネイル", "その他"];
 const COLOR_TONES = ["ブルー系", "ダーク系", "グリーン系", "ブラウン系", "ベージュ・和色系", "モノクロ系", "カラフル", "その他"];
 const NEW_DAYS = 14; // この日数以内なら NEW バッジ
@@ -420,7 +420,7 @@ function autoSamples(d) {
     ];
   }
 
-  if (genre === "その他画像") {
+  if (genre === "その他画像" || genre === "サムネイル") {
     // サムネ・バナー等の横長キャンバス
     const canvasStage = (ratio, inner) => `
       <div class="sample-stage" style="background:${dark ? "#1a1f29" : "#e9ebf2"}">

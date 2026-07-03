@@ -1790,12 +1790,12 @@ description: 黒地×紫シアンのネオン発光ポスター（B判縦）をH
 `,
   },
 
-  // ===== その他画像 =====
+  // ===== サムネイル / その他画像 =====
   {
     id: "img-yt-thumb",
     creator: "keita-official",
     isSample: true,
-    genre: "その他画像",
+    genre: "サムネイル",
     category: "SNS・サムネイル",
     colorTone: "カラフル",
     price: 0,
@@ -1994,7 +1994,7 @@ description: 淡ベージュ×セリフ体の上品なInstagram告知スクエ�
     id: "img-ogp-eyecatch",
     creator: "keita-official",
     isSample: true,
-    genre: "その他画像",
+    genre: "サムネイル",
     category: "SNS・サムネイル",
     colorTone: "ブルー系",
     price: 0,
@@ -2086,6 +2086,185 @@ description: ブログ・note記事のOGP画像/アイキャッチ（1200×630�
 - [ ] タイトルサイズが文字数表に従っているか
 - [ ] 200px幅に縮小してもタイトルが読めるか
 - [ ] 色が4色トークンだけで構成されているか
+`,
+  },
+  {
+    id: "img-webinar-thumb",
+    creator: "keita-official",
+    isSample: true,
+    genre: "サムネイル",
+    category: "SNS・サムネイル",
+    colorTone: "ブルー系",
+    price: 0,
+    createdAt: "2026-07-02",
+    sampleSpec: { c1: "#1e40af", c2: "#0f172a", dark: true },
+    highlights: [
+      "ウェビナー・オンラインセミナー・勉強会の告知サムネを作りたい方",
+      "登壇者の顔写真枠と日時を、信頼感のある構成で見せたい方",
+      "connpass・Peatix・YouTube Liveのカバー画像を量産したい方",
+    ],
+    longDesc: "ウェビナー・セミナー告知に特化した16:9のサムネイル設計図です。濃紺のビジネス配色をベースに、左に大きな講演タイトルと日時、右に登壇者の丸フレーム、下部に主催ロゴ帯——「ちゃんとしたセミナー」に見える型を数値で固定しました。\n登壇者の枠・日時・タイトルを差し替えるだけで、connpass/Peatix/YouTube Liveのどこに出しても崩れない告知画像が作れます。",
+    title: "ウェビナー告知サムネ・信頼ブルー",
+    tags: ["ウェビナー", "セミナー", "16:9"],
+    desc: "濃紺×青のウェビナー・セミナー告知サムネ（16:9）。タイトル・日時・登壇者枠・主催ロゴ帯の固定レイアウトで「ちゃんとした告知」を作る設計図。",
+    features: [
+      "16:9の告知テンプレ（タイトル・日時・登壇者・主催）",
+      "登壇者の丸フレーム＋肩書の並べ方ルール",
+      "日時バッジと『オンライン開催』ラベルの型",
+      "connpass/Peatix/YouTube Liveで見切れないセーフエリア",
+    ],
+    downloads: 176,
+    seedReviews: [
+      { name: "勉強会主催", stars: 5, date: "2026-07-02", text: "毎月の勉強会サムネがこれで統一できました。登壇者枠の位置が決まっているのが本当に楽です。" },
+    ],
+    thumb: `<div class="thumb" style="background:linear-gradient(150deg,#1e3a8a,#0f172a)">
+      <div style="position:absolute;top:20%;left:14px;display:flex;flex-direction:column;gap:7px">
+        <div class="t-bar" style="background:#ffffff;width:120px;height:16px"></div>
+        <div class="t-bar" style="background:#60a5fa;width:80px;height:10px"></div>
+      </div>
+      <div style="position:absolute;top:24%;right:16px;width:64px;height:64px;border-radius:50%;background:#334155;border:2px solid #60a5fa"></div>
+      <div style="position:absolute;bottom:12px;left:14px;right:14px;height:8px;background:#ffffff22;border-radius:3px"></div>
+    </div>`,
+    skill: `---
+name: img-webinar-thumb
+description: 濃紺×青のウェビナー・セミナー告知サムネイル（16:9）をHTML/CSSで作るスキル。タイトル・日時・登壇者の丸フレーム・主催ロゴ帯の固定レイアウトが特徴。「ウェビナーのサムネ」「セミナー告知画像」「勉強会のカバー画像」の依頼で使う。
+---
+
+# ウェビナー告知サムネ・信頼ブルー デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでサムネイル1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="thumb-canvas">\` 1枚、**幅1280px × 高さ720px 固定**。position:absolute レイヤー構成
+- フォントは Google Fonts の **"Noto Sans JP"（500/800）** を読み込む
+- 登壇者の顔はプレースホルダー（丸フレーム＋差し替えコメント）で組む
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --navy: #0f172a;      /* 背景の濃紺 */
+  --navy-2: #1e3a8a;
+  --blue: #60a5fa;      /* アクセントの青 */
+  --white: #f8fafc;
+  --sub: #cbd5e1;       /* 補助テキスト */
+}
+\`\`\`
+
+## レイアウト
+
+1. **背景**: 150deg の --navy-2 → --navy グラデ。右上に --blue 10%透過の光。左端に --blue の縦帯（幅8px）
+2. **上部ラベル**: 左上に「オンライン開催」バッジ（--blue 地・白文字・角丸・22px）
+3. **タイトル**: 左半分に Noto Sans JP 800・**52〜72px**・--white・行間1.3・2〜3行。最重要ワードだけ --blue
+4. **日時バッジ**: タイトル下に日付＋時間（白角丸カードに --navy 文字・28px。日付を最大強調）
+5. **登壇者枠**: 右側に丸フレーム（直径220px・--blue の2px枠）を1〜3個。各フレーム下に氏名（20px・白）＋肩書（14px・--sub）。「ここに登壇者の顔写真」コメント必須
+6. **主催帯**: 最下部に主催・ロゴのプレースホルダー行（--white 40%透過の角丸・高さ20px）
+
+## セーフエリア（配信面で見切れない工夫）
+
+- 外周 **48px** には主要素を置かない（YouTube Liveのタイトル帯・再生ボタンで隠れる）
+- 中央下の再生ボタン位置（直径120px相当）に顔や文字を重ねない
+
+## チェックリスト
+
+- [ ] 1280×720px固定か
+- [ ] タイトルが52px以上で、最重要ワードだけ青になっているか
+- [ ] 日時が一目でわかる大きさ・位置にあるか
+- [ ] 登壇者枠が丸フレームで、氏名・肩書が揃っているか
+- [ ] 中央下と外周48pxに主要素が被っていないか
+- [ ] 色が濃紺・青・白＋補助グレーに収まっているか
+`,
+  },
+  {
+    id: "img-sns-header",
+    creator: "keita-official",
+    isSample: true,
+    genre: "その他画像",
+    category: "SNS・サムネイル",
+    colorTone: "モノクロ系",
+    price: 0,
+    createdAt: "2026-07-02",
+    sampleSpec: { c1: "#111827", c2: "#f3f4f6" },
+    highlights: [
+      "X(Twitter)・YouTube・noteのヘッダー/バナー画像を作りたい方",
+      "プロフィールアイコンやボタンで文字が隠れない設計が欲しい方",
+      "肩書・キャッチ・実績を1枚で伝えたい個人・フリーランスの方",
+    ],
+    longDesc: "X・YouTube・noteのヘッダー画像に特化した横長バナーの設計図です。各SNSでアイコンやボタンに隠れる位置を避ける『セーフエリア』を最優先に設計し、中央にキャッチコピー＋肩書、脇に実績や提供メニューを整理——「何をしている人か」が一目で伝わる型を数値で固定しました。\nプラットフォームごとの推奨比率と、隠れる領域の逃がし方まで指定してあります。",
+    title: "SNSヘッダー・セーフエリア設計",
+    tags: ["ヘッダー", "バナー", "プロフィール"],
+    desc: "X・YouTube・note向けの横長ヘッダー画像。アイコン/ボタンで隠れないセーフエリア設計とキャッチ・肩書の型で「何者か」を1枚で伝える設計図。",
+    features: [
+      "各SNSの推奨比率と隠れ領域を避けるセーフエリア定義",
+      "中央キャッチ＋肩書＋実績3点の並べ方",
+      "プロフィールアイコン被りを逃がす左下の空け方",
+      "モノトーン基調＋1アクセントの上品な配色ルール",
+    ],
+    downloads: 198,
+    seedReviews: [
+      { name: "フリーランスデザイナー", stars: 5, date: "2026-07-02", text: "Xのヘッダーで文字が丸アイコンに隠れる問題がやっと解決。セーフエリアの数値が神です。" },
+    ],
+    thumb: `<div class="thumb" style="background:#f3f4f6">
+      <div style="position:absolute;inset:12px;border:2px dashed #d1d5db;border-radius:4px"></div>
+      <div style="position:absolute;top:38%;left:24%;right:24%;display:flex;flex-direction:column;gap:6px;align-items:center">
+        <div class="t-bar" style="background:#111827;width:80%;height:12px"></div>
+        <div class="t-bar" style="background:#6b7280;width:50%;height:7px"></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;width:26px;height:26px;border-radius:50%;background:#111827"></div>
+    </div>`,
+    skill: `---
+name: img-sns-header
+description: X(Twitter)・YouTube・note向けの横長ヘッダー/バナー画像をHTML/CSSで作るスキル。各SNSのセーフエリア設計・キャッチ・肩書の型が特徴。「SNSのヘッダー」「プロフィールバナー」「YouTubeのチャンネルアート」の依頼で使う。
+---
+
+# SNSヘッダー・セーフエリア設計 デザインスキル
+
+このスキルは「Design Skill Market」で配布されているデザイン定義です。
+以下のルールに **厳密に** 従って、HTML/CSSでヘッダー画像1枚を生成してください。独自のアレンジは、ユーザーに頼まれない限り加えないこと。
+
+## 出力形式（必ず守る）
+
+- \`<div class="header-canvas">\` 1枚。用途で比率を選ぶ（ユーザー指定がなければ X 用）:
+  - **X(Twitter)**: 1500×500px
+  - **YouTube チャンネルアート**: 2560×1440px（PC表示のセーフエリアは中央 1546×423px）
+  - **note**: 1600×640px
+- フォントは Google Fonts の **"Noto Sans JP"（400/700）** を読み込む
+
+## デザイントークン
+
+\`\`\`css
+:root {
+  --ink: #111827;       /* 文字・背景の主色 */
+  --paper: #f3f4f6;     /* 明るい背景 */
+  --gray: #6b7280;      /* 肩書・補助 */
+  --accent: #2563eb;    /* アクセント1色（差し替え可） */
+}
+\`\`\`
+
+## セーフエリア（このスキルの主目的）
+
+**主要な文字・ロゴは必ず中央のセーフエリア内に置く。** 各SNSで隠れる領域を避ける:
+- **X**: スマホではヘッダー上下が切れる。上下 各60px と 左下（プロフィールアイコン直径約130px＋余白）に主要素を置かない
+- **YouTube**: PC以外では中央帯（1546×423px）以外が見切れる。テキストは必ずこの中央帯に収める
+- **note**: 上下の端 各50px を避ける
+
+## レイアウト
+
+1. **背景**: --ink 全面 or --paper 全面（明暗どちらか）。反対色の斜め帯 or 大きな円を1つ置いて単調さ回避
+2. **中央キャッチ**: セーフエリア中央に Noto Sans JP 700・比率に応じ 48〜72px・1行。最重要語のみ --accent
+3. **肩書・提供価値**: キャッチ下に 24〜28px・--gray・1行（例「Webデザイン / 月10本の制作実績」）
+4. **実績・メニュー**: 右側 or 下部に「・」区切りで3点まで（20px）
+5. **アイコン被り回避**: X/note はプロフィールアイコンが左下 or 中央下に重なる → その円形領域には何も置かない
+
+## チェックリスト
+
+- [ ] 選んだ比率のサイズで固定されているか
+- [ ] 主要な文字が各SNSのセーフエリア内に収まっているか
+- [ ] プロフィールアイコンが重なる位置に文字・ロゴが無いか
+- [ ] キャッチが1行で「何をしている人か」を伝えているか
+- [ ] 色が主色2つ＋アクセント1色に収まっているか
 `,
   },
 ];
