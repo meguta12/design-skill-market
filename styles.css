@@ -54,6 +54,8 @@ a { color: inherit; text-decoration: none; }
 .btn-ghost { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
 .btn-ghost:hover { background: var(--accent-soft); }
 .btn-block { width: 100%; }
+.submit-actions { display: flex; gap: 12px; align-items: center; }
+.submit-actions .btn-block { width: auto; flex: 1; }
 
 /* ----- sections ----- */
 .section-title { font-size: 28px; font-weight: 800; text-align: center; margin-bottom: 12px; }
@@ -383,12 +385,15 @@ a { color: inherit; text-decoration: none; }
 #sb-skill { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.6; }
 
 .my-works { list-style: none; }
-.my-works li {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px;
+.my-work-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; flex-wrap: wrap;
 }
-.my-works a { color: var(--accent); font-weight: 700; }
-.my-works a:hover { text-decoration: underline; }
+.my-work-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.my-work-main a { color: var(--accent); font-weight: 700; }
+.my-work-main a:hover { text-decoration: underline; }
+.my-work-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.my-work-dl { font-size: 12px; color: var(--ink-faint); }
 .text-danger {
   background: none; border: none; color: #d23b3b; font-size: 12px;
   cursor: pointer; font-weight: 700;

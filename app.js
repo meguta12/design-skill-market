@@ -762,9 +762,16 @@ function showAccount() {
       <h2 class="panel-sub">自分の投稿（${works.length}件)</h2>
       ${works.length
         ? `<ul class="my-works">${works.map(d => `
-            <li>
-              <a href="#" onclick="showDetail('${d.id}'); return false;">${escapeHtml(d.title)}</a>
-              <button class="text-danger" onclick="deleteUserDesign('${d.id}')">削除</button>
+            <li class="my-work-row">
+              <div class="my-work-main">
+                <span class="tag tag-genre">${GENRE_ICONS[d.genre] || "🌐"} ${escapeHtml(d.genre || "ホームページ")}</span>
+                <a href="#" onclick="showDetail('${d.id}'); return false;">${escapeHtml(d.title)}</a>
+              </div>
+              <div class="my-work-actions">
+                <span class="my-work-dl">⬇ ${totalDownloads(d).toLocaleString()}</span>
+                <button class="btn btn-ghost btn-sm" onclick="editDesign('${d.id}')">編集</button>
+                <button class="text-danger" onclick="deleteUserDesign('${d.id}')">削除</button>
+              </div>
             </li>`).join("")}</ul>`
         : `<p class="empty-note">まだ投稿がありません。<a href="#" onclick="showSubmit(); return false;">最初のデザインを投稿してみましょう →</a></p>`}
     ` : ""}
@@ -966,7 +973,16 @@ async function deleteReviewAdmin(id) {
 }
 
 // ---------- デザイン投稿 ----------
-function showSubmit() {
+function editDesign(id) {
+  const d = findDesign(id);
+  if (!session || !d || d.creator !== session.user.id) {
+    toast("編集できるのは自分の投稿だけです");
+    return;
+  }
+  showSubmit(id);
+}
+
+function showSubmit(editId) {
   const body = document.getElementById("submit-body");
 
   if (!session || !myProfile) {
@@ -980,40 +996,53 @@ function showSubmit() {
     return;
   }
 
+  const d = editId ? findDesign(editId) : null;
+  if (editId && (!d || d.creator !== session.user.id)) {
+    toast("編集できるのは自分の投稿だけです");
+    editId = null;
+  }
+  const isEdit = !!editId;
+  const spec = (d && d.sampleSpec) || {};
+
   body.innerHTML = `
   <div class="panel">
-    <h1 class="panel-title">デザインを投稿</h1>
-    <p class="panel-lead">あなたのデザインの「作り方」をスキルとして共有しましょう。投稿者として「${escapeHtml(myProfile.name)}」が表示されます。</p>
+    <h1 class="panel-title">${isEdit ? "デザインを編集" : "デザインを投稿"}</h1>
+    <p class="panel-lead">${isEdit
+      ? "変更を保存すると、公開中のページにすぐ反映されます。"
+      : `あなたのデザインの「作り方」をスキルとして共有しましょう。投稿者として「${escapeHtml(myProfile.name)}」が表示されます。`}</p>
     <form class="nice-form" id="submit-form">
-      <label>ジャンル（必須）<select id="sb-genre">${GENRES.map(g => `<option>${g}</option>`).join("")}</select></label>
-      <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP"></label>
-      <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発"></label>
-      <label>説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？"></textarea></label>
-      <label>こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム"></textarea></label>
-      <label>詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。"></textarea></label>
+      <label>ジャンル（必須）<select id="sb-genre">${GENRES.map(g => `<option ${d && d.genre === g ? "selected" : ""}>${g}</option>`).join("")}</select></label>
+      <label>デザイン名（必須）<input type="text" id="sb-title" required maxlength="40" placeholder="例：ネオン・ダークLP" value="${escapeHtml(d ? d.title : "")}"></label>
+      <label>タグ（カンマ区切り・3つまで）<input type="text" id="sb-tags" placeholder="例：LP, ダーク, 個人開発" value="${escapeHtml(d ? (d.tags || []).join(", ") : "")}"></label>
+      <label>説明文（必須・一覧に表示される短い紹介）<textarea id="sb-desc" rows="3" required maxlength="200" placeholder="どんなサイト/資料/アプリ向けの、どんなデザインですか？">${escapeHtml(d ? d.desc : "")}</textarea></label>
+      <label>こんな方におすすめ（1行に1つ・3つまで）<textarea id="sb-highlights" rows="3" placeholder="例：&#10;個人開発のLPを今っぽくしたい方&#10;デザイナーなしでUIを整えたいチーム">${escapeHtml(d ? (d.highlights || []).join("\n") : "")}</textarea></label>
+      <label>詳しい説明（商品ページに表示される紹介文）<textarea id="sb-longdesc" rows="5" maxlength="1000" placeholder="このデザインの特徴・どんな場面で使えるか・工夫した点などを自由に。空行で段落を分けられます。">${escapeHtml(d ? d.longDesc : "")}</textarea></label>
       <label>使用例画像のURL（1行に1つ・10枚まで）
-        <textarea id="sb-images" rows="3" placeholder="https://...png&#10;https://...jpg"></textarea>
+        <textarea id="sb-images" rows="3" placeholder="https://...png&#10;https://...jpg">${escapeHtml(d ? (d.imageUrls || []).join("\n") : "")}</textarea>
         <span class="form-hint">実際にこのスキルで作った画面のスクリーンショットがあると、ダウンロード率が大きく上がります。</span>
       </label>
       <div class="color-row">
-        <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option>${c}</option>`).join("")}</select></label>
-        <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option>${c}</option>`).join("")}</select></label>
+        <label>カテゴリ<select id="sb-category">${CATEGORIES.map(c => `<option ${d && d.category === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
+        <label>カラー系統<select id="sb-colortone">${COLOR_TONES.map(c => `<option ${d && d.colorTone === c ? "selected" : ""}>${c}</option>`).join("")}</select></label>
       </div>
-      <label>特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き"></textarea></label>
+      <label>特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き">${escapeHtml(d ? (d.features || []).join("\n") : "")}</textarea></label>
       <div class="color-row">
-        <label>メインカラー<input type="color" id="sb-color1" value="#4f46e5"></label>
-        <label>背景カラー<input type="color" id="sb-color2" value="#f5f5fa"></label>
+        <label>メインカラー<input type="color" id="sb-color1" value="${spec.c1 || "#4f46e5"}"></label>
+        <label>背景カラー<input type="color" id="sb-color2" value="${spec.c2 || "#f5f5fa"}"></label>
       </div>
       <label>スキル本文（.mdの中身）
         <textarea id="sb-skill" rows="14" required spellcheck="false"></textarea>
       </label>
       <p class="form-hint">💡 テンプレートを用意してあります。デザイントークン・構成・チェックリストを埋めると、Claude が再現しやすい良いスキルになります。</p>
-      <button type="submit" class="btn btn-primary btn-block">このデザインを公開する</button>
+      <div class="submit-actions">
+        <button type="submit" class="btn btn-primary btn-block">${isEdit ? "変更を保存する" : "このデザインを公開する"}</button>
+        ${isEdit ? `<button type="button" class="btn btn-ghost" onclick="showDetail('${editId}')">キャンセル</button>` : ""}
+      </div>
     </form>
   </div>`;
   showView("submit");
 
-  document.getElementById("sb-skill").value = skillTemplate();
+  document.getElementById("sb-skill").value = d ? d.skill : skillTemplate();
 
   document.getElementById("submit-form").addEventListener("submit", async e => {
     e.preventDefault();
@@ -1031,8 +1060,6 @@ function showSubmit() {
       .split("\n").map(u => u.trim()).filter(u => /^https?:\/\//.test(u)).slice(0, 10);
 
     const row = {
-      id: "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      creator: session.user.id,
       title,
       tags: tags.length ? tags : ["オリジナル"],
       description: document.getElementById("sb-desc").value.trim(),
@@ -1048,6 +1075,19 @@ function showSubmit() {
       thumb: genThumb(c1, c2),
       skill: document.getElementById("sb-skill").value,
     };
+
+    if (isEdit) {
+      const { data, error } = await sb.from("designs").update(row).eq("id", editId).select().single();
+      if (error) { toast("保存に失敗しました: " + error.message); return; }
+      const idx = cloud.designs.findIndex(x => x.id === editId);
+      if (idx !== -1) cloud.designs[idx] = designFromRow(data);
+      toast("変更を保存しました");
+      showDetail(editId);
+      return;
+    }
+
+    row.id = "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    row.creator = session.user.id;
     const { data, error } = await sb.from("designs").insert(row).select().single();
     if (error) { toast("公開に失敗しました: " + error.message); return; }
     cloud.designs.unshift(designFromRow(data));
