@@ -214,7 +214,8 @@ function cardHtml(d) {
   const dl = totalDownloads(d);
   const cr = findCreator(d.creator);
   return `
-  <article class="design-card" onclick="showDetail('${d.id}')">
+  <article class="design-card" tabindex="0" role="button" aria-label="${escapeHtml(d.title)}の詳細を見る"
+    onclick="showDetail('${d.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showDetail('${d.id}');}">
     <div class="badge-row">
       ${priceBadgeHtml(d)}
       ${sampleBadgeHtml(d)}
@@ -228,9 +229,10 @@ function cardHtml(d) {
       </div>
       <h3 class="card-title">${escapeHtml(d.title)}</h3>
       <p class="card-desc">${escapeHtml(d.desc)}</p>
-      <div class="card-creator" onclick="event.stopPropagation(); showCreator('${d.creator}')">
+      <button type="button" class="card-creator" tabindex="-1" aria-hidden="true"
+        onclick="event.stopPropagation(); showCreator('${d.creator}')">
         ${avatarHtml(cr, "sm")} <span class="creator-name">${escapeHtml(cr.name)}</span>
-      </div>
+      </button>
       <div class="card-meta">
         <span>${ratingMetaHtml(d)}</span>
         <span class="dl-count">${dl.toLocaleString()} DL</span>
@@ -502,8 +504,11 @@ function showSampleIdx(i) {
   if (!item) return;
   document.getElementById("gallery-main").innerHTML = item.img
     ? `<img class="gallery-img" src="${escapeHtml(item.img)}" alt="${escapeHtml(item.label)}"
+        tabindex="0" role="button" aria-label="クリックまたはEnterで全体表示を切り替え"
         onload="this.classList.add(this.naturalHeight > this.naturalWidth * 1.3 ? 'img-tall' : 'img-wide')"
-        onclick="this.classList.toggle('expanded')" title="クリックで全体表示/戻る">`
+        onclick="this.classList.toggle('expanded')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('expanded');}"
+        title="クリックで全体表示/戻る">`
     : item.html;
   document.querySelectorAll(".gallery-thumb").forEach((b, idx) =>
     b.classList.toggle("active", idx === i));
@@ -550,7 +555,8 @@ function renderDetail(d) {
         <span class="design-id">ID: ${d.id}</span>
       </div>
       <div class="creator-box">
-        <div class="creator-box-head" onclick="showCreator('${d.creator}')">
+        <div class="creator-box-head" tabindex="0" role="button" aria-label="${escapeHtml(cr.name)}のプロフィールを見る"
+          onclick="showCreator('${d.creator}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showCreator('${d.creator}');}">
           ${avatarHtml(cr, "sm")}
           <div>
             <div class="creator-box-name">${escapeHtml(cr.name)}</div>
@@ -604,8 +610,8 @@ function renderDetail(d) {
 
     <form class="review-form nice-form" id="review-form">
       <h3>レビューを書く</h3>
-      <div class="star-input" id="star-input">
-        ${[1,2,3,4,5].map(i => `<span data-v="${i}">★</span>`).join("")}
+      <div class="star-input" id="star-input" role="radiogroup" aria-label="評価（星の数）">
+        ${[1,2,3,4,5].map(i => `<span data-v="${i}" role="radio" aria-checked="false" aria-label="★${i}" tabindex="${i === 1 ? "0" : "-1"}">★</span>`).join("")}
       </div>
       <label>ニックネーム<input type="text" id="rv-name" required maxlength="30" placeholder="ニックネーム"></label>
       <label>コメント<textarea id="rv-text" rows="3" required maxlength="400" placeholder="使ってみた感想を教えてください"></textarea></label>
@@ -615,13 +621,25 @@ function renderDetail(d) {
 
   showSampleIdx(0);
 
-  // 星入力
+  // 星入力（role=radiogroup。クリック・矢印キー・Space/Enterで操作可能）
   const starInput = document.getElementById("star-input");
-  starInput.querySelectorAll("span").forEach(s => {
-    s.addEventListener("click", () => {
-      pendingStars = parseInt(s.dataset.v, 10);
-      starInput.querySelectorAll("span").forEach(x =>
-        x.classList.toggle("on", parseInt(x.dataset.v, 10) <= pendingStars));
+  const starEls = [...starInput.querySelectorAll("span")];
+  const selectStar = (v, { focus = true } = {}) => {
+    pendingStars = v;
+    starEls.forEach(x => {
+      const on = parseInt(x.dataset.v, 10) <= v;
+      x.classList.toggle("on", on);
+      x.setAttribute("aria-checked", parseInt(x.dataset.v, 10) === v ? "true" : "false");
+      x.tabIndex = parseInt(x.dataset.v, 10) === v ? 0 : -1;
+    });
+    if (focus) starEls[v - 1].focus();
+  };
+  starEls.forEach((s, i) => {
+    s.addEventListener("click", () => selectStar(parseInt(s.dataset.v, 10), { focus: false }));
+    s.addEventListener("keydown", e => {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); selectStar(parseInt(s.dataset.v, 10)); return; }
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); selectStar(starEls[(i + 1) % starEls.length].dataset.v | 0); return; }
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); selectStar(starEls[(i - 1 + starEls.length) % starEls.length].dataset.v | 0); }
     });
   });
 
@@ -1325,22 +1343,52 @@ async function doDownload(id) {
 }
 
 // ---------- モーダル ----------
+// Esc閉じ・フォーカストラップ・開く前のフォーカス位置への復帰に対応
 let adTimer;
+let modalLastFocused = null;
+let modalKeydownHandler = null;
+const FOCUSABLE_SEL = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 function openModal(html) {
   closeModal();
+  modalLastFocused = document.activeElement;
   const overlay = document.createElement("div");
   overlay.className = "modal-overlay";
   overlay.id = "modal-overlay";
-  overlay.innerHTML = `<div class="modal">${html}</div>`;
+  overlay.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
   overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
   document.body.appendChild(overlay);
   document.body.style.overflow = "hidden";
+
+  const modal = overlay.querySelector(".modal");
+  const heading = modal.querySelector(".modal-title, h1, h2, h3");
+  if (heading) {
+    if (!heading.id) heading.id = "modal-heading-" + Date.now();
+    modal.setAttribute("aria-labelledby", heading.id);
+  }
+  const focusables = () => [...modal.querySelectorAll(FOCUSABLE_SEL)];
+  (focusables()[0] || modal).focus({ preventScroll: true });
+  if (!modal.hasAttribute("tabindex")) modal.tabIndex = -1;
+
+  modalKeydownHandler = e => {
+    if (e.key === "Escape") { e.preventDefault(); closeModal(); return; }
+    if (e.key !== "Tab") return;
+    const list = focusables();
+    if (!list.length) return;
+    const first = list[0], last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+  document.addEventListener("keydown", modalKeydownHandler);
 }
 function closeModal() {
   clearInterval(adTimer);
+  if (modalKeydownHandler) { document.removeEventListener("keydown", modalKeydownHandler); modalKeydownHandler = null; }
   const el = document.getElementById("modal-overlay");
   if (el) el.remove();
   document.body.style.overflow = "";
+  if (modalLastFocused && document.contains(modalLastFocused)) modalLastFocused.focus({ preventScroll: true });
+  modalLastFocused = null;
 }
 
 // 広告ポップアップ（5秒カウントダウン後にDLボタンが有効になる）

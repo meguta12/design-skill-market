@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://designskillmarket.com/">
 <meta property="og:image" content="https://designskillmarket.com/assets/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="styles.css?v=20260706">
+<link rel="stylesheet" href="styles.css?v=20260708">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -69,7 +69,7 @@
     <a class="logo" href="#" onclick="showHome(); return false;">
       <span class="logo-mark">◆</span> Design Skill Market
     </a>
-    <nav class="nav">
+    <nav class="nav" id="nav">
       <a href="#gallery" onclick="showHome()">デザイン一覧</a>
       <a href="#about" onclick="showHome()">使い方</a>
       <a href="#order" onclick="showHome()">制作代行</a>
@@ -77,6 +77,9 @@
       <a href="#" class="nav-admin" id="nav-admin" onclick="showAdmin(); return false;" hidden>管理</a>
       <a href="#" class="nav-account" id="nav-account" onclick="showAccount(); return false;">アカウント作成</a>
     </nav>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav" aria-label="メニューを開く">
+      <span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>
+    </button>
   </div>
 </header>
 
@@ -103,7 +106,7 @@
         <span><b>6ジャンル</b>を配布中</span>
       </div>
       <div class="hero-genres">
-        <span onclick="setGenre('ホームページ'); document.getElementById('gallery').scrollIntoView()">ホームページ</span><span onclick="setGenre('スライド資料'); document.getElementById('gallery').scrollIntoView()">スライド資料</span><span onclick="setGenre('アプリUI'); document.getElementById('gallery').scrollIntoView()">アプリUI</span><span onclick="setGenre('広告ポスター'); document.getElementById('gallery').scrollIntoView()">広告ポスター</span><span onclick="setGenre('サムネイル'); document.getElementById('gallery').scrollIntoView()">サムネイル</span><span onclick="setGenre('その他画像'); document.getElementById('gallery').scrollIntoView()">その他画像</span>
+        <span tabindex="0" role="button" onclick="setGenre('ホームページ'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('ホームページ'); document.getElementById('gallery').scrollIntoView()}">ホームページ</span><span tabindex="0" role="button" onclick="setGenre('スライド資料'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('スライド資料'); document.getElementById('gallery').scrollIntoView()}">スライド資料</span><span tabindex="0" role="button" onclick="setGenre('アプリUI'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('アプリUI'); document.getElementById('gallery').scrollIntoView()}">アプリUI</span><span tabindex="0" role="button" onclick="setGenre('広告ポスター'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('広告ポスター'); document.getElementById('gallery').scrollIntoView()}">広告ポスター</span><span tabindex="0" role="button" onclick="setGenre('サムネイル'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('サムネイル'); document.getElementById('gallery').scrollIntoView()}">サムネイル</span><span tabindex="0" role="button" onclick="setGenre('その他画像'); document.getElementById('gallery').scrollIntoView()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setGenre('その他画像'); document.getElementById('gallery').scrollIntoView()}">その他画像</span>
       </div>
     </div>
 
@@ -319,10 +322,26 @@ window.addEventListener("scroll", checkReveals, { passive: true });
 window.addEventListener("resize", checkReveals);
 const revealTimer = setInterval(checkReveals, 450); // scrollイベントが来ない環境への保険（全表示後に自動停止）
 checkReveals();
+
+// モバイル用ハンバーガーメニュー（860px以下でヘッダーの主要ナビが隠れる代わりに開閉ドロワーで表示）
+const navToggle = document.getElementById("nav-toggle");
+const navMenu = document.getElementById("nav");
+function setNavOpen(open) {
+  navMenu.classList.toggle("nav-open", open);
+  navToggle.classList.toggle("open", open);
+  navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  navToggle.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+}
+navToggle.addEventListener("click", () => setNavOpen(!navMenu.classList.contains("nav-open")));
+navMenu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => setNavOpen(false)));
+document.addEventListener("click", e => {
+  if (navMenu.classList.contains("nav-open") && !navMenu.contains(e.target) && e.target !== navToggle && !navToggle.contains(e.target)) setNavOpen(false);
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") setNavOpen(false); });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script src="data.js?v=20260707"></script>
-<script src="app.js?v=20260707"></script>
+<script src="app.js?v=20260708"></script>
 </body>
 </html>
