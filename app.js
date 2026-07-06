@@ -308,6 +308,57 @@ function renderHeaderAccount() {
   document.getElementById("nav-admin").hidden = !isAdminUser();
 }
 
+// ---------- ルーティング（デザイン/クリエイターへの固有URL・ブラウザ履歴・meta動的更新） ----------
+const SITE_URL = "https://designskillmarket.com/";
+const DEFAULT_META = {
+  title: document.title,
+  description: document.querySelector('meta[name="description"]').getAttribute("content"),
+  url: SITE_URL,
+};
+
+function setMeta({ title, description, url }) {
+  document.title = title;
+  document.querySelector('meta[name="description"]').setAttribute("content", description);
+  document.querySelector('link[rel="canonical"]').setAttribute("href", url);
+  document.querySelector('meta[property="og:title"]').setAttribute("content", title);
+  document.querySelector('meta[property="og:description"]').setAttribute("content", description);
+  document.querySelector('meta[property="og:url"]').setAttribute("content", url);
+  const tw = document.querySelector('meta[name="twitter:title"]');
+  const twd = document.querySelector('meta[name="twitter:description"]');
+  if (tw) tw.setAttribute("content", title);
+  if (twd) twd.setAttribute("content", description);
+}
+function resetMeta() { setMeta(DEFAULT_META); }
+
+// 同じビュー(+同じid/editId)への再描画では履歴を汚さない。実際にビューが変わる時だけ履歴に積む
+function navigate(view, url, state = {}) {
+  const id = state.id ?? null;
+  const editId = state.editId ?? null;
+  const current = history.state;
+  if (current && current.view === view && current.id === id && current.editId === editId) return;
+  history.pushState({ view, id, editId }, "", url);
+}
+
+function restoreFromLocation() {
+  const params = new URLSearchParams(location.search);
+  const d = params.get("d");
+  const c = params.get("creator");
+  if (d && findDesign(d)) { showDetail(d, { skipHistory: true }); return; }
+  if (c) { showCreator(c, { skipHistory: true }); return; }
+  showHome({ skipHistory: true });
+}
+
+window.addEventListener("popstate", e => {
+  const s = e.state;
+  if (s && s.view === "detail" && s.id && findDesign(s.id)) { showDetail(s.id, { skipHistory: true }); return; }
+  if (s && s.view === "creator" && s.id) { showCreator(s.id, { skipHistory: true }); return; }
+  if (s && s.view === "submit") { showSubmit(s.editId || undefined, { skipHistory: true }); return; }
+  if (s && s.view === "account") { showAccount({ skipHistory: true }); return; }
+  if (s && s.view === "admin") { showAdmin({ skipHistory: true }); return; }
+  if (s && s.view === "home") { showHome({ skipHistory: true }); return; }
+  restoreFromLocation(); // stateが無い(直接アクセスされた等)場合はURLクエリから復元
+});
+
 // ---------- ビュー切り替え ----------
 const VIEWS = ["home", "detail", "creator", "account", "submit", "admin"];
 function showView(name) {
@@ -315,9 +366,12 @@ function showView(name) {
   window.scrollTo({ top: 0 });
 }
 
-function showHome() {
+function showHome(opts = {}) {
   renderGallery();
   showView("home");
+  resetMeta();
+  // ページ内アンカー(#gallery等)へのスクロールはブラウザ標準の挙動に任せ、SPAの履歴管理は素のパスで統一する
+  if (!opts.skipHistory) navigate("home", location.pathname);
 }
 
 // ---------- 使用例ギャラリー（CSSモックを自動生成 + 投稿画像） ----------
@@ -517,11 +571,17 @@ function showSampleIdx(i) {
 // ---------- デザイン詳細 ----------
 let pendingStars = 0;
 
-function showDetail(id) {
+function showDetail(id, opts = {}) {
   const d = findDesign(id);
   if (!d) return;
   showView("detail");
   renderDetail(d);
+  setMeta({
+    title: `${d.title}｜Design Skill Market`,
+    description: (d.desc || "").trim() || DEFAULT_META.description,
+    url: `${SITE_URL}?d=${encodeURIComponent(d.id)}`,
+  });
+  if (!opts.skipHistory) navigate("detail", `?d=${encodeURIComponent(d.id)}`, { id: d.id });
 }
 
 function renderDetail(d) {
@@ -668,7 +728,7 @@ function renderDetail(d) {
 }
 
 // ---------- クリエイタープロフィール ----------
-function showCreator(id) {
+function showCreator(id, opts = {}) {
   const cr = findCreator(id);
   if (!cr) return;
   const works = designsByCreator(id);
@@ -693,6 +753,12 @@ function showCreator(id) {
     : `<p class="empty-note">まだ投稿がありません。</p>`}
   `;
   showView("creator");
+  setMeta({
+    title: `${cr.name}のプロフィール｜Design Skill Market`,
+    description: (cr.bio || "").trim() || `${cr.name}が投稿したデザインスキル一覧。${DEFAULT_META.description}`,
+    url: `${SITE_URL}?creator=${encodeURIComponent(id)}`,
+  });
+  if (!opts.skipHistory) navigate("creator", `?creator=${encodeURIComponent(id)}`, { id });
 }
 
 // ---------- 認証・アカウント ----------
@@ -721,7 +787,7 @@ async function loadMyProfile() {
   if (myProfile) cloud.profiles[myProfile.id] = myProfile;
 }
 
-function showAccount() {
+function showAccount(opts = {}) {
   const body = document.getElementById("account-body");
 
   if (!session) {
@@ -746,6 +812,8 @@ function showAccount() {
       </form>
     </div>`;
     showView("account");
+    resetMeta();
+    if (!opts.skipHistory) navigate("account", location.pathname);
 
     const email = () => document.getElementById("auth-email").value.trim();
     const pass = () => document.getElementById("auth-pass").value;
@@ -805,6 +873,8 @@ function showAccount() {
     ` : ""}
   </div>`;
   showView("account");
+  resetMeta();
+  if (!opts.skipHistory) navigate("account", location.pathname);
 
   document.getElementById("account-form").addEventListener("submit", async e => {
     e.preventDefault();
@@ -908,10 +978,12 @@ async function deleteUserDesign(id) {
 }
 
 // ---------- 管理ページ（管理者のみ・全部日本語） ----------
-function showAdmin() {
+function showAdmin(opts = {}) {
   if (!isAdminUser()) { toast("管理者のみアクセスできます"); return; }
   renderAdmin();
   showView("admin");
+  resetMeta();
+  if (!opts.skipHistory) navigate("admin", location.pathname);
 }
 
 function renderAdmin() {
@@ -1075,7 +1147,7 @@ function editDesign(id) {
   showSubmit(id);
 }
 
-function showSubmit(editId) {
+function showSubmit(editId, opts = {}) {
   const body = document.getElementById("submit-body");
 
   if (!session || !myProfile) {
@@ -1086,6 +1158,8 @@ function showSubmit(editId) {
       <button class="btn btn-primary" onclick="showAccount()">${!session ? "ログイン / 新規登録へ" : "プロフィールを設定する"}</button>
     </div>`;
     showView("submit");
+    resetMeta();
+    if (!opts.skipHistory) navigate("submit", location.pathname, { editId: editId || null });
     return;
   }
 
@@ -1136,6 +1210,8 @@ function showSubmit(editId) {
     </form>
   </div>`;
   showView("submit");
+  resetMeta();
+  if (!opts.skipHistory) navigate("submit", location.pathname, { editId: editId || null });
 
   document.getElementById("sb-skill").value = d ? d.skill : skillTemplate();
   renderImagePreviews();
@@ -1606,4 +1682,5 @@ function startMarquee(track, pxPerSec) {
   renderGenreTabs(); // 件数を更新
   renderGallery();   // クラウドの投稿・レビュー・DL数を反映
   buildHeroMarquee();
+  restoreFromLocation(); // クラウドの投稿も解決できるよう、この位置でURL(?d=/?creator=)からの初期表示を復元
 })();
