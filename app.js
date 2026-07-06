@@ -202,10 +202,15 @@ function sampleBadgeHtml(d) {
   return d.isSample ? `<span class="badge badge-sample">運営サンプル</span>` : "";
 }
 
+// 運営サンプル画像は軽量版(assets/samples/small/)があれば一覧・マーキーで使う（フル画像は詳細ページのみ）
+function smallImageUrl(url) {
+  return url.startsWith("assets/samples/") ? url.replace("assets/samples/", "assets/samples/small/") : url;
+}
+
 function cardThumbHtml(d) {
   // 実画像があればそれをサムネイルに、なければCSSモック
   if (d.imageUrls && d.imageUrls.length) {
-    return `<div class="thumb thumb-photo"><img src="${escapeHtml(d.imageUrls[0])}" alt="${escapeHtml(d.title)}の完成イメージ" loading="lazy"></div>`;
+    return `<div class="thumb thumb-photo"><img src="${escapeHtml(smallImageUrl(d.imageUrls[0]))}" alt="${escapeHtml(d.title)}の完成イメージ" loading="lazy"></div>`;
   }
   return d.thumb;
 }
@@ -1079,8 +1084,11 @@ async function deleteReviewAdmin(id) {
 }
 
 // ---------- デザイン投稿 ----------
-// ---------- 投稿フォームの画像アップロード（クライアントでリサイズしてdata URL化。バックエンド変更不要） ----------
-let submitImages = []; // 現在フォームに入っている画像（data URL または既存URL）の配列
+// ---------- 投稿フォームの画像アップロード ----------
+// クライアントでリサイズ後、Supabase Storage(design-imagesバケット)にアップロードして
+// 公開URLをimage_urlsに保存する（DBにbase64を入れず転送量を抑えるため）。
+// 既存の投稿(古いdata URLの画像)は変更しない＝非破壊・新規アップロードのみ対象。
+let submitImages = []; // 現在フォームに入っている画像（アップロード済みURL または既存URL）の配列
 
 function resizeImageFile(file, maxDim = 1280, quality = 0.8) {
   return new Promise((resolve, reject) => {
@@ -1098,7 +1106,7 @@ function resizeImageFile(file, maxDim = 1280, quality = 0.8) {
         canvas.width = width;
         canvas.height = height;
         canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", quality));
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("toBlob failed")), "image/jpeg", quality);
       };
       img.onerror = reject;
       img.src = reader.result;
@@ -1108,18 +1116,32 @@ function resizeImageFile(file, maxDim = 1280, quality = 0.8) {
   });
 }
 
+async function uploadSubmitImage(blob) {
+  const path = `${session.user.id}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+  const { error } = await sb.storage.from("design-images").upload(path, blob, { contentType: "image/jpeg" });
+  if (error) throw error;
+  return sb.storage.from("design-images").getPublicUrl(path).data.publicUrl;
+}
+
 async function handleImageFiles(input) {
   const files = [...input.files].filter(f => f.type.startsWith("image/"));
-  for (const f of files) {
-    if (submitImages.length >= 5) { toast("画像は5枚までです"); break; }
-    try {
-      submitImages.push(await resizeImageFile(f));
-      renderImagePreviews();
-    } catch {
-      toast("画像を読み込めませんでした: " + (f.name || ""));
+  input.disabled = true;
+  try {
+    for (const f of files) {
+      if (submitImages.length >= 5) { toast("画像は5枚までです"); break; }
+      try {
+        const blob = await resizeImageFile(f);
+        submitImages.push(await uploadSubmitImage(blob));
+        renderImagePreviews();
+      } catch (err) {
+        toast("画像のアップロードに失敗しました: " + (f.name || ""));
+        console.warn("画像アップロード失敗:", err && (err.message || err));
+      }
     }
+  } finally {
+    input.disabled = false;
+    input.value = ""; // 同じファイルを選び直せるようにクリア
   }
-  input.value = ""; // 同じファイルを選び直せるようにクリア
 }
 
 function removeSubmitImage(i) {
@@ -1636,10 +1658,8 @@ function buildHeroMarquee() {
     .filter(d => d.imageUrls && d.imageUrls.length)
     .sort((a, b) => totalDownloads(b) - totalDownloads(a));
   if (!ranked.length) return;
-  const smallSrc = url => url.startsWith("assets/samples/")
-    ? url.replace("assets/samples/", "assets/samples/small/") : url;
   const imgsFor = list => list
-    .map(d => `<img src="${escapeHtml(smallSrc(d.imageUrls[0]))}" alt="" draggable="false">`)
+    .map(d => `<img src="${escapeHtml(smallImageUrl(d.imageUrls[0]))}" alt="" draggable="false">`)
     .join("");
   // 上位順を2列に交互配分（両列とも上位が先頭に来る）。各列は同じ並びを2回繰り返してシームレスループ
   const even = ranked.filter((_, i) => i % 2 === 0);
