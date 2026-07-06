@@ -1525,7 +1525,9 @@ function openAdModal(d) {
   }, 1000);
 }
 
-// 購入モーダル（決済は未実装のデモ。Stripe導入で置き換える）
+// 購入モーダル（決済は未実装のデモ）
+// ※現在「課金システムは導入しない・全スキル無料」方針のため、価格>0のデザインが存在せず
+//   isPaid(d)は常にfalseになり、このモーダルは実質呼ばれない。方針転換時に備えて残置。
 function openPurchaseModal(d) {
   const cr = findCreator(d.creator);
   openModal(`
