@@ -24,8 +24,8 @@ let myProfile = null;
 
 function designFromRow(r) {
   return {
-    id: r.id,
-    creator: r.creator,
+    id: safeId(r.id),
+    creator: safeId(r.creator),
     title: r.title,
     tags: r.tags || [],
     desc: r.description || "",
@@ -38,7 +38,8 @@ function designFromRow(r) {
     longDesc: r.long_desc || "",
     imageUrls: r.image_urls || [],
     sampleSpec: r.sample_spec || null,
-    thumb: r.thumb || "",
+    // 保存された thumb(生HTML)は信用せず、サニタイズ済みの色から毎回再生成する（保存型XSS対策）
+    thumb: genThumb(safeColor((r.sample_spec || {}).c1, "#4f46e5"), safeColor((r.sample_spec || {}).c2, "#f5f5fa")),
     skill: r.skill,
     createdAt: (r.created_at || "").slice(0, 10),
     downloads: 0,
@@ -47,7 +48,7 @@ function designFromRow(r) {
 }
 function profileFromRow(r) {
   return {
-    id: r.id,
+    id: safeId(r.id),
     name: r.name,
     initial: r.initial || r.name.slice(0, 1),
     avatarColor: r.avatar_color || "#4f46e5",
@@ -166,7 +167,7 @@ function avatarHtml(creator, size) {
   if (creator.avatarUrl) {
     return `<span class="avatar ${cls}"><img src="${escapeHtml(creator.avatarUrl)}" alt="${escapeHtml(creator.name)}" onerror="this.remove()"></span>`;
   }
-  return `<span class="avatar ${cls}" style="background:${creator.avatarColor}">${escapeHtml(creator.initial)}</span>`;
+  return `<span class="avatar ${cls}" style="background:${safeColor(creator.avatarColor, '#4f46e5')}">${escapeHtml(creator.initial)}</span>`;
 }
 
 function linkChipsHtml(links) {
@@ -179,7 +180,7 @@ function linkChipsHtml(links) {
   const chips = defs
     .filter(([key]) => links && links[key])
     .map(([key, label]) =>
-      `<a class="link-chip" href="${escapeHtml(links[key])}" target="_blank" rel="noopener">${label}</a>`);
+      `<a class="link-chip" href="${escapeHtml(safeUrl(links[key]))}" target="_blank" rel="noopener">${label}</a>`);
   return chips.length ? `<div class="link-chips">${chips.join("")}</div>` : "";
 }
 
@@ -320,8 +321,8 @@ function showHome() {
 // ---------- 使用例ギャラリー（CSSモックを自動生成 + 投稿画像） ----------
 function autoSamples(d) {
   const spec = d.sampleSpec || {};
-  const c1 = spec.c1 || "#4f46e5";
-  const c2 = spec.c2 || "#f5f5fa";
+  const c1 = safeColor(spec.c1, "#4f46e5");
+  const c2 = safeColor(spec.c2, "#f5f5fa");
   const dark = !!spec.dark;
   const ink = dark ? "#ffffff22" : "#00000014";
   const card = dark ? "#ffffff14" : "#ffffff";
@@ -627,18 +628,24 @@ function renderDetail(d) {
   // レビュー投稿（クラウド保存）
   document.getElementById("review-form").addEventListener("submit", async e => {
     e.preventDefault();
-    if (!pendingStars) { toast("★をタップして評価を選んでください"); return; }
-    const review = {
-      design_id: d.id,
-      name: document.getElementById("rv-name").value.trim(),
-      stars: pendingStars,
-      body: document.getElementById("rv-text").value.trim(),
-    };
-    const { data, error } = await sb.from("reviews").insert(review).select().single();
-    if (error) { toast("投稿に失敗しました: " + error.message); return; }
-    cloud.reviews.push(data);
-    toast("レビューを投稿しました！ありがとうございます");
-    renderDetail(d);
+    const _btn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (_btn) _btn.disabled = true;
+    try {
+      if (!pendingStars) { toast("★をタップして評価を選んでください"); return; }
+      const review = {
+        design_id: d.id,
+        name: document.getElementById("rv-name").value.trim(),
+        stars: pendingStars,
+        body: document.getElementById("rv-text").value.trim(),
+      };
+      const { data, error } = await sb.from("reviews").insert(review).select().single();
+      if (error) { toast("投稿に失敗しました: " + error.message); return; }
+      cloud.reviews.push(data);
+      toast("レビューを投稿しました！ありがとうございます");
+      renderDetail(d);
+    } finally {
+      if (_btn) _btn.disabled = false;
+    }
   });
 }
 
@@ -783,30 +790,36 @@ function showAccount() {
 
   document.getElementById("account-form").addEventListener("submit", async e => {
     e.preventDefault();
-    const name = document.getElementById("ac-name").value.trim();
-    if (!name) return;
-    const row = {
-      id: session.user.id,
-      name,
-      initial: name.slice(0, 1),
-      avatar_color: document.getElementById("ac-color").value,
-      avatar_url: document.getElementById("ac-avatar-url").value.trim(),
-      bio: document.getElementById("ac-bio").value.trim(),
-      links: {
-        homepage: document.getElementById("ac-homepage").value.trim(),
-        x: document.getElementById("ac-x").value.trim(),
-        instagram: document.getElementById("ac-instagram").value.trim(),
-        youtube: document.getElementById("ac-youtube").value.trim(),
-      },
-    };
-    const { error } = await sb.from("profiles").upsert(row);
-    if (error) { toast("保存に失敗しました: " + error.message); return; }
-    const isFirst = !myProfile;
-    myProfile = profileFromRow(row);
-    cloud.profiles[myProfile.id] = myProfile;
-    renderHeaderAccount();
-    toast(isFirst ? `ようこそ、${name}さん！これでデザインを投稿できます` : "プロフィールを保存しました");
-    showAccount();
+    const _btn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (_btn) _btn.disabled = true;
+    try {
+      const name = document.getElementById("ac-name").value.trim();
+      if (!name) return;
+      const row = {
+        id: session.user.id,
+        name,
+        initial: name.slice(0, 1),
+        avatar_color: document.getElementById("ac-color").value,
+        avatar_url: document.getElementById("ac-avatar-url").value.trim(),
+        bio: document.getElementById("ac-bio").value.trim(),
+        links: {
+          homepage: document.getElementById("ac-homepage").value.trim(),
+          x: document.getElementById("ac-x").value.trim(),
+          instagram: document.getElementById("ac-instagram").value.trim(),
+          youtube: document.getElementById("ac-youtube").value.trim(),
+        },
+      };
+      const { error } = await sb.from("profiles").upsert(row);
+      if (error) { toast("保存に失敗しました: " + error.message); return; }
+      const isFirst = !myProfile;
+      myProfile = profileFromRow(row);
+      cloud.profiles[myProfile.id] = myProfile;
+      renderHeaderAccount();
+      toast(isFirst ? `ようこそ、${name}さん！これでデザインを投稿できます` : "プロフィールを保存しました");
+      showAccount();
+    } finally {
+      if (_btn) _btn.disabled = false;
+    }
   });
 
   // アバターのライブプレビュー
@@ -836,7 +849,7 @@ function accountFormHtml(acc, submitLabel) {
       </div>
       <span class="form-hint">SNSと同じアイコンにすると、フォロワーがあなただと分かりやすくなります。空欄なら下の色＋頭文字になります。</span>
     </label>
-    <label class="field-full">アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${acc.avatarColor || "#4f46e5"}"></label>
+    <label class="field-full">アバターカラー（画像がない場合に使用）<input type="color" id="ac-color" value="${safeColor(acc.avatarColor, "#4f46e5")}"></label>
     <label>ホームページURL<input type="url" id="ac-homepage" value="${escapeHtml(links.homepage || "")}" placeholder="https://..."></label>
     <label>X (Twitter) URL<input type="url" id="ac-x" value="${escapeHtml(links.x || "")}" placeholder="https://x.com/..."></label>
     <label>Instagram URL<input type="url" id="ac-instagram" value="${escapeHtml(links.instagram || "")}" placeholder="https://instagram.com/..."></label>
@@ -1028,7 +1041,7 @@ function renderImagePreviews() {
   const wrap = document.getElementById("sb-image-previews");
   if (!wrap) return;
   wrap.innerHTML = submitImages.map((src, i) =>
-    `<div class="img-preview"><img src="${src}" alt="使用例${i + 1}">
+    `<div class="img-preview"><img src="${escapeHtml(src)}" alt="使用例${i + 1}">
       <button type="button" class="img-remove" onclick="removeSubmitImage(${i})" aria-label="削除">×</button></div>`
   ).join("");
   const count = document.getElementById("sb-image-count");
@@ -1091,8 +1104,8 @@ function showSubmit(editId) {
       </div>
       <label class="field-full">特徴（1行に1つ・4つまで）<textarea id="sb-features" rows="4" placeholder="例：&#10;ダークモード前提の配色設計&#10;スクロールアニメーション付き">${escapeHtml(d ? (d.features || []).join("\n") : "")}</textarea></label>
       <div class="color-row">
-        <label>メインカラー<input type="color" id="sb-color1" value="${spec.c1 || "#4f46e5"}"></label>
-        <label>背景カラー<input type="color" id="sb-color2" value="${spec.c2 || "#f5f5fa"}"></label>
+        <label>メインカラー<input type="color" id="sb-color1" value="${safeColor(spec.c1, "#4f46e5")}"></label>
+        <label>背景カラー<input type="color" id="sb-color2" value="${safeColor(spec.c2, "#f5f5fa")}"></label>
       </div>
       <label class="field-full">スキル本文（.mdの中身）
         <textarea id="sb-skill" rows="14" required spellcheck="false"></textarea>
@@ -1111,52 +1124,58 @@ function showSubmit(editId) {
 
   document.getElementById("submit-form").addEventListener("submit", async e => {
     e.preventDefault();
-    const title = document.getElementById("sb-title").value.trim();
-    const tags = document.getElementById("sb-tags").value
-      .split(/[,、，]/).map(t => t.trim()).filter(Boolean).slice(0, 3);
-    const features = document.getElementById("sb-features").value
-      .split("\n").map(f => f.trim()).filter(Boolean).slice(0, 4);
-    const c1 = document.getElementById("sb-color1").value;
-    const c2 = document.getElementById("sb-color2").value;
+    const _btn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (_btn) _btn.disabled = true;
+    try {
+      const title = document.getElementById("sb-title").value.trim();
+      const tags = document.getElementById("sb-tags").value
+        .split(/[,、，]/).map(t => t.trim()).filter(Boolean).slice(0, 3);
+      const features = document.getElementById("sb-features").value
+        .split("\n").map(f => f.trim()).filter(Boolean).slice(0, 4);
+      const c1 = document.getElementById("sb-color1").value;
+      const c2 = document.getElementById("sb-color2").value;
 
-    const highlights = document.getElementById("sb-highlights").value
-      .split("\n").map(h => h.trim()).filter(Boolean).slice(0, 3);
-    const imageUrls = submitImages.slice(0, 5);
+      const highlights = document.getElementById("sb-highlights").value
+        .split("\n").map(h => h.trim()).filter(Boolean).slice(0, 3);
+      const imageUrls = submitImages.slice(0, 5);
 
-    const row = {
-      title,
-      tags: tags.length ? tags : ["オリジナル"],
-      description: document.getElementById("sb-desc").value.trim(),
-      genre: document.getElementById("sb-genre").value,
-      category: document.getElementById("sb-category").value,
-      color_tone: document.getElementById("sb-colortone").value,
-      price: 0, // 全スキル無料（広告収益モデル）
-      features,
-      highlights,
-      long_desc: document.getElementById("sb-longdesc").value.trim(),
-      image_urls: imageUrls,
-      sample_spec: { c1, c2 },
-      thumb: genThumb(c1, c2),
-      skill: document.getElementById("sb-skill").value,
-    };
+      const row = {
+        title,
+        tags: tags.length ? tags : ["オリジナル"],
+        description: document.getElementById("sb-desc").value.trim(),
+        genre: document.getElementById("sb-genre").value,
+        category: document.getElementById("sb-category").value,
+        color_tone: document.getElementById("sb-colortone").value,
+        price: 0, // 全スキル無料（広告収益モデル）
+        features,
+        highlights,
+        long_desc: document.getElementById("sb-longdesc").value.trim(),
+        image_urls: imageUrls,
+        sample_spec: { c1, c2 },
+        thumb: genThumb(c1, c2),
+        skill: document.getElementById("sb-skill").value,
+      };
 
-    if (isEdit) {
-      const { data, error } = await sb.from("designs").update(row).eq("id", editId).select().single();
-      if (error) { toast("保存に失敗しました: " + error.message); return; }
-      const idx = cloud.designs.findIndex(x => x.id === editId);
-      if (idx !== -1) cloud.designs[idx] = designFromRow(data);
-      toast("変更を保存しました");
-      showDetail(editId);
-      return;
+      if (isEdit) {
+        const { data, error } = await sb.from("designs").update(row).eq("id", editId).select().single();
+        if (error) { toast("保存に失敗しました: " + error.message); return; }
+        const idx = cloud.designs.findIndex(x => x.id === editId);
+        if (idx !== -1) cloud.designs[idx] = designFromRow(data);
+        toast("変更を保存しました");
+        showDetail(editId);
+        return;
+      }
+
+      row.id = "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      row.creator = session.user.id;
+      const { data, error } = await sb.from("designs").insert(row).select().single();
+      if (error) { toast("公開に失敗しました: " + error.message); return; }
+      cloud.designs.unshift(designFromRow(data));
+      toast("デザインを公開しました！");
+      showDetail(data.id);
+    } finally {
+      if (_btn) _btn.disabled = false;
     }
-
-    row.id = "d-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    row.creator = session.user.id;
-    const { data, error } = await sb.from("designs").insert(row).select().single();
-    if (error) { toast("公開に失敗しました: " + error.message); return; }
-    cloud.designs.unshift(designFromRow(data));
-    toast("デザインを公開しました！");
-    showDetail(data.id);
   });
 }
 
@@ -1302,6 +1321,7 @@ async function doDownload(id) {
   // DL数をクラウドでカウント
   const { error } = await sb.rpc("bump_download", { d_id: id });
   if (!error) cloud.stats[id] = (cloud.stats[id] || 0) + 1;
+  else console.warn("bump_download失敗:", error && (error.message || error));
 }
 
 // ---------- モーダル ----------
@@ -1380,9 +1400,10 @@ function openPurchaseModal(d) {
 }
 
 // ---------- 制作代行 ----------
-function setOrderDesign(id, title) {
-  document.getElementById("order-design-id").value = id || "";
-  document.getElementById("order-design-label").value = title || "未定・相談したい";
+function setOrderDesign(id) {
+  const d = id ? findDesign(id) : null;
+  document.getElementById("order-design-id").value = d ? d.id : "";
+  document.getElementById("order-design-label").value = d ? d.title : "未定・相談したい";
 }
 
 function openDesignPicker() {
@@ -1397,7 +1418,7 @@ function openDesignPicker() {
       !needle ||
       [d.title, d.desc, d.genre, d.category, ...(d.tags || [])].join(" ").toLowerCase().includes(needle));
     document.getElementById("picker-list").innerHTML = `
-      <button type="button" class="picker-item" onclick="setOrderDesign('', ''); closeModal()">
+      <button type="button" class="picker-item" onclick="setOrderDesign(''); closeModal()">
         <span class="picker-title">未定・相談したい</span>
         <span class="picker-sub">デザインを決めずに相談する</span>
       </button>
@@ -1405,9 +1426,9 @@ function openDesignPicker() {
         const cr = findCreator(d.creator);
         return `
         <button type="button" class="picker-item"
-          onclick="setOrderDesign('${d.id}', '${escapeHtml(d.title)}'); closeModal()">
+          onclick="setOrderDesign('${safeId(d.id)}'); closeModal()">
           <span class="picker-title">${escapeHtml(d.title)} ${isPaid(d) ? `<span class="badge badge-paid">¥${d.price.toLocaleString()}</span>` : ""}</span>
-          <span class="picker-sub">by ${escapeHtml(cr.name)}　<code>ID: ${d.id}</code></span>
+          <span class="picker-sub">by ${escapeHtml(cr.name)}　<code>ID: ${escapeHtml(d.id)}</code></span>
         </button>`;
       }).join("")}
       ${list.length === 0 ? `<p class="empty-note">見つかりませんでした</p>` : ""}`;
@@ -1455,6 +1476,16 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   }[c]));
+}
+function safeId(s) {
+  return String(s == null ? "" : s).replace(/[^A-Za-z0-9_-]/g, "");
+}
+function safeColor(s, fallback) {
+  return /^#[0-9a-fA-F]{3,8}$|^[a-zA-Z]+$/.test(String(s || "")) ? String(s) : fallback;
+}
+function safeUrl(u) {
+  try { const url = new URL(String(u), location.href); return (url.protocol === "http:" || url.protocol === "https:") ? String(u) : "#"; }
+  catch { return "#"; }
 }
 
 let toastTimer;
@@ -1526,4 +1557,5 @@ function startMarquee(track, pxPerSec) {
   await Promise.all([initAuth(), loadCloudData()]);
   renderGenreTabs(); // 件数を更新
   renderGallery();   // クラウドの投稿・レビュー・DL数を反映
+  buildHeroMarquee();
 })();
