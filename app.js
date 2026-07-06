@@ -563,7 +563,7 @@ function renderDetail(d) {
       <ul class="feature-list">${(d.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join("")}</ul>
       <div class="detail-actions">
         <button class="btn btn-primary" onclick="downloadSkill('${d.id}')">
-          ${isPaid(d) ? `¥${d.price.toLocaleString()} で購入してダウンロード` : "無料ダウンロード（広告が表示されます）"}
+          ${isPaid(d) ? `¥${d.price.toLocaleString()} で購入してダウンロード` : "無料ダウンロード"}
         </button>
         <button class="btn btn-ghost" onclick="orderThis('${d.id}')">このデザインで制作代行を頼む</button>
       </div>
@@ -1213,13 +1213,15 @@ description: （どんなサイト向けの、どんなデザインかを1〜2�
 }
 
 // ---------- スキルダウンロード ----------
-// 無料 → 広告ポップアップを挟んでDL ／ 有料 → 購入モーダル（決済はデモ）
+// 無料 → 即DL ／ 有料 → 購入モーダル（決済はデモ）
+// ※広告ポップアップ(openAdModal)は、Google AdSense未申請のため一旦無効化中。
+//   ユーザー数が増えて申請できる段階になったら、下の else 節を openAdModal(d) に戻す。
 function downloadSkill(id) {
   const d = findDesign(id);
   if (!d) return;
   if (isAdminUser()) { doDownload(id); return; } // 管理者は広告・購入なしで即DL
   if (isPaid(d)) openPurchaseModal(d);
-  else openAdModal(d);
+  else doDownload(id);
 }
 
 // ダウンロードする .md には毎回、先頭に「安全のための注意書き＋AIに渡す確認プロンプト」を付ける。
@@ -1322,6 +1324,8 @@ function closeModal() {
 }
 
 // 広告ポップアップ（5秒カウントダウン後にDLボタンが有効になる）
+// ※現在 downloadSkill() からは呼ばれていない（Google AdSense未申請のため一旦無効化中）。
+//   AdSense申請が通ったら downloadSkill() の呼び出しをこちらに戻す。
 const AD_WAIT = 5;
 function openAdModal(d) {
   openModal(`
